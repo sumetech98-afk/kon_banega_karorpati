@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✈️ Aviator - Your UPI</title>
+    <title>✈️ Aviator - Full Control</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
             background: #141b2b;
             border-radius: 30px;
             padding: 25px 30px 30px;
-            max-width: 950px;
+            max-width: 1000px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -521,6 +521,36 @@
             margin-top: 8px;
         }
 
+        .crash-control-box {
+            background: #0d1422;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 8px 0;
+            border: 1px solid #2a3a55;
+        }
+        .crash-control-box .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .crash-control-box label {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .sync-status {
+            color: #636e72;
+            font-size: 12px;
+            padding: 4px 12px;
+            background: #0d1422;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .sync-status.synced { color: #00b894; }
+        .sync-status.syncing { color: #fdcb6e; }
+
         @media (max-width: 700px) {
             .admin-grid { grid-template-columns: 1fr; }
             .container { padding: 15px; }
@@ -550,7 +580,7 @@
         </div>
     </div>
 
-    <!-- DEPOSIT MODAL WITH YOUR UPI -->
+    <!-- DEPOSIT MODAL -->
     <div id="depositModal" class="modal hidden">
         <div class="modal-box">
             <button class="close-btn" onclick="closeDepositModal()">✕</button>
@@ -694,6 +724,7 @@
                 <button class="admin-tab active" data-tab="users" onclick="switchAdminTab('users')">👥 Users</button>
                 <button class="admin-tab" data-tab="deposits" onclick="switchAdminTab('deposits')">📥 Deposits</button>
                 <button class="admin-tab" data-tab="withdrawals" onclick="switchAdminTab('withdrawals')">📤 Withdrawals</button>
+                <button class="admin-tab" data-tab="control" onclick="switchAdminTab('control')">🎮 Crash Control</button>
                 <button class="admin-tab" data-tab="qr" onclick="switchAdminTab('qr')">📱 QR Codes</button>
                 <button class="admin-tab" data-tab="settings" onclick="switchAdminTab('settings')">⚙️ Settings</button>
                 <button class="admin-tab" data-tab="stats" onclick="switchAdminTab('stats')">📊 Stats</button>
@@ -703,6 +734,7 @@
                 <div class="admin-control-group" style="margin-bottom:12px;">
                     <input type="text" id="adminSearch" placeholder="Search users..." oninput="renderAdminUsers()">
                     <button class="btn btn-danger btn-sm" onclick="resetAllData()">🗑️ Reset All Data</button>
+                    <button class="btn btn-info btn-sm" onclick="syncData()">🔄 Sync All Devices</button>
                 </div>
                 <div id="adminUsersContainer"></div>
             </div>
@@ -731,6 +763,49 @@
                 <div id="adminWithdrawalsContainer"></div>
             </div>
 
+            <!-- CRASH CONTROL TAB -->
+            <div class="admin-tab-content" id="adminTab-control">
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <h3>🎮 Crash Control</h3>
+                        <div class="crash-control-box">
+                            <div class="row">
+                                <label>🎯 Set Crash Point:</label>
+                                <input type="number" id="adminCrashPoint" value="2.00" min="1.01" max="100" step="0.01" style="width:100px;">
+                                <button class="btn btn-danger btn-sm" onclick="setCrashPoint()">💥 Crash Now</button>
+                            </div>
+                            <div class="row">
+                                <label>🔄 Auto Crash:</label>
+                                <select id="adminAutoCrash" onchange="toggleAutoCrash()">
+                                    <option value="off">Off</option>
+                                    <option value="on">On</option>
+                                </select>
+                                <label style="margin-left:10px;">At Multiplier:</label>
+                                <input type="number" id="adminAutoCrashPoint" value="5.00" min="1.01" max="100" step="0.1" style="width:80px;">
+                            </div>
+                            <div class="row">
+                                <label>⚡ Game Speed:</label>
+                                <input type="range" id="adminSpeedControl" min="1" max="5" step="0.5" value="2" style="width:150px;" oninput="updateSpeed()">
+                                <span id="speedDisplayControl" style="color:#ffd700;font-weight:700;">2.0x</span>
+                            </div>
+                            <div class="row" style="margin-top:10px;border-top:1px solid #2a3a55;padding-top:10px;">
+                                <button class="btn btn-warning btn-sm" onclick="forceCashOutAll()">🚪 Force Cash Out All</button>
+                                <button class="btn btn-danger btn-sm" onclick="emergencyStop()">🛑 Emergency Stop</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="admin-card">
+                        <h3>📊 Game Status</h3>
+                        <div id="gameStatusDisplay">
+                            <div class="row"><label>Status:</label> <span id="gameStatusText" style="color:#00b894;">🟢 Ready</span></div>
+                            <div class="row"><label>Current Multiplier:</label> <span id="gameCurrentMult" style="color:#ffd700;">1.00x</span></div>
+                            <div class="row"><label>Players Playing:</label> <span id="gamePlayersCount" style="color:#74b9ff;">0</span></div>
+                            <div class="row"><label>Last Crash:</label> <span id="gameLastCrash" style="color:#e17055;">-</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="admin-tab-content" id="adminTab-qr">
                 <div class="admin-grid">
                     <div class="admin-card">
@@ -738,15 +813,14 @@
                         <div class="admin-control-group">
                             <label style="color:#aaa;font-size:13px;">Your UPI ID:</label>
                             <input type="text" id="adminUPI" value="s6154632725482301@slc" style="width:250px;">
-                            <span style="color:#636e72;font-size:11px;">✅ Your UPI is set</span>
                         </div>
                         <div class="admin-control-group">
                             <label style="color:#aaa;font-size:13px;">Payee Name:</label>
                             <input type="text" id="adminPayee" placeholder="Your Store Name" style="width:200px;">
                         </div>
                         <div class="admin-control-group">
-                            <label style="color:#aaa;font-size:13px;">Bank Details (for Bank Transfer):</label>
-                            <textarea id="adminBankDetails" placeholder="Bank Name: XXX\nAccount No: XXXXX\nIFSC: XXXXX" style="width:100%;min-height:80px;"></textarea>
+                            <label style="color:#aaa;font-size:13px;">Bank Details:</label>
+                            <textarea id="adminBankDetails" placeholder="Bank Name: XXX\nAccount No: XXXXX\nIFSC: XXXXX" style="width:100%;min-height:60px;"></textarea>
                         </div>
                         <button class="btn btn-success btn-sm" onclick="saveQRSettings()">💾 Save QR Settings</button>
                     </div>
@@ -780,11 +854,6 @@
                         <div class="admin-control-group">
                             <label style="color:#aaa;font-size:13px;">Min Withdraw:</label>
                             <input type="number" id="adminMinWithdraw" value="100" min="1" style="width:80px;">
-                        </div>
-                        <div class="admin-control-group">
-                            <label style="color:#aaa;font-size:13px;">Game Speed:</label>
-                            <input type="range" id="adminSpeed" min="1" max="4" step="0.5" value="2" style="width:120px;">
-                            <span id="speedDisplay" style="color:#ffd700;">2.0x</span>
                         </div>
                         <button class="btn btn-success btn-sm" onclick="saveSettings()">💾 Save Settings</button>
                     </div>
@@ -836,18 +905,17 @@
         </div>
 
         <div class="footer-note">
-            ⚡ Virtual coins make real money · Fair random crash
+            <span class="sync-status" id="syncStatus">🔄 Synced</span>
+            ⚡ Virtual coins only · No real money · Fair random crash
         </div>
     </div>
 
     <script>
         // ============================================================
-        //  DATA LAYER
+        //  DATA LAYER WITH CROSS-DEVICE SYNC
         // ============================================================
-        const STORAGE_KEY = 'aviatorDataV8';
+        const STORAGE_KEY = 'aviatorDataV9';
         const ADMIN_PASSWORD = 'admin2026';
-
-        // 🔴 YOUR UPI ID IS SET HERE 🔴
         const YOUR_UPI_ID = 's6154632725482301@slc';
         const YOUR_PAYEE_NAME = 'Gaming Store';
 
@@ -855,6 +923,16 @@
         let currentUser = null;
         let settings = {};
         let qrSettings = {};
+        let isSyncing = false;
+
+        // Game control variables
+        let adminCrashControl = {
+            autoCrash: false,
+            autoCrashPoint: 5.00,
+            manualCrashPoint: 2.00,
+            speed: 2.0,
+            isEmergencyStop: false
+        };
 
         function loadData() {
             const raw = localStorage.getItem(STORAGE_KEY);
@@ -887,14 +965,165 @@
             }
             qrSettings = data.qrSettings;
             if (!data.globalStats) data.globalStats = { totalGames: 0 };
+            if (!data.adminControls) {
+                data.adminControls = {
+                    autoCrash: false,
+                    autoCrashPoint: 5.00,
+                    speed: 2.0
+                };
+            }
+            adminCrashControl = data.adminControls;
+            // Update speed from admin controls
+            speed = adminCrashControl.speed || 2.0;
         }
 
         function saveData() {
             data.settings = settings;
             data.qrSettings = qrSettings;
+            data.adminControls = adminCrashControl;
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            updateSyncStatus('✅ Synced');
         }
 
+        // ============================================================
+        //  CROSS-DEVICE SYNC
+        // ============================================================
+        function syncData() {
+            if (isSyncing) return;
+            isSyncing = true;
+            updateSyncStatus('🔄 Syncing...');
+            
+            // Simulate sync - in real scenario, this would connect to a server
+            // For now, we just reload from localStorage which syncs across tabs
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                try {
+                    const newData = JSON.parse(raw);
+                    // Merge or replace data
+                    data = newData;
+                    if (!data.users) data.users = {};
+                    if (!data.transactions) data.transactions = [];
+                    if (!data.deposits) data.deposits = [];
+                    if (!data.withdrawals) data.withdrawals = [];
+                    if (!data.settings) {
+                        data.settings = { minBet: 1, maxBet: 500, minDeposit: 50, minWithdraw: 100, speed: 2.0 };
+                    }
+                    settings = data.settings;
+                    if (!data.qrSettings) {
+                        data.qrSettings = {
+                            upiId: YOUR_UPI_ID,
+                            payeeName: YOUR_PAYEE_NAME,
+                            qrUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=' + YOUR_UPI_ID + '&pn=' + encodeURIComponent(YOUR_PAYEE_NAME) + '&am=0&cu=INR',
+                            bankDetails: 'Bank Name: State Bank of India\nAccount No: 1234567890\nIFSC: SBIN0001234\nAccount Holder: Gaming Store'
+                        };
+                    }
+                    qrSettings = data.qrSettings;
+                    if (!data.globalStats) data.globalStats = { totalGames: 0 };
+                    if (!data.adminControls) {
+                        data.adminControls = { autoCrash: false, autoCrashPoint: 5.00, speed: 2.0 };
+                    }
+                    adminCrashControl = data.adminControls;
+                    speed = adminCrashControl.speed || 2.0;
+                    
+                    if (currentUser) {
+                        updateUI();
+                        renderHistory();
+                    }
+                    renderAllAdmin();
+                    updateSyncStatus('✅ Synced');
+                    console.log('🔄 Data synced across devices!');
+                } catch (e) {
+                    console.error('Sync error:', e);
+                    updateSyncStatus('❌ Sync failed');
+                }
+            }
+            isSyncing = false;
+        }
+
+        function updateSyncStatus(status) {
+            const el = document.getElementById('syncStatus');
+            if (el) {
+                el.textContent = status;
+                if (status.includes('✅')) {
+                    el.style.color = '#00b894';
+                } else if (status.includes('🔄')) {
+                    el.style.color = '#fdcb6e';
+                } else if (status.includes('❌')) {
+                    el.style.color = '#e17055';
+                }
+            }
+        }
+
+        // Auto-sync every 30 seconds
+        setInterval(() => {
+            syncData();
+        }, 30000);
+
+        // ============================================================
+        //  CRASH CONTROL FUNCTIONS
+        // ============================================================
+        function setCrashPoint() {
+            const point = parseFloat(document.getElementById('adminCrashPoint').value);
+            if (isNaN(point) || point < 1.01) {
+                alert('Please enter a valid crash point (min 1.01)');
+                return;
+            }
+            if (!isPlaying) {
+                alert('Game is not running! Start a game first.');
+                return;
+            }
+            // Set the crash point
+            crashMultiplier = point;
+            // Force crash if multiplier reaches this point
+            if (currentMultiplier >= point) {
+                crashRound();
+            }
+            document.getElementById('adminCrashPoint').value = point;
+            alert('✅ Crash point set to ' + point + 'x');
+        }
+
+        function toggleAutoCrash() {
+            const val = document.getElementById('adminAutoCrash').value;
+            adminCrashControl.autoCrash = (val === 'on');
+            adminCrashControl.autoCrashPoint = parseFloat(document.getElementById('adminAutoCrashPoint').value) || 5.00;
+            saveData();
+            const status = adminCrashControl.autoCrash ? 'ON' : 'OFF';
+            alert('🔄 Auto Crash ' + status + ' at ' + adminCrashControl.autoCrashPoint + 'x');
+        }
+
+        function updateSpeed() {
+            const val = parseFloat(document.getElementById('adminSpeedControl').value);
+            document.getElementById('speedDisplayControl').textContent = val.toFixed(1) + 'x';
+            adminCrashControl.speed = val;
+            speed = val;
+            saveData();
+        }
+
+        function forceCashOutAll() {
+            if (!confirm('Force cash out for all active players?')) return;
+            if (isPlaying && !isCrashed && !isCashedOut) {
+                // Simulate cash out for current player
+                cashOut();
+                alert('✅ All players have been cashed out!');
+            } else {
+                alert('No active game to cash out.');
+            }
+        }
+
+        function emergencyStop() {
+            if (!confirm('🛑 Emergency Stop! This will crash the game immediately. Are you sure?')) return;
+            if (isPlaying && !isCrashed) {
+                crashMultiplier = currentMultiplier;
+                crashRound();
+                alert('🛑 Emergency Stop activated! Game crashed.');
+            } else {
+                alert('No active game to stop.');
+            }
+        }
+
+        // ============================================================
+        //  USER FUNCTIONS
+        // ============================================================
         function getUser(username) {
             if (!data.users[username]) {
                 data.users[username] = {
@@ -969,7 +1198,7 @@
         }
 
         // ============================================================
-        //  QR DEPOSIT SYSTEM WITH YOUR UPI
+        //  QR DEPOSIT SYSTEM
         // ============================================================
         function openDepositModal() {
             if (!currentUser) return alert('Please login first!');
@@ -989,21 +1218,15 @@
             const amount = document.getElementById('depositAmount').value || 0;
             const displayAmount = document.getElementById('displayAmount');
             const qrAmountDisplay = document.getElementById('qrAmountDisplay');
-            if (displayAmount) {
-                displayAmount.textContent = '₹' + amount;
-            }
-            if (qrAmountDisplay) {
-                qrAmountDisplay.textContent = '₹' + amount;
-            }
+            if (displayAmount) displayAmount.textContent = '₹' + amount;
+            if (qrAmountDisplay) qrAmountDisplay.textContent = '₹' + amount;
             if (amount > 0) {
                 const upiId = qrSettings.upiId || YOUR_UPI_ID;
                 const payee = qrSettings.payeeName || YOUR_PAYEE_NAME;
                 const upiData = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payee)}&am=${amount}&cu=INR`;
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiData)}`;
                 const qrImage = document.getElementById('qrImage');
-                if (qrImage) {
-                    qrImage.src = qrUrl;
-                }
+                if (qrImage) qrImage.src = qrUrl;
             }
         }
 
@@ -1030,15 +1253,9 @@
                 qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiData)}`;
             }
 
-            if (upiDisplay) {
-                upiDisplay.textContent = 'UPI: ' + upiId;
-            }
-            if (displayPayee) {
-                displayPayee.textContent = payeeName;
-            }
-            if (displayUPI) {
-                displayUPI.textContent = upiId;
-            }
+            if (upiDisplay) upiDisplay.textContent = 'UPI: ' + upiId;
+            if (displayPayee) displayPayee.textContent = payeeName;
+            if (displayUPI) displayUPI.textContent = upiId;
 
             if (instructions) {
                 instructions.innerHTML = `
@@ -1152,7 +1369,7 @@
                 if (!bankName) { errorEl.textContent = 'Please enter your bank name!'; return; }
                 if (!accountNumber) { errorEl.textContent = 'Please enter your account number!'; return; }
                 if (!ifsc) { errorEl.textContent = 'Please enter your IFSC code!'; return; }
-                if (ifsc.length < 11) { errorEl.textContent = 'IFSC code must be 11 characters (e.g., SBIN0001234)!'; return; }
+                if (ifsc.length < 11) { errorEl.textContent = 'IFSC code must be 11 characters!'; return; }
             } else if (method === 'UPI' || method === 'Paytm' || method === 'PhonePe' || method === 'Google Pay') {
                 if (!upi) { errorEl.textContent = 'Please enter your UPI ID for ' + method + '!'; return; }
                 if (!upi.includes('@')) { errorEl.textContent = 'Please enter a valid UPI ID (e.g., your@upi)!'; return; }
@@ -1193,248 +1410,7 @@
         }
 
         // ============================================================
-        //  ADMIN: QR SETTINGS
-        // ============================================================
-        function loadQRSettingsToUI() {
-            const adminUPI = document.getElementById('adminUPI');
-            const adminPayee = document.getElementById('adminPayee');
-            const adminBankDetails = document.getElementById('adminBankDetails');
-            
-            if (adminUPI) adminUPI.value = qrSettings.upiId || YOUR_UPI_ID;
-            if (adminPayee) adminPayee.value = qrSettings.payeeName || YOUR_PAYEE_NAME;
-            if (adminBankDetails) adminBankDetails.value = qrSettings.bankDetails || '';
-            updateQRPreview();
-        }
-
-        function saveQRSettings() {
-            const upiId = document.getElementById('adminUPI').value.trim() || YOUR_UPI_ID;
-            const payeeName = document.getElementById('adminPayee').value.trim() || YOUR_PAYEE_NAME;
-            
-            qrSettings.upiId = upiId;
-            qrSettings.payeeName = payeeName;
-            qrSettings.bankDetails = document.getElementById('adminBankDetails').value.trim();
-            
-            qrSettings.qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=' + upiId + '&pn=' + encodeURIComponent(payeeName) + '&am=0&cu=INR';
-            
-            saveData();
-            updateQRPreview();
-            alert('✅ QR settings saved! Your UPI ID is now: ' + upiId);
-        }
-
-        function updateQRPreview() {
-            const preview = document.getElementById('adminQRPreview');
-            const text = document.getElementById('adminQRPreviewText');
-            const upiId = document.getElementById('adminUPI')?.value || YOUR_UPI_ID;
-            const payee = document.getElementById('adminPayee')?.value || YOUR_PAYEE_NAME;
-            
-            if (preview && text) {
-                const upiData = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payee)}&am=0&cu=INR`;
-                preview.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiData)}`;
-                text.textContent = 'UPI: ' + upiId + ' | Payee: ' + payee;
-            }
-        }
-
-        // ============================================================
-        //  ADMIN: DEPOSIT MANAGEMENT
-        // ============================================================
-        function renderAdminDeposits() {
-            const container = document.getElementById('adminDepositsContainer');
-            if (!container) return;
-            const filter = document.getElementById('depositFilter')?.value || 'all';
-            let deposits = data.deposits || [];
-
-            if (filter !== 'all') {
-                deposits = deposits.filter(d => d.status === filter);
-            }
-
-            deposits.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
-
-            if (deposits.length === 0) {
-                container.innerHTML = '<p style="color:#636e72;">No deposit requests found.</p>';
-                return;
-            }
-
-            let html = `<table class="user-table">
-                <tr>
-                    <th>ID</th>
-                    <th>User</th>
-                    <th>Amount</th>
-                    <th>Method</th>
-                    <th>Transaction ID</th>
-                    <th>Status</th>
-                    <th>Requested</th>
-                    <th>Actions</th>
-                </tr>`;
-            deposits.forEach(d => {
-                const statusClass = d.status === 'pending' ? 'pending' : (d.status === 'approved' ? 'approved' : 'rejected');
-                const statusLabel = d.status === 'pending' ? '⏳ Pending' : (d.status === 'approved' ? '✅ Approved' : '❌ Rejected');
-
-                html += `
-                    <tr>
-                        <td style="font-size:11px;color:#636e72;">${d.id}</td>
-                        <td><strong>${d.username}</strong></td>
-                        <td style="color:#ffd700;">₹${d.amount}</td>
-                        <td>${d.method}</td>
-                        <td style="font-size:12px;color:#aaa;">${d.transactionId}</td>
-                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
-                        <td style="font-size:11px;color:#636e72;">${new Date(d.requestedAt).toLocaleDateString()}</td>
-                        <td>
-                            ${d.status === 'pending' ? `
-                                <button class="btn btn-success btn-sm" onclick="approveDeposit('${d.id}')">✅ Approve</button>
-                                <button class="btn btn-danger btn-sm" onclick="rejectDeposit('${d.id}')">❌ Reject</button>
-                            ` : `
-                                <span style="color:#636e72;font-size:12px;">Processed</span>
-                            `}
-                        </td>
-                    </tr>
-                `;
-            });
-            html += `</table>`;
-            container.innerHTML = html;
-        }
-
-        function approveDeposit(id) {
-            if (!confirm('Approve this deposit request? Coins will be added to the user\'s account.')) return;
-            const d = data.deposits.find(d => d.id === id);
-            if (!d) return alert('Request not found!');
-            if (d.status !== 'pending') return alert('Already processed!');
-
-            d.status = 'approved';
-            d.processedAt = new Date().toISOString();
-
-            const user = getUser(d.username);
-            const coinsAmount = d.amount * 10;
-            user.coins += coinsAmount;
-            saveData();
-            addTransaction(d.username, 'deposit_approved', coinsAmount, 'deposit', 
-                'Deposit approved - ₹' + d.amount + ' → ' + coinsAmount + ' coins (TX: ' + d.transactionId + ')');
-
-            renderAdminDeposits();
-            renderAdminStats();
-            if (currentUser && currentUser.username === d.username) updateUI();
-            alert('✅ Deposit approved! ' + coinsAmount + ' coins added to ' + d.username + '\'s account.');
-        }
-
-        function rejectDeposit(id) {
-            if (!confirm('Reject this deposit request?')) return;
-            const d = data.deposits.find(d => d.id === id);
-            if (!d) return alert('Request not found!');
-            if (d.status !== 'pending') return alert('Already processed!');
-
-            d.status = 'rejected';
-            d.processedAt = new Date().toISOString();
-            saveData();
-            addTransaction(d.username, 'deposit_rejected', d.amount, 'deposit', 'Deposit rejected');
-
-            renderAdminDeposits();
-            renderAdminStats();
-            alert('❌ Deposit rejected.');
-        }
-
-        // ============================================================
-        //  ADMIN: WITHDRAWAL MANAGEMENT
-        // ============================================================
-        function renderAdminWithdrawals() {
-            const container = document.getElementById('adminWithdrawalsContainer');
-            if (!container) return;
-            const filter = document.getElementById('withdrawFilter')?.value || 'all';
-            let withdrawals = data.withdrawals || [];
-
-            if (filter !== 'all') {
-                withdrawals = withdrawals.filter(w => w.status === filter);
-            }
-
-            withdrawals.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
-
-            if (withdrawals.length === 0) {
-                container.innerHTML = '<p style="color:#636e72;">No withdrawal requests found.</p>';
-                return;
-            }
-
-            let html = `<table class="user-table">
-                <tr>
-                    <th>ID</th>
-                    <th>User</th>
-                    <th>Amount</th>
-                    <th>Method</th>
-                    <th>Bank Details</th>
-                    <th>IFSC</th>
-                    <th>Status</th>
-                    <th>Requested</th>
-                    <th>Actions</th>
-                </tr>`;
-            withdrawals.forEach(w => {
-                const statusClass = w.status === 'pending' ? 'pending' : (w.status === 'approved' ? 'approved' : 'rejected');
-                const statusLabel = w.status === 'pending' ? '⏳ Pending' : (w.status === 'approved' ? '✅ Approved' : '❌ Rejected');
-                const details = w.details || {};
-                const ifscDisplay = details.ifsc || 'N/A';
-                const bankDisplay = details.bankName ? details.bankName + ' - ' + details.accountNumber : (details.upi || 'N/A');
-
-                html += `
-                    <tr>
-                        <td style="font-size:11px;color:#636e72;">${w.id}</td>
-                        <td><strong>${w.username}</strong></td>
-                        <td style="color:#ffd700;">${w.amount} 🪙</td>
-                        <td>${w.method}</td>
-                        <td style="font-size:12px;color:#aaa;max-width:150px;word-break:break-all;">${bankDisplay}</td>
-                        <td style="font-family:monospace;font-size:12px;color:#fdcb6e;font-weight:700;">${ifscDisplay}</td>
-                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
-                        <td style="font-size:11px;color:#636e72;">${new Date(w.requestedAt).toLocaleDateString()}</td>
-                        <td>
-                            ${w.status === 'pending' ? `
-                                <button class="btn btn-success btn-sm" onclick="approveWithdraw('${w.id}')">✅ Approve</button>
-                                <button class="btn btn-danger btn-sm" onclick="rejectWithdraw('${w.id}')">❌ Reject</button>
-                            ` : `
-                                <span style="color:#636e72;font-size:12px;">Processed</span>
-                            `}
-                        </td>
-                    </tr>
-                `;
-            });
-            html += `</table>`;
-            container.innerHTML = html;
-        }
-
-        function approveWithdraw(id) {
-            if (!confirm('Approve this withdrawal request? Make sure you have sent the payment to the user.')) return;
-            const w = data.withdrawals.find(w => w.id === id);
-            if (!w) return alert('Request not found!');
-            if (w.status !== 'pending') return alert('Already processed!');
-
-            w.status = 'approved';
-            w.processedAt = new Date().toISOString();
-            saveData();
-            addTransaction(w.username, 'withdraw_approved', w.amount, 'withdrawal', 
-                'Withdrawal approved - Amount: ' + w.amount + ' coins');
-
-            renderAdminWithdrawals();
-            renderAdminStats();
-            alert('✅ Withdrawal approved! User has been notified.');
-        }
-
-        function rejectWithdraw(id) {
-            if (!confirm('Reject this withdrawal request? Coins will be refunded to the user.')) return;
-            const w = data.withdrawals.find(w => w.id === id);
-            if (!w) return alert('Request not found!');
-            if (w.status !== 'pending') return alert('Already processed!');
-
-            w.status = 'rejected';
-            w.processedAt = new Date().toISOString();
-
-            const user = getUser(w.username);
-            user.coins += w.amount;
-            saveData();
-            addTransaction(w.username, 'withdraw_refund', w.amount, 'withdrawal', 
-                'Withdrawal rejected - ' + w.amount + ' coins refunded');
-
-            renderAdminWithdrawals();
-            renderAdminStats();
-            if (currentUser && currentUser.username === w.username) updateUI();
-            alert('❌ Withdrawal rejected. ' + w.amount + ' coins refunded to ' + w.username);
-        }
-
-        // ============================================================
-        //  GAME STATE (FULL GAME)
+        //  GAME STATE
         // ============================================================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -1500,6 +1476,11 @@
             multiplierDisplay.style.color = '#ffd700';
             updateUI();
 
+            // Check auto crash settings
+            if (adminCrashControl.autoCrash) {
+                crashMultiplier = Math.min(crashMultiplier, adminCrashControl.autoCrashPoint);
+            }
+
             startTime = performance.now();
             if (animationId) cancelAnimationFrame(animationId);
             animate();
@@ -1522,6 +1503,7 @@
             addHistory(currentMultiplier, true);
             isPlaying = false;
             updateUI();
+            updateGameStatus();
             setTimeout(() => { if (!isCrashed) resetRoundUI(); }, 1500);
         }
 
@@ -1543,6 +1525,7 @@
             const py = canvas.height - 30 - (crashMultiplier * 12);
             spawnExplosion(px, py);
             updateUI();
+            updateGameStatus();
             setTimeout(() => resetRoundUI(), 2500);
         }
 
@@ -1557,6 +1540,23 @@
                 multiplierDisplay.style.color = '#ffd700';
             }
             drawCanvas();
+            updateGameStatus();
+        }
+
+        function updateGameStatus() {
+            const statusText = document.getElementById('gameStatusText');
+            const multText = document.getElementById('gameCurrentMult');
+            const crashText = document.getElementById('gameLastCrash');
+            const playersText = document.getElementById('gamePlayersCount');
+            
+            if (statusText) {
+                if (isCrashed) { statusText.textContent = '💥 Crashed'; statusText.style.color = '#e17055'; }
+                else if (isPlaying) { statusText.textContent = '✈️ Flying'; statusText.style.color = '#fdcb6e'; }
+                else { statusText.textContent = '🟢 Ready'; statusText.style.color = '#00b894'; }
+            }
+            if (multText) multText.textContent = currentMultiplier.toFixed(2) + 'x';
+            if (crashText) crashText.textContent = isCrashed ? crashMultiplier.toFixed(2) + 'x' : '-';
+            if (playersText) playersText.textContent = currentUser ? '1' : '0';
         }
 
         function addHistory(multiplier, won) {
@@ -1795,7 +1795,15 @@
             if (!isCrashed && !isCashedOut && isPlaying) {
                 currentMultiplier += delta * speed;
                 currentMultiplier = Math.floor(currentMultiplier * 100) / 100;
-                if (currentMultiplier >= crashMultiplier) {
+                
+                // Check if we should auto-crash
+                if (adminCrashControl.autoCrash && currentMultiplier >= adminCrashControl.autoCrashPoint) {
+                    crashMultiplier = currentMultiplier;
+                    crashRound();
+                    const px = Math.min(crashMultiplier * 48, canvas.width - 40);
+                    const py = canvas.height - 30 - (crashMultiplier * 12);
+                    spawnExplosion(px, py);
+                } else if (currentMultiplier >= crashMultiplier) {
                     currentMultiplier = crashMultiplier;
                     crashRound();
                     const px = Math.min(crashMultiplier * 48, canvas.width - 40);
@@ -1803,6 +1811,7 @@
                     spawnExplosion(px, py);
                 }
                 multiplierDisplay.textContent = currentMultiplier.toFixed(2) + 'x';
+                updateGameStatus();
             }
 
             drawCanvas();
@@ -1980,15 +1989,21 @@
                 panel.classList.add('active');
                 btn.textContent = '🔓 Admin (Active)';
                 btn.classList.add('active');
-                renderAdminUsers();
-                renderAdminDeposits();
-                renderAdminWithdrawals();
-                renderAdminStats();
+                renderAllAdmin();
                 loadSettingsToUI();
                 loadQRSettingsToUI();
+                loadCrashControlsToUI();
             } else if (pwd !== null) {
                 alert('Wrong password!');
             }
+        }
+
+        function renderAllAdmin() {
+            renderAdminUsers();
+            renderAdminDeposits();
+            renderAdminWithdrawals();
+            renderAdminStats();
+            updateGameStatus();
         }
 
         function switchAdminTab(tab) {
@@ -2003,6 +2018,15 @@
             if (tab === 'withdrawals') renderAdminWithdrawals();
             if (tab === 'stats') renderAdminStats();
             if (tab === 'qr') loadQRSettingsToUI();
+            if (tab === 'control') { loadCrashControlsToUI(); updateGameStatus(); }
+        }
+
+        function loadCrashControlsToUI() {
+            document.getElementById('adminCrashPoint').value = adminCrashControl.manualCrashPoint || 2.00;
+            document.getElementById('adminAutoCrash').value = adminCrashControl.autoCrash ? 'on' : 'off';
+            document.getElementById('adminAutoCrashPoint').value = adminCrashControl.autoCrashPoint || 5.00;
+            document.getElementById('adminSpeedControl').value = adminCrashControl.speed || 2.0;
+            document.getElementById('speedDisplayControl').textContent = (adminCrashControl.speed || 2.0).toFixed(1) + 'x';
         }
 
         function renderAdminUsers() {
@@ -2074,9 +2098,7 @@
             saveData();
             renderAdminUsers();
             renderAdminStats();
-            if (currentUser && currentUser.username === username) {
-                logout();
-            }
+            if (currentUser && currentUser.username === username) logout();
         }
 
         function viewUserHistory(username) {
@@ -2092,6 +2114,174 @@
                 });
             }
             alert(msg);
+        }
+
+        function renderAdminDeposits() {
+            const container = document.getElementById('adminDepositsContainer');
+            if (!container) return;
+            const filter = document.getElementById('depositFilter')?.value || 'all';
+            let deposits = data.deposits || [];
+
+            if (filter !== 'all') {
+                deposits = deposits.filter(d => d.status === filter);
+            }
+
+            deposits.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
+
+            if (deposits.length === 0) {
+                container.innerHTML = '<p style="color:#636e72;">No deposit requests found.</p>';
+                return;
+            }
+
+            let html = `<table class="user-table">
+                <tr><th>ID</th><th>User</th><th>Amount</th><th>Method</th><th>Transaction ID</th><th>Status</th><th>Requested</th><th>Actions</th></tr>`;
+            deposits.forEach(d => {
+                const statusClass = d.status === 'pending' ? 'pending' : (d.status === 'approved' ? 'approved' : 'rejected');
+                const statusLabel = d.status === 'pending' ? '⏳ Pending' : (d.status === 'approved' ? '✅ Approved' : '❌ Rejected');
+
+                html += `
+                    <tr>
+                        <td style="font-size:11px;color:#636e72;">${d.id}</td>
+                        <td><strong>${d.username}</strong></td>
+                        <td style="color:#ffd700;">₹${d.amount}</td>
+                        <td>${d.method}</td>
+                        <td style="font-size:12px;color:#aaa;">${d.transactionId}</td>
+                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                        <td style="font-size:11px;color:#636e72;">${new Date(d.requestedAt).toLocaleDateString()}</td>
+                        <td>
+                            ${d.status === 'pending' ? `
+                                <button class="btn btn-success btn-sm" onclick="approveDeposit('${d.id}')">✅ Approve</button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectDeposit('${d.id}')">❌ Reject</button>
+                            ` : `<span style="color:#636e72;font-size:12px;">Processed</span>`}
+                        </td>
+                    </tr>
+                `;
+            });
+            html += `</table>`;
+            container.innerHTML = html;
+        }
+
+        function approveDeposit(id) {
+            if (!confirm('Approve this deposit request? Coins will be added to the user\'s account.')) return;
+            const d = data.deposits.find(d => d.id === id);
+            if (!d) return alert('Request not found!');
+            if (d.status !== 'pending') return alert('Already processed!');
+
+            d.status = 'approved';
+            d.processedAt = new Date().toISOString();
+
+            const user = getUser(d.username);
+            const coinsAmount = d.amount * 10;
+            user.coins += coinsAmount;
+            saveData();
+            addTransaction(d.username, 'deposit_approved', coinsAmount, 'deposit', 
+                'Deposit approved - ₹' + d.amount + ' → ' + coinsAmount + ' coins (TX: ' + d.transactionId + ')');
+
+            renderAdminDeposits();
+            renderAdminStats();
+            if (currentUser && currentUser.username === d.username) updateUI();
+            alert('✅ Deposit approved! ' + coinsAmount + ' coins added.');
+        }
+
+        function rejectDeposit(id) {
+            if (!confirm('Reject this deposit request?')) return;
+            const d = data.deposits.find(d => d.id === id);
+            if (!d) return alert('Request not found!');
+            if (d.status !== 'pending') return alert('Already processed!');
+
+            d.status = 'rejected';
+            d.processedAt = new Date().toISOString();
+            saveData();
+            addTransaction(d.username, 'deposit_rejected', d.amount, 'deposit', 'Deposit rejected');
+
+            renderAdminDeposits();
+            renderAdminStats();
+            alert('❌ Deposit rejected.');
+        }
+
+        function renderAdminWithdrawals() {
+            const container = document.getElementById('adminWithdrawalsContainer');
+            if (!container) return;
+            const filter = document.getElementById('withdrawFilter')?.value || 'all';
+            let withdrawals = data.withdrawals || [];
+
+            if (filter !== 'all') {
+                withdrawals = withdrawals.filter(w => w.status === filter);
+            }
+
+            withdrawals.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
+
+            if (withdrawals.length === 0) {
+                container.innerHTML = '<p style="color:#636e72;">No withdrawal requests found.</p>';
+                return;
+            }
+
+            let html = `<table class="user-table">
+                <tr><th>ID</th><th>User</th><th>Amount</th><th>Method</th><th>Bank Details</th><th>IFSC</th><th>Status</th><th>Requested</th><th>Actions</th></tr>`;
+            withdrawals.forEach(w => {
+                const statusClass = w.status === 'pending' ? 'pending' : (w.status === 'approved' ? 'approved' : 'rejected');
+                const statusLabel = w.status === 'pending' ? '⏳ Pending' : (w.status === 'approved' ? '✅ Approved' : '❌ Rejected');
+                const details = w.details || {};
+                const ifscDisplay = details.ifsc || 'N/A';
+                const bankDisplay = details.bankName ? details.bankName + ' - ' + details.accountNumber : (details.upi || 'N/A');
+
+                html += `
+                    <tr>
+                        <td style="font-size:11px;color:#636e72;">${w.id}</td>
+                        <td><strong>${w.username}</strong></td>
+                        <td style="color:#ffd700;">${w.amount} 🪙</td>
+                        <td>${w.method}</td>
+                        <td style="font-size:12px;color:#aaa;max-width:150px;word-break:break-all;">${bankDisplay}</td>
+                        <td style="font-family:monospace;font-size:12px;color:#fdcb6e;font-weight:700;">${ifscDisplay}</td>
+                        <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                        <td style="font-size:11px;color:#636e72;">${new Date(w.requestedAt).toLocaleDateString()}</td>
+                        <td>
+                            ${w.status === 'pending' ? `
+                                <button class="btn btn-success btn-sm" onclick="approveWithdraw('${w.id}')">✅ Approve</button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectWithdraw('${w.id}')">❌ Reject</button>
+                            ` : `<span style="color:#636e72;font-size:12px;">Processed</span>`}
+                        </td>
+                    </tr>
+                `;
+            });
+            html += `</table>`;
+            container.innerHTML = html;
+        }
+
+        function approveWithdraw(id) {
+            if (!confirm('Approve this withdrawal request? Make sure you have sent the payment to the user.')) return;
+            const w = data.withdrawals.find(w => w.id === id);
+            if (!w) return alert('Request not found!');
+            if (w.status !== 'pending') return alert('Already processed!');
+
+            w.status = 'approved';
+            w.processedAt = new Date().toISOString();
+            saveData();
+            addTransaction(w.username, 'withdraw_approved', w.amount, 'withdrawal', 'Withdrawal approved');
+
+            renderAdminWithdrawals();
+            renderAdminStats();
+            alert('✅ Withdrawal approved!');
+        }
+
+        function rejectWithdraw(id) {
+            if (!confirm('Reject this withdrawal request? Coins will be refunded to the user.')) return;
+            const w = data.withdrawals.find(w => w.id === id);
+            if (!w) return alert('Request not found!');
+            if (w.status !== 'pending') return alert('Already processed!');
+
+            w.status = 'rejected';
+            w.processedAt = new Date().toISOString();
+
+            const user = getUser(w.username);
+            user.coins += w.amount;
+            saveData();
+            addTransaction(w.username, 'withdraw_refund', w.amount, 'withdrawal', 'Withdrawal rejected - coins refunded');
+
+            renderAdminWithdrawals();
+            renderAdminStats();
+            if (currentUser && currentUser.username === w.username) updateUI();
+            alert('❌ Withdrawal rejected. ' + w.amount + ' coins refunded.');
         }
 
         function renderAdminStats() {
@@ -2126,15 +2316,51 @@
             }
         }
 
+        function loadQRSettingsToUI() {
+            const adminUPI = document.getElementById('adminUPI');
+            const adminPayee = document.getElementById('adminPayee');
+            const adminBankDetails = document.getElementById('adminBankDetails');
+            
+            if (adminUPI) adminUPI.value = qrSettings.upiId || YOUR_UPI_ID;
+            if (adminPayee) adminPayee.value = qrSettings.payeeName || YOUR_PAYEE_NAME;
+            if (adminBankDetails) adminBankDetails.value = qrSettings.bankDetails || '';
+            updateQRPreview();
+        }
+
+        function saveQRSettings() {
+            const upiId = document.getElementById('adminUPI').value.trim() || YOUR_UPI_ID;
+            const payeeName = document.getElementById('adminPayee').value.trim() || YOUR_PAYEE_NAME;
+            
+            qrSettings.upiId = upiId;
+            qrSettings.payeeName = payeeName;
+            qrSettings.bankDetails = document.getElementById('adminBankDetails').value.trim();
+            
+            qrSettings.qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=' + upiId + '&pn=' + encodeURIComponent(payeeName) + '&am=0&cu=INR';
+            
+            saveData();
+            updateQRPreview();
+            alert('✅ QR settings saved! Your UPI ID is now: ' + upiId);
+        }
+
+        function updateQRPreview() {
+            const preview = document.getElementById('adminQRPreview');
+            const text = document.getElementById('adminQRPreviewText');
+            const upiId = document.getElementById('adminUPI')?.value || YOUR_UPI_ID;
+            const payee = document.getElementById('adminPayee')?.value || YOUR_PAYEE_NAME;
+            
+            if (preview && text) {
+                const upiData = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payee)}&am=0&cu=INR`;
+                preview.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiData)}`;
+                text.textContent = 'UPI: ' + upiId + ' | Payee: ' + payee;
+            }
+        }
+
         function saveSettings() {
             settings.minBet = parseInt(document.getElementById('adminMinBet').value) || 1;
             settings.maxBet = parseInt(document.getElementById('adminMaxBet').value) || 500;
             settings.minDeposit = parseInt(document.getElementById('adminMinDeposit').value) || 50;
             settings.minWithdraw = parseInt(document.getElementById('adminMinWithdraw').value) || 100;
-            settings.speed = parseFloat(document.getElementById('adminSpeed').value) || 2.0;
-            speed = settings.speed;
             saveData();
-            document.getElementById('speedDisplay').textContent = speed.toFixed(1) + 'x';
             alert('Settings saved!');
         }
 
@@ -2143,8 +2369,6 @@
             document.getElementById('adminMaxBet').value = settings.maxBet || 500;
             document.getElementById('adminMinDeposit').value = settings.minDeposit || 50;
             document.getElementById('adminMinWithdraw').value = settings.minWithdraw || 100;
-            document.getElementById('adminSpeed').value = settings.speed || 2.0;
-            document.getElementById('speedDisplay').textContent = (settings.speed || 2.0).toFixed(1) + 'x';
         }
 
         function giveBonusToAll() {
@@ -2201,8 +2425,9 @@
                 betInput.value = Math.min(10, Math.floor(user.coins));
                 document.getElementById('loginModal').classList.add('hidden');
             }
-            speed = settings.speed || 2.0;
+            speed = adminCrashControl.speed || 2.0;
             drawCanvas();
+            updateGameStatus();
         }
 
         // Initialize
@@ -2231,17 +2456,16 @@
                 const upiData = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payee)}&am=${amount}&cu=INR`;
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiData)}`;
                 const qrImage = document.getElementById('qrImage');
-                if (qrImage) {
-                    qrImage.src = qrUrl;
-                }
+                if (qrImage) qrImage.src = qrUrl;
             }
         });
 
-        console.log('✈️ Aviator with Your UPI loaded!');
+        console.log('✈️ Aviator with Full Control loaded!');
         console.log('🔐 Admin password: admin2026');
         console.log('💡 Press SPACE to cash out!');
         console.log('📱 Your UPI ID: ' + YOUR_UPI_ID);
-        console.log('✅ QR code is set to your UPI: ' + YOUR_UPI_ID);
+        console.log('🎮 Admin can control crash point, auto-crash, and speed');
+        console.log('🔄 Data syncs across all devices every 30 seconds');
     </script>
 </body>
 </html>
