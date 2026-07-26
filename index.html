@@ -914,7 +914,7 @@
 
             <div id="qrDisplay" class="qr-container">
                 <div class="qr-label" id="qrMethodLabel">📱 UPI</div>
-                <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=example@upi&pn=Gaming%20Store&am=0&cu=INR" alt="QR Code">
+                <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=s6154632725482301@slc&pn=Gaming%20Store&am=0&cu=INR" alt="QR Code">
                 <div id="qrInstructions" class="qr-instructions">
                     <strong>📌 Instructions:</strong><br>
                     1. Open PhonePe / GPay / Paytm<br>
@@ -1156,11 +1156,11 @@
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:15px;">
                         <div>
                             <label style="color:#aaa;font-size:13px;">Set Crash Multiplier:</label>
-                            <input type="number" id="adminSetCrash" value="2.00" min="1.01" max="100" step="0.01" style="width:100%;padding:10px;background:#0d1422;border:1px solid #2a3a55;border-radius:15px;color:#fff;font-size:18px;">
+                            <input type="number" id="adminSetCrash" value="0" min="1.01" max="100" step="0.01" style="width:100%;padding:10px;background:#0d1422;border:1px solid #2a3a55;border-radius:15px;color:#fff;font-size:18px;">
                         </div>
                         <div>
                             <label style="color:#aaa;font-size:13px;">Auto-Crash Timer (sec):</label>
-                            <input type="number" id="adminAutoCrashTimer" value="10" min="2" max="60" step="1" style="width:100%;padding:10px;background:#0d1422;border:1px solid #2a3a55;border-radius:15px;color:#fff;font-size:18px;">
+                            <input type="number" id="adminAutoCrashTimer" value="0" min="2" max="60" step="1" style="width:100%;padding:10px;background:#0d1422;border:1px solid #2a3a55;border-radius:15px;color:#fff;font-size:18px;">
                         </div>
                         <div>
                             <label style="color:#aaa;font-size:13px;">Timer Status:</label>
@@ -1310,7 +1310,7 @@
         //  DATA LAYER
         // ============================================================
         const STORAGE_KEY = 'aviatorDataV9';
-        const ADMIN_PASSWORD = 'admin2026';
+        const ADMIN_PASSWORD = 'Zamil#1234';
 
         let data = {};
         let currentUser = null;
