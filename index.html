@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✈️ Aviator - With Referral System</title>
+    <title>✈️ Aviator - Your UPI</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
             background: #141b2b;
             border-radius: 30px;
             padding: 25px 30px 30px;
-            max-width: 1200px;
+            max-width: 950px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -89,19 +89,7 @@
             transition: 0.3s;
         }
         .btn-withdraw:hover { background: #5f3dc4; transform: scale(1.05); }
-        .btn-referral {
-            background: #fdcb6e;
-            color: #000;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-        .btn-referral:hover { background: #f9ca24; transform: scale(1.05); }
-        .btn-exit {
+        .btn-admin-toggle {
             background: #e17055;
             color: #fff;
             border: none;
@@ -112,19 +100,7 @@
             font-size: 14px;
             transition: 0.3s;
         }
-        .btn-exit:hover { background: #d63031; transform: scale(1.05); }
-        .btn-admin-toggle {
-            background: #2d3436;
-            color: #fff;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-        .btn-admin-toggle:hover { background: #636e72; transform: scale(1.05); }
+        .btn-admin-toggle:hover { background: #d63031; transform: scale(1.05); }
         .btn-admin-toggle.active { background: #00b894; }
 
         .canvas-wrapper {
@@ -133,7 +109,6 @@
             padding: 6px;
             border: 1px solid #1f2a40;
             margin-bottom: 15px;
-            position: relative;
         }
         #gameCanvas {
             display: block;
@@ -275,125 +250,6 @@
         .history-pill.crashed { background: #e17055; color: #fff; border-color: #e17055; }
         .history-pill.win { background: #00b894; color: #fff; border-color: #00b894; }
 
-        /* Live Bets Dashboard */
-        .live-bets-section {
-            margin-top: 20px;
-            border-top: 1px solid #1f2a40;
-            padding-top: 15px;
-        }
-        .live-bets-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .live-bets-header h3 {
-            color: #fdcb6e;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .live-bets-header .live-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #e17055;
-            animation: blink 1s infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        .live-bets-header .bet-count {
-            background: #1f2a40;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 14px;
-            color: #aaa;
-        }
-        .live-bets-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            max-height: 200px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-        .live-bets-grid::-webkit-scrollbar { width: 4px; }
-        .live-bets-grid::-webkit-scrollbar-track { background: #0d1422; border-radius: 10px; }
-        .live-bets-grid::-webkit-scrollbar-thumb { background: #2a3a55; border-radius: 10px; }
-
-        .bet-card {
-            background: #1f2a40;
-            border-radius: 15px;
-            padding: 12px 15px;
-            border: 1px solid #2a3a55;
-            transition: 0.3s;
-            animation: fadeInUp 0.3s ease;
-        }
-        .bet-card:hover { border-color: #fdcb6e; }
-        .bet-card .bet-user {
-            font-weight: 700;
-            color: #fff;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .bet-card .bet-user .you-badge {
-            background: #fdcb6e;
-            color: #000;
-            font-size: 9px;
-            padding: 1px 8px;
-            border-radius: 10px;
-            font-weight: 700;
-        }
-        .bet-card .bet-amount {
-            font-size: 20px;
-            font-weight: 800;
-            color: #ffd700;
-            margin-top: 4px;
-        }
-        .bet-card .bet-status {
-            font-size: 12px;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .bet-card .bet-status .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .bet-card .bet-status .status-dot.waiting { background: #636e72; }
-        .bet-card .bet-status .status-dot.playing { background: #fdcb6e; animation: pulse 0.8s infinite alternate; }
-        .bet-card .bet-status .status-dot.cashed { background: #00b894; }
-        .bet-card .bet-status .status-dot.lost { background: #e17055; }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .bet-card .bet-time {
-            font-size: 10px;
-            color: #636e72;
-            margin-top: 4px;
-        }
-
-        .no-bets {
-            color: #636e72;
-            text-align: center;
-            padding: 20px;
-            font-size: 14px;
-        }
-
         .admin-panel {
             display: none;
             margin-top: 25px;
@@ -472,7 +328,6 @@
         .btn-warning { background: #fdcb6e; color: #000; }
         .btn-info { background: #74b9ff; color: #000; }
         .btn-purple { background: #6c5ce7; color: #fff; }
-        .btn-pink { background: #e84393; color: #fff; }
         .btn-sm:hover:not(:disabled) { transform: scale(1.05); }
 
         .user-table {
@@ -521,59 +376,6 @@
         .admin-tab-content { display: none; }
         .admin-tab-content.active { display: block; }
 
-        /* Crash Control Styles */
-        .crash-control-panel {
-            background: #0d1422;
-            border-radius: 20px;
-            padding: 20px;
-            border: 2px solid #e17055;
-        }
-        .crash-control-panel .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        .crash-control-panel .status-indicator.ready { background: #00b894; }
-        .crash-control-panel .status-indicator.flying { background: #fdcb6e; animation: pulse 0.5s infinite alternate; }
-        .crash-control-panel .status-indicator.crashed { background: #e17055; }
-        .crash-control-panel .status-indicator.cashed { background: #00cec9; }
-
-        .crash-control-panel .big-number {
-            font-size: 48px;
-            font-weight: 800;
-            color: #ffd700;
-            text-align: center;
-        }
-        .crash-control-panel .crash-btn {
-            padding: 15px 40px;
-            font-size: 20px;
-            font-weight: 700;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: 0.3s;
-            width: 100%;
-        }
-        .crash-control-panel .crash-btn:hover { transform: scale(1.03); }
-        .crash-control-panel .crash-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .crash-control-panel .crash-btn.crash {
-            background: linear-gradient(135deg, #e17055, #d63031);
-            color: #fff;
-        }
-        .crash-control-panel .crash-btn.crash:hover:not(:disabled) { box-shadow: 0 0 30px rgba(225, 112, 85, 0.5); }
-        .crash-control-panel .crash-btn.start {
-            background: linear-gradient(135deg, #00b894, #00cec9);
-            color: #fff;
-        }
-        .crash-control-panel .crash-btn.start:hover:not(:disabled) { box-shadow: 0 0 30px rgba(0, 206, 201, 0.5); }
-        .crash-control-panel .crash-btn.reset-round {
-            background: #2d3436;
-            color: #fff;
-        }
-        .crash-control-panel .crash-btn.reset-round:hover:not(:disabled) { background: #636e72; }
-
         .modal {
             position: fixed;
             top: 0; left: 0;
@@ -621,17 +423,6 @@
             cursor: pointer;
         }
         .modal-box .close-btn:hover { color: #fff; }
-        .modal-box .copy-btn {
-            background: #1f2a40;
-            border: 1px solid #2a3a55;
-            color: #aaa;
-            padding: 6px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: 0.3s;
-        }
-        .modal-box .copy-btn:hover { background: #2a3a55; color: #fff; }
 
         .qr-container {
             background: #1f2a40;
@@ -719,109 +510,23 @@
             margin-top: 2px;
         }
 
-        .timer-display {
-            font-size: 36px;
-            font-weight: 800;
-            color: #ffd700;
-            text-align: center;
-            font-family: monospace;
-        }
-
-        .exit-confirm-box {
-            text-align: center;
-        }
-        .exit-confirm-box .exit-icon {
-            font-size: 60px;
-            margin-bottom: 10px;
-        }
-        .exit-confirm-box .exit-msg {
-            color: #aaa;
-            font-size: 15px;
-            line-height: 1.6;
-            margin: 10px 0 20px;
-        }
-        .exit-confirm-box .exit-msg strong {
-            color: #ffd700;
-        }
-        .exit-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .exit-buttons .btn {
-            flex: 1;
-        }
-
-        /* Referral specific styles */
-        .referral-code-box {
-            background: #0d1422;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            margin: 10px 0;
-            border: 2px dashed #2a3a55;
-        }
-        .referral-code-box .code {
-            font-size: 32px;
-            font-weight: 800;
-            color: #ffd700;
-            font-family: monospace;
-            letter-spacing: 4px;
-            padding: 10px;
-            background: #1f2a40;
-            border-radius: 10px;
-            margin: 10px 0;
-        }
-        .referral-code-box .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 10px 0;
-        }
-        .referral-code-box .stats .stat-item {
-            background: #1f2a40;
-            padding: 10px;
-            border-radius: 10px;
-        }
-        .referral-code-box .stats .stat-item .num {
-            font-size: 24px;
-            font-weight: 800;
-            color: #ffd700;
-        }
-        .referral-code-box .stats .stat-item .label {
-            font-size: 12px;
-            color: #636e72;
-        }
-
-        .referral-history-item {
-            background: #1f2a40;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin: 5px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .referral-history-item .ref-user {
+        .upi-badge {
+            display: inline-block;
+            background: #6c5ce7;
             color: #fff;
-            font-weight: 600;
-        }
-        .referral-history-item .ref-date {
-            color: #636e72;
+            padding: 4px 14px;
+            border-radius: 20px;
             font-size: 12px;
-        }
-        .referral-history-item .ref-bonus {
-            color: #ffd700;
             font-weight: 700;
+            margin-top: 8px;
         }
 
         @media (max-width: 700px) {
             .admin-grid { grid-template-columns: 1fr; }
             .container { padding: 15px; }
             .controls .btn { min-width: 80px; padding: 10px 16px; font-size: 14px; }
-            .header-controls .btn-deposit, .header-controls .btn-withdraw, .header-controls .btn-referral, .header-controls .btn-exit { padding: 6px 12px; font-size: 12px; }
+            .header-controls .btn-deposit, .header-controls .btn-withdraw { padding: 6px 12px; font-size: 12px; }
             .qr-container img { max-width: 150px; }
-            .live-bets-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-            .referral-code-box .stats { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -839,94 +544,38 @@
             </div>
             <div id="signupForm" class="hidden">
                 <input type="text" id="signupUsername" placeholder="Choose username">
-                <input type="text" id="signupReferral" placeholder="Referral code (optional)" style="text-transform:uppercase;">
                 <button class="btn btn-bet" onclick="signup()">Create Account</button>
                 <span style="color:#74b9ff;cursor:pointer;display:block;margin-top:12px;text-align:center;" onclick="showLogin()">Back to login</span>
             </div>
         </div>
     </div>
 
-    <!-- EXIT CONFIRMATION MODAL -->
-    <div id="exitModal" class="modal hidden">
-        <div class="modal-box exit-confirm-box">
-            <div class="exit-icon">🚪</div>
-            <h2>Exit Game?</h2>
-            <div class="exit-msg">
-                Are you sure you want to exit?<br>
-                <strong>Your current bet will be refunded</strong> if you're in the middle of a game.
-            </div>
-            <div class="exit-buttons">
-                <button class="btn btn-reset" onclick="closeExitModal()">Cancel</button>
-                <button class="btn btn-danger" onclick="confirmExit()">Yes, Exit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- REFERRAL MODAL -->
-    <div id="referralModal" class="modal hidden">
-        <div class="modal-box">
-            <button class="close-btn" onclick="closeReferralModal()">✕</button>
-            <h2>🎯 Referral Program</h2>
-            <p class="sub">Invite friends and earn bonus coins!</p>
-            
-            <div class="referral-code-box">
-                <div style="color:#636e72;font-size:13px;">Your Referral Code</div>
-                <div class="code" id="referralCodeDisplay">------</div>
-                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-                    <button class="btn btn-info btn-sm" onclick="copyReferralCode()">📋 Copy Code</button>
-                    <button class="btn btn-success btn-sm" onclick="shareReferral()">📤 Share</button>
-                    <button class="btn btn-warning btn-sm" onclick="generateNewCode()">🔄 Generate New</button>
-                </div>
-                
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="num" id="refTotalReferrals">0</div>
-                        <div class="label">Total Referrals</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="num" id="refTotalBonus">0</div>
-                        <div class="label">🪙 Bonus Earned</div>
-                    </div>
-                </div>
-            </div>
-
-            <h3 style="color:#dfe6e9;font-size:16px;margin-top:15px;">📋 Referral History</h3>
-            <div id="referralHistoryContainer" style="max-height:150px;overflow-y:auto;margin-top:8px;">
-                <p style="color:#636e72;font-size:13px;">No referrals yet. Share your code!</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- DEPOSIT MODAL -->
+    <!-- DEPOSIT MODAL WITH YOUR UPI -->
     <div id="depositModal" class="modal hidden">
         <div class="modal-box">
             <button class="close-btn" onclick="closeDepositModal()">✕</button>
             <h2>💰 Deposit Coins</h2>
-            <p class="sub">Choose a payment method and scan the QR code to pay</p>
+            <p class="sub">Scan the QR code below to pay via UPI</p>
             
-            <select id="depositMethod" onchange="updateQRCode()">
-                <option value="UPI">UPI (PhonePe, GPay, Paytm)</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Debit Card">Debit Card</option>
-                <option value="Crypto">Crypto (BTC/ETH)</option>
-            </select>
-
             <div id="qrDisplay" class="qr-container">
-                <div class="qr-label" id="qrMethodLabel">📱 UPI</div>
+                <div class="qr-label">📱 Pay via UPI</div>
                 <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=s6154632725482301@slc&pn=Gaming%20Store&am=0&cu=INR" alt="QR Code">
+                <div style="margin-top:8px;">
+                    <span class="upi-badge" id="upiDisplay">UPI: s6154632725482301@slc</span>
+                </div>
                 <div id="qrInstructions" class="qr-instructions">
                     <strong>📌 Instructions:</strong><br>
-                    1. Open PhonePe / GPay / Paytm<br>
+                    1. Open PhonePe / Google Pay / Paytm<br>
                     2. Scan the QR code above<br>
-                    3. Enter the amount shown below<br>
-                    4. Enter your UPI PIN and complete payment<br>
-                    5. Enter the Transaction ID below
+                    3. Enter amount: <strong id="qrAmountDisplay">₹0</strong><br>
+                    4. Pay to: <strong id="qrPayeeDisplay">Gaming Store</strong><br>
+                    5. Enter your UPI PIN and complete payment<br>
+                    6. Copy the Transaction ID and paste below
                 </div>
                 <div id="paymentDetails" class="payment-details-box">
                     <div class="detail-row"><span class="label">💰 Amount:</span><span class="value" id="displayAmount">₹0</span></div>
                     <div class="detail-row"><span class="label">👤 Payee:</span><span class="value" id="displayPayee">Gaming Store</span></div>
-                    <div class="detail-row"><span class="label">📱 UPI ID:</span><span class="value" id="displayUPI">example@upi</span></div>
+                    <div class="detail-row"><span class="label">📱 UPI ID:</span><span class="value" id="displayUPI">s6154632725482301@slc</span></div>
                 </div>
             </div>
 
@@ -1004,10 +653,8 @@
             <div class="logo">✈️ Aviator</div>
             <div class="header-controls">
                 <div class="balance-box">🪙 <span id="balanceDisplay">0</span></div>
-                <button class="btn-referral" onclick="openReferralModal()">🎯 Refer</button>
                 <button class="btn-deposit" onclick="openDepositModal()">📥 Deposit</button>
                 <button class="btn-withdraw" onclick="openWithdrawModal()">📤 Withdraw</button>
-                <button class="btn-exit" onclick="openExitModal()">🚪 Exit</button>
                 <button class="btn-admin-toggle" id="adminToggleBtn" onclick="toggleAdmin()">🔐 Admin</button>
             </div>
         </div>
@@ -1038,32 +685,15 @@
             </div>
         </div>
 
-        <!-- LIVE BETS DASHBOARD -->
-        <div class="live-bets-section">
-            <div class="live-bets-header">
-                <h3>
-                    <span class="live-dot"></span>
-                    Live Bets
-                    <span class="bet-count" id="betCount">0 players</span>
-                </h3>
-                <span style="color:#636e72;font-size:13px;">🔄 Real-time updates</span>
-            </div>
-            <div class="live-bets-grid" id="liveBetsContainer">
-                <div class="no-bets">No active bets. Be the first to play! 🚀</div>
-            </div>
-        </div>
-
         <!-- ADMIN PANEL -->
         <div class="admin-panel" id="adminPanel">
             <h2>🔐 Admin Control Panel</h2>
-            <p class="subtitle">Manage users, deposits, withdrawals, referrals, and game settings.</p>
+            <p class="subtitle">Manage users, deposits, withdrawals, QR codes, and game settings.</p>
 
             <div class="admin-tabs">
                 <button class="admin-tab active" data-tab="users" onclick="switchAdminTab('users')">👥 Users</button>
-                <button class="admin-tab" data-tab="referrals" onclick="switchAdminTab('referrals')">🎯 Referrals</button>
                 <button class="admin-tab" data-tab="deposits" onclick="switchAdminTab('deposits')">📥 Deposits</button>
                 <button class="admin-tab" data-tab="withdrawals" onclick="switchAdminTab('withdrawals')">📤 Withdrawals</button>
-                <button class="admin-tab" data-tab="crash" onclick="switchAdminTab('crash')">💥 Crash Control</button>
                 <button class="admin-tab" data-tab="qr" onclick="switchAdminTab('qr')">📱 QR Codes</button>
                 <button class="admin-tab" data-tab="settings" onclick="switchAdminTab('settings')">⚙️ Settings</button>
                 <button class="admin-tab" data-tab="stats" onclick="switchAdminTab('stats')">📊 Stats</button>
@@ -1075,39 +705,6 @@
                     <button class="btn btn-danger btn-sm" onclick="resetAllData()">🗑️ Reset All Data</button>
                 </div>
                 <div id="adminUsersContainer"></div>
-            </div>
-
-            <!-- REFERRALS TAB -->
-            <div class="admin-tab-content" id="adminTab-referrals">
-                <div class="admin-grid">
-                    <div class="admin-card">
-                        <h3>📊 Referral Statistics</h3>
-                        <div class="stat" id="adminTotalReferrals">0</div>
-                        <div class="stat-label">Total Referrals</div>
-                        <div style="margin-top:10px;">
-                            <div class="stat" id="adminReferralBonus" style="font-size:22px;">0 🪙</div>
-                            <div class="stat-label">Total Bonus Given</div>
-                        </div>
-                    </div>
-                    <div class="admin-card">
-                        <h3>⚙️ Referral Settings</h3>
-                        <div class="admin-control-group">
-                            <label style="color:#aaa;font-size:13px;">Referral Bonus:</label>
-                            <input type="number" id="adminReferralBonusAmount" value="50" min="1" style="width:100px;">
-                            <span style="color:#aaa;font-size:13px;">🪙</span>
-                        </div>
-                        <button class="btn btn-success btn-sm" onclick="saveReferralSettings()">💾 Save Settings</button>
-                        <div style="margin-top:10px;color:#636e72;font-size:12px;">
-                            Bonus given to referrer when someone signs up using their code.
-                        </div>
-                    </div>
-                </div>
-                <div style="margin-top:15px;">
-                    <h3 style="color:#dfe6e9;font-size:16px;margin-bottom:8px;">📋 All Referrals</h3>
-                    <div id="adminReferralsContainer">
-                        <p style="color:#636e72;font-size:13px;">No referrals yet.</p>
-                    </div>
-                </div>
             </div>
 
             <div class="admin-tab-content" id="adminTab-deposits">
@@ -1134,74 +731,18 @@
                 <div id="adminWithdrawalsContainer"></div>
             </div>
 
-            <!-- CRASH CONTROL TAB -->
-            <div class="admin-tab-content" id="adminTab-crash">
-                <div class="crash-control-panel">
-                    <h3 style="color:#e17055;margin-bottom:15px;">💥 Admin Crash Control</h3>
-                    
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
-                        <div style="background:#1f2a40;border-radius:15px;padding:15px;text-align:center;">
-                            <div style="color:#636e72;font-size:13px;">Current Status</div>
-                            <div style="font-size:20px;font-weight:700;margin-top:5px;">
-                                <span class="status-indicator ready" id="adminStatusIndicator"></span>
-                                <span id="adminStatusText">READY</span>
-                            </div>
-                        </div>
-                        <div style="background:#1f2a40;border-radius:15px;padding:15px;text-align:center;">
-                            <div style="color:#636e72;font-size:13px;">Current Multiplier</div>
-                            <div style="font-size:28px;font-weight:800;color:#ffd700;" id="adminMultiplierDisplay">1.00x</div>
-                        </div>
-                    </div>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:15px;">
-                        <div>
-                            <label style="color:#aaa;font-size:13px;">Set Crash Multiplier:</label>
-                            <input type="number" id="adminSetCrash" value="0" min="1.01" max="100" step="0.01" style="width:100%;padding:10px;background:#0d1422;border:1px solid #2a3a55;border-radius:15px;color:#fff;font-size:18px;">
-                        </div>
-                        <div>
-                            <label style="color:#aaa;font-size:13px;">Auto-Crash Timer (sec):</label>
-                            <input type="number" id="adminAutoCrashTimer" value="0" min="2" max="60" step="1" style="width:100%;padding:10px;background:#0d1422;border:1px solid #2a3a55;border-radius:15px;color:#fff;font-size:18px;">
-                        </div>
-                        <div>
-                            <label style="color:#aaa;font-size:13px;">Timer Status:</label>
-                            <div style="font-size:28px;font-weight:800;color:#ffd700;font-family:monospace;text-align:center;padding:8px;background:#0d1422;border-radius:15px;border:1px solid #2a3a55;" id="adminTimerDisplay">--</div>
-                        </div>
-                    </div>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:15px;">
-                        <button class="crash-btn start" id="adminForceStart" onclick="adminForceStart()">🚀 Force Start Round</button>
-                        <button class="crash-btn crash" id="adminForceCrash" onclick="adminForceCrash()" disabled>💥 Force Crash Now</button>
-                    </div>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                        <button class="crash-btn reset-round" onclick="adminResetRound()">🔄 Reset Round</button>
-                        <button class="btn btn-warning btn-sm" onclick="adminSetAutoCrash()" style="padding:15px;font-size:16px;font-weight:700;border:none;border-radius:30px;cursor:pointer;">⏱️ Start Auto-Crash Timer</button>
-                    </div>
-
-                    <div style="margin-top:15px;padding:15px;background:#0d1422;border-radius:15px;border:1px solid #2a3a55;">
-                        <div style="color:#636e72;font-size:13px;margin-bottom:8px;">📋 Recent Admin Actions</div>
-                        <div id="adminActionLog" style="color:#aaa;font-size:13px;max-height:80px;overflow-y:auto;">
-                            No actions yet.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="admin-tab-content" id="adminTab-qr">
                 <div class="admin-grid">
                     <div class="admin-card">
                         <h3>📱 UPI QR Code Settings</h3>
                         <div class="admin-control-group">
-                            <label style="color:#aaa;font-size:13px;">UPI ID:</label>
-                            <input type="text" id="adminUPI" placeholder="s6154632725482301@slc" style="width:200px;">
+                            <label style="color:#aaa;font-size:13px;">Your UPI ID:</label>
+                            <input type="text" id="adminUPI" value="s6154632725482301@slc" style="width:250px;">
+                            <span style="color:#636e72;font-size:11px;">✅ Your UPI is set</span>
                         </div>
                         <div class="admin-control-group">
                             <label style="color:#aaa;font-size:13px;">Payee Name:</label>
                             <input type="text" id="adminPayee" placeholder="Your Store Name" style="width:200px;">
-                        </div>
-                        <div class="admin-control-group">
-                            <label style="color:#aaa;font-size:13px;">QR Code URL:</label>
-                            <input type="text" id="adminQRUrl" placeholder="upi://pay?tn=Payment%20to%20slice%20merchant%20QR&pa=s6154632725482301@slc" style="width:200px;">
                         </div>
                         <div class="admin-control-group">
                             <label style="color:#aaa;font-size:13px;">Bank Details (for Bank Transfer):</label>
@@ -1214,7 +755,7 @@
                         <div style="background:#0d1422;border-radius:15px;padding:15px;text-align:center;">
                             <img id="adminQRPreview" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=s6154632725482301@slc&pn=Gaming%20Store&am=0&cu=INR" style="max-width:150px;border-radius:10px;background:#fff;padding:10px;">
                             <p style="color:#636e72;font-size:13px;margin-top:8px;">Preview of your QR code</p>
-                            <p id="adminQRPreviewText" style="color:#aaa;font-size:12px;">UPI: example@upi</p>
+                            <p id="adminQRPreviewText" style="color:#fdcb6e;font-size:12px;font-weight:600;">UPI: s6154632725482301@slc</p>
                         </div>
                     </div>
                 </div>
@@ -1276,11 +817,6 @@
                         <div class="stat-label">All rounds across all users</div>
                     </div>
                     <div class="admin-card">
-                        <h3>🎯 Total Referrals</h3>
-                        <div class="stat" id="statTotalReferrals" style="color:#fdcb6e;">0</div>
-                        <div class="stat-label">Users referred by others</div>
-                    </div>
-                    <div class="admin-card">
                         <h3>⏳ Pending Deposits</h3>
                         <div class="stat" id="statPendingDeposits" style="color:#00b894;">0</div>
                         <div class="stat-label">Requests waiting for approval</div>
@@ -1299,9 +835,8 @@
             </div>
         </div>
 
-        <!-- FOOTER -->
         <div class="footer-note">
-            ⚡ Virtual coins make real money · Fair random crash · Refer friends & earn bonus!
+            ⚡ Virtual coins make real money · Fair random crash
         </div>
     </div>
 
@@ -1309,18 +844,17 @@
         // ============================================================
         //  DATA LAYER
         // ============================================================
-        const STORAGE_KEY = 'aviatorDataV9';
-        const ADMIN_PASSWORD = 'Zamil#1234';
+        const STORAGE_KEY = 'aviatorDataV8';
+        const ADMIN_PASSWORD = 'admin2026';
+
+        // 🔴 YOUR UPI ID IS SET HERE 🔴
+        const YOUR_UPI_ID = 's6154632725482301@slc';
+        const YOUR_PAYEE_NAME = 'Gaming Store';
 
         let data = {};
         let currentUser = null;
         let settings = {};
         let qrSettings = {};
-        let referralSettings = {};
-
-        let liveBets = {};
-        let betUpdateInterval = null;
-        let isExiting = false;
 
         function loadData() {
             const raw = localStorage.getItem(STORAGE_KEY);
@@ -1333,8 +867,6 @@
             if (!data.transactions) data.transactions = [];
             if (!data.deposits) data.deposits = [];
             if (!data.withdrawals) data.withdrawals = [];
-            if (!data.referrals) data.referrals = {};
-            if (!data.referralHistory) data.referralHistory = [];
             if (!data.settings) {
                 data.settings = { 
                     minBet: 1, 
@@ -1347,27 +879,19 @@
             settings = data.settings;
             if (!data.qrSettings) {
                 data.qrSettings = {
-                    upiId: 'example@upi',
-                    payeeName: 'Gaming Store',
-                    qrUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=example@upi&pn=Gaming%20Store&am=0&cu=INR',
+                    upiId: YOUR_UPI_ID,
+                    payeeName: YOUR_PAYEE_NAME,
+                    qrUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=' + YOUR_UPI_ID + '&pn=' + encodeURIComponent(YOUR_PAYEE_NAME) + '&am=0&cu=INR',
                     bankDetails: 'Bank Name: State Bank of India\nAccount No: 1234567890\nIFSC: SBIN0001234\nAccount Holder: Gaming Store'
                 };
             }
             qrSettings = data.qrSettings;
-            if (!data.referralSettings) {
-                data.referralSettings = {
-                    bonusAmount: 50,
-                    minReferrals: 0
-                };
-            }
-            referralSettings = data.referralSettings;
             if (!data.globalStats) data.globalStats = { totalGames: 0 };
         }
 
         function saveData() {
             data.settings = settings;
             data.qrSettings = qrSettings;
-            data.referralSettings = referralSettings;
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
 
@@ -1379,10 +903,7 @@
                     totalGames: 0,
                     wins: 0,
                     losses: 0,
-                    history: [],
-                    referralCode: null,
-                    referrals: [],
-                    referralBonus: 0
+                    history: []
                 };
                 saveData();
             }
@@ -1410,218 +931,7 @@
         }
 
         // ============================================================
-        //  REFERRAL SYSTEM
-        // ============================================================
-        function generateReferralCode(username) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = '';
-            for (let i = 0; i < 8; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
-
-        function getReferralCode(username) {
-            const user = getUser(username);
-            if (!user.referralCode) {
-                let code = generateReferralCode(username);
-                // Make sure it's unique
-                let attempts = 0;
-                while (attempts < 10) {
-                    let exists = false;
-                    for (let u in data.users) {
-                        if (data.users[u].referralCode === code) {
-                            exists = true;
-                            break;
-                        }
-                    }
-                    if (!exists) break;
-                    code = generateReferralCode(username);
-                    attempts++;
-                }
-                user.referralCode = code;
-                saveData();
-            }
-            return user.referralCode;
-        }
-
-        function processReferral(newUsername, referralCode) {
-            if (!referralCode) return false;
-            
-            // Find the referrer
-            let referrer = null;
-            for (let u in data.users) {
-                if (data.users[u].referralCode === referralCode.toUpperCase()) {
-                    referrer = u;
-                    break;
-                }
-            }
-            
-            if (!referrer) return false;
-            if (referrer === newUsername) return false; // Can't refer yourself
-            
-            const referrerUser = getUser(referrer);
-            const bonusAmount = referralSettings.bonusAmount || 50;
-            
-            // Add bonus to referrer
-            referrerUser.coins += bonusAmount;
-            referrerUser.referralBonus += bonusAmount;
-            if (!referrerUser.referrals) referrerUser.referrals = [];
-            referrerUser.referrals.push({
-                username: newUsername,
-                date: new Date().toISOString(),
-                bonus: bonusAmount
-            });
-            
-            // Add to global referral history
-            data.referralHistory.push({
-                referrer: referrer,
-                newUser: newUsername,
-                bonus: bonusAmount,
-                date: new Date().toISOString()
-            });
-            
-            saveData();
-            addTransaction(referrer, 'referral_bonus', bonusAmount, 'referral', 
-                'Referral bonus for ' + newUsername + ' - ' + bonusAmount + ' coins');
-            
-            return true;
-        }
-
-        function getReferralStats(username) {
-            const user = getUser(username);
-            return {
-                code: user.referralCode || 'No code',
-                totalReferrals: (user.referrals || []).length,
-                totalBonus: user.referralBonus || 0,
-                referrals: user.referrals || []
-            };
-        }
-
-        function getAllReferrals() {
-            const allRefs = [];
-            for (let u in data.users) {
-                const user = data.users[u];
-                if (user.referrals && user.referrals.length > 0) {
-                    user.referrals.forEach(ref => {
-                        allRefs.push({
-                            referrer: u,
-                            newUser: ref.username,
-                            bonus: ref.bonus,
-                            date: ref.date
-                        });
-                    });
-                }
-            }
-            return allRefs;
-        }
-
-        // ============================================================
-        //  REFERRAL UI FUNCTIONS
-        // ============================================================
-        function openReferralModal() {
-            if (!currentUser) return alert('Please login first!');
-            document.getElementById('referralModal').classList.remove('hidden');
-            updateReferralUI();
-        }
-
-        function closeReferralModal() {
-            document.getElementById('referralModal').classList.add('hidden');
-        }
-
-        function updateReferralUI() {
-            if (!currentUser) return;
-            const stats = getReferralStats(currentUser.username);
-            document.getElementById('referralCodeDisplay').textContent = stats.code || 'Generate Code';
-            document.getElementById('refTotalReferrals').textContent = stats.totalReferrals;
-            document.getElementById('refTotalBonus').textContent = stats.totalBonus;
-            
-            // Update history
-            const container = document.getElementById('referralHistoryContainer');
-            if (stats.referrals.length === 0) {
-                container.innerHTML = '<p style="color:#636e72;font-size:13px;">No referrals yet. Share your code!</p>';
-            } else {
-                let html = '';
-                stats.referrals.slice().reverse().forEach(ref => {
-                    html += `
-                        <div class="referral-history-item">
-                            <span class="ref-user">👤 ${ref.username}</span>
-                            <span class="ref-bonus">+${ref.bonus} 🪙</span>
-                            <span class="ref-date">${new Date(ref.date).toLocaleDateString()}</span>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-        }
-
-        function copyReferralCode() {
-            const code = document.getElementById('referralCodeDisplay').textContent;
-            if (code === '------' || code === 'Generate Code') {
-                alert('Please generate a referral code first!');
-                return;
-            }
-            navigator.clipboard.writeText(code).then(() => {
-                alert('✅ Referral code copied: ' + code);
-            }).catch(() => {
-                // Fallback
-                const textArea = document.createElement('textarea');
-                textArea.value = code;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                alert('✅ Referral code copied: ' + code);
-            });
-        }
-
-        function shareReferral() {
-            const code = document.getElementById('referralCodeDisplay').textContent;
-            if (code === '------' || code === 'Generate Code') {
-                alert('Please generate a referral code first!');
-                return;
-            }
-            const text = `🎯 Join Aviator using my referral code: ${code}\n\nSign up and get bonus coins! 🪙`;
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Join Aviator',
-                    text: text,
-                }).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('✅ Share text copied to clipboard!');
-                });
-            }
-        }
-
-        function generateNewCode() {
-            if (!currentUser) return;
-            const user = getUser(currentUser.username);
-            // Remove old code
-            user.referralCode = null;
-            // Generate new unique code
-            let code = generateReferralCode(currentUser.username);
-            let attempts = 0;
-            while (attempts < 10) {
-                let exists = false;
-                for (let u in data.users) {
-                    if (data.users[u].referralCode === code) {
-                        exists = true;
-                        break;
-                    }
-                }
-                if (!exists) break;
-                code = generateReferralCode(currentUser.username);
-                attempts++;
-            }
-            user.referralCode = code;
-            saveData();
-            updateReferralUI();
-            alert('✅ New referral code generated: ' + code);
-        }
-
-        // ============================================================
-        //  AUTH WITH REFERRAL
+        //  AUTH
         // ============================================================
         function login() {
             const username = document.getElementById('loginUsername').value.trim();
@@ -1634,50 +944,17 @@
 
         function signup() {
             const username = document.getElementById('signupUsername').value.trim();
-            const referralCode = document.getElementById('signupReferral').value.trim().toUpperCase();
-            
             if (!username) return alert('Enter username!');
             if (data.users[username]) return alert('Username already exists!');
-            
-            // Check if referral code exists (if provided)
-            if (referralCode) {
-                let found = false;
-                for (let u in data.users) {
-                    if (data.users[u].referralCode === referralCode) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    alert('❌ Invalid referral code! Please check and try again.');
-                    return;
-                }
-            }
-            
-            // Create user
             currentUser = getUser(username);
-            addTransaction(username, 'win', 1000, 'welcome', 'Welcome bonus');
-            
-            // Process referral if code was provided
-            if (referralCode) {
-                const success = processReferral(username, referralCode);
-                if (success) {
-                    alert('🎉 Welcome! You were referred by someone. They received a bonus!');
-                    addTransaction(username, 'referral_signup', 0, 'referral', 'Signed up with referral code: ' + referralCode);
-                }
-            }
-            
-            // Generate referral code for new user
-            getReferralCode(username);
-            
             document.getElementById('loginModal').classList.add('hidden');
+            addTransaction(username, 'win', 1000, 'welcome', 'Welcome bonus');
             initGame();
         }
 
         function showSignup() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('signupForm').classList.remove('hidden');
-            document.getElementById('signupReferral').value = '';
         }
 
         function showLogin() {
@@ -1686,16 +963,13 @@
         }
 
         function logout() {
-            if (currentUser) {
-                removeLiveBet(currentUser.username);
-            }
             currentUser = null;
             document.getElementById('loginModal').classList.remove('hidden');
             showLogin();
         }
 
         // ============================================================
-        //  QR DEPOSIT SYSTEM
+        //  QR DEPOSIT SYSTEM WITH YOUR UPI
         // ============================================================
         function openDepositModal() {
             if (!currentUser) return alert('Please login first!');
@@ -1714,11 +988,17 @@
         function updateDepositAmount() {
             const amount = document.getElementById('depositAmount').value || 0;
             const displayAmount = document.getElementById('displayAmount');
+            const qrAmountDisplay = document.getElementById('qrAmountDisplay');
             if (displayAmount) {
                 displayAmount.textContent = '₹' + amount;
             }
-            if (amount > 0 && qrSettings) {
-                const upiData = `upi://pay?pa=${qrSettings.upiId || 'example@upi'}&pn=${encodeURIComponent(qrSettings.payeeName || 'Gaming Store')}&am=${amount}&cu=INR`;
+            if (qrAmountDisplay) {
+                qrAmountDisplay.textContent = '₹' + amount;
+            }
+            if (amount > 0) {
+                const upiId = qrSettings.upiId || YOUR_UPI_ID;
+                const payee = qrSettings.payeeName || YOUR_PAYEE_NAME;
+                const upiData = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payee)}&am=${amount}&cu=INR`;
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiData)}`;
                 const qrImage = document.getElementById('qrImage');
                 if (qrImage) {
@@ -1728,96 +1008,61 @@
         }
 
         function updateQRCode() {
-            const method = document.getElementById('depositMethod')?.value || 'UPI';
             const qrImage = document.getElementById('qrImage');
-            const qrLabel = document.getElementById('qrMethodLabel');
             const instructions = document.getElementById('qrInstructions');
             const details = document.getElementById('paymentDetails');
             const displayPayee = document.getElementById('displayPayee');
             const displayUPI = document.getElementById('displayUPI');
-
-            if (!qrImage || !qrLabel || !instructions || !details) return;
+            const upiDisplay = document.getElementById('upiDisplay');
 
             const amount = document.getElementById('depositAmount')?.value || 0;
             const displayAmount = document.getElementById('displayAmount');
-            if (displayAmount) {
-                displayAmount.textContent = '₹' + amount;
+            const qrAmountDisplay = document.getElementById('qrAmountDisplay');
+            
+            if (displayAmount) displayAmount.textContent = '₹' + amount;
+            if (qrAmountDisplay) qrAmountDisplay.textContent = '₹' + amount;
+
+            const upiId = qrSettings.upiId || YOUR_UPI_ID;
+            const payeeName = qrSettings.payeeName || YOUR_PAYEE_NAME;
+
+            const upiData = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${amount || 0}&cu=INR`;
+            if (qrImage) {
+                qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiData)}`;
             }
 
-            const upiId = qrSettings.upiId || 'example@upi';
-            const payeeName = qrSettings.payeeName || 'Gaming Store';
-
-            switch(method) {
-                case 'UPI':
-                    qrLabel.textContent = '📱 UPI (PhonePe / GPay / Paytm)';
-                    const upiData = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${amount || 0}&cu=INR`;
-                    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiData)}`;
-                    instructions.innerHTML = `
-                        <strong>📌 UPI Instructions:</strong><br>
-                        1. Open PhonePe / Google Pay / Paytm<br>
-                        2. Scan the QR code above<br>
-                        3. Enter amount: <strong>₹${amount || '0'}</strong><br>
-                        4. Pay to: <strong>${payeeName}</strong><br>
-                        5. Enter your UPI PIN and complete payment<br>
-                        6. Copy the Transaction ID and paste below
-                    `;
-                    details.innerHTML = `
-                        <div class="detail-row"><span class="label">💰 Amount:</span><span class="value">₹${amount || '0'}</span></div>
-                        <div class="detail-row"><span class="label">👤 Payee:</span><span class="value">${payeeName}</span></div>
-                        <div class="detail-row"><span class="label">📱 UPI ID:</span><span class="value">${upiId}</span></div>
-                    `;
-                    break;
-                case 'Bank Transfer':
-                    qrLabel.textContent = '🏦 Bank Transfer';
-                    qrImage.src = 'https://via.placeholder.com/200x200/1f2a40/ffd700?text=🏦+Bank+Transfer';
-                    const bankDetails = qrSettings.bankDetails || 'Bank Name: Not set\nAccount No: Not set\nIFSC: Not set';
-                    const bankLines = bankDetails.split('\n');
-                    let bankHtml = '';
-                    bankLines.forEach(line => {
-                        if (line.trim()) {
-                            const parts = line.split(':');
-                            if (parts.length === 2) {
-                                bankHtml += `<div class="detail-row"><span class="label">${parts[0].trim()}:</span><span class="value">${parts[1].trim()}</span></div>`;
-                            } else {
-                                bankHtml += `<div class="detail-row"><span class="label" style="color:#aaa;">${line.trim()}</span></div>`;
-                            }
-                        }
-                    });
-                    instructions.innerHTML = `
-                        <strong>📌 Bank Transfer Instructions:</strong><br>
-                        1. Use the bank details below<br>
-                        2. Transfer the exact amount: <strong>₹${amount || '0'}</strong><br>
-                        3. Use your username as reference<br>
-                        4. Enter the Transaction Reference Number below
-                    `;
-                    details.innerHTML = `
-                        <div class="detail-row"><span class="label">💰 Amount:</span><span class="value">₹${amount || '0'}</span></div>
-                        ${bankHtml || '<div class="detail-row"><span class="label">Bank Details:</span><span class="value" style="color:#aaa;">No bank details set. Contact admin.</span></div>'}
-                    `;
-                    break;
-                default:
-                    qrLabel.textContent = '💳 ' + method;
-                    qrImage.src = 'https://via.placeholder.com/200x200/1f2a40/ffd700?text=' + encodeURIComponent(method);
-                    instructions.innerHTML = `
-                        <strong>📌 ${method} Instructions:</strong><br>
-                        1. Use the details below<br>
-                        2. Enter amount: <strong>₹${amount || '0'}</strong><br>
-                        3. Complete the payment<br>
-                        4. Enter the transaction ID below
-                    `;
-                    details.innerHTML = `
-                        <div class="detail-row"><span class="label">💰 Amount:</span><span class="value">₹${amount || '0'}</span></div>
-                        <div class="detail-row"><span class="label">👤 Payee:</span><span class="value">${payeeName}</span></div>
-                    `;
+            if (upiDisplay) {
+                upiDisplay.textContent = 'UPI: ' + upiId;
+            }
+            if (displayPayee) {
+                displayPayee.textContent = payeeName;
+            }
+            if (displayUPI) {
+                displayUPI.textContent = upiId;
             }
 
-            if (displayPayee) displayPayee.textContent = payeeName;
-            if (displayUPI) displayUPI.textContent = upiId;
+            if (instructions) {
+                instructions.innerHTML = `
+                    <strong>📌 Instructions:</strong><br>
+                    1. Open PhonePe / Google Pay / Paytm<br>
+                    2. Scan the QR code above<br>
+                    3. Enter amount: <strong>₹${amount || '0'}</strong><br>
+                    4. Pay to: <strong>${payeeName}</strong> (${upiId})<br>
+                    5. Enter your UPI PIN and complete payment<br>
+                    6. Copy the Transaction ID and paste below
+                `;
+            }
+
+            if (details) {
+                details.innerHTML = `
+                    <div class="detail-row"><span class="label">💰 Amount:</span><span class="value">₹${amount || '0'}</span></div>
+                    <div class="detail-row"><span class="label">👤 Payee:</span><span class="value">${payeeName}</span></div>
+                    <div class="detail-row"><span class="label">📱 UPI ID:</span><span class="value">${upiId}</span></div>
+                `;
+            }
         }
 
         function submitDeposit() {
             const amount = parseInt(document.getElementById('depositAmount').value);
-            const method = document.getElementById('depositMethod').value;
             const transactionId = document.getElementById('depositTransactionId').value.trim();
             const note = document.getElementById('depositNote').value.trim();
             const errorEl = document.getElementById('depositError');
@@ -1834,11 +1079,13 @@
                 return;
             }
 
+            const upiId = qrSettings.upiId || YOUR_UPI_ID;
+
             data.deposits.push({
                 id: 'DP-' + Date.now().toString().slice(-6),
                 username: currentUser.username,
                 amount: amount,
-                method: method,
+                method: 'UPI',
                 transactionId: transactionId,
                 note: note || '',
                 status: 'pending',
@@ -1849,7 +1096,7 @@
 
             saveData();
             addTransaction(currentUser.username, 'deposit_pending', amount, 'deposit', 
-                'Deposit request submitted - ₹' + amount + ' via ' + method + ' (TX: ' + transactionId + ')');
+                'Deposit request submitted - ₹' + amount + ' via UPI (' + upiId + ') (TX: ' + transactionId + ')');
 
             closeDepositModal();
             alert('✅ Deposit request submitted! Admin will verify and approve it shortly.');
@@ -1905,10 +1152,10 @@
                 if (!bankName) { errorEl.textContent = 'Please enter your bank name!'; return; }
                 if (!accountNumber) { errorEl.textContent = 'Please enter your account number!'; return; }
                 if (!ifsc) { errorEl.textContent = 'Please enter your IFSC code!'; return; }
-                if (ifsc.length < 11) { errorEl.textContent = 'IFSC code must be 11 characters!'; return; }
+                if (ifsc.length < 11) { errorEl.textContent = 'IFSC code must be 11 characters (e.g., SBIN0001234)!'; return; }
             } else if (method === 'UPI' || method === 'Paytm' || method === 'PhonePe' || method === 'Google Pay') {
-                if (!upi) { errorEl.textContent = 'Please enter your UPI ID!'; return; }
-                if (!upi.includes('@')) { errorEl.textContent = 'Please enter a valid UPI ID!'; return; }
+                if (!upi) { errorEl.textContent = 'Please enter your UPI ID for ' + method + '!'; return; }
+                if (!upi.includes('@')) { errorEl.textContent = 'Please enter a valid UPI ID (e.g., your@upi)!'; return; }
             } else {
                 if (!accountHolder) { errorEl.textContent = 'Please enter your account holder name!'; return; }
             }
@@ -1946,342 +1193,39 @@
         }
 
         // ============================================================
-        //  EXIT SYSTEM
-        // ============================================================
-        function openExitModal() {
-            if (!currentUser) return alert('Please login first!');
-            document.getElementById('exitModal').classList.remove('hidden');
-        }
-
-        function closeExitModal() {
-            document.getElementById('exitModal').classList.add('hidden');
-        }
-
-        function confirmExit() {
-            isExiting = true;
-            
-            if (isPlaying && !isCrashed && !isCashedOut && currentUser) {
-                const user = getUser(currentUser.username);
-                user.coins += betAmount;
-                saveData();
-                addTransaction(currentUser.username, 'refund', betAmount, 'exit', 
-                    'Bet refunded on exit - ' + betAmount + ' coins');
-                
-                isPlaying = false;
-                isCrashed = false;
-                isCashedOut = false;
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                    animationId = null;
-                }
-                
-                statusText.textContent = '🚪 EXITED';
-                statusText.className = 'status-text ready';
-                multiplierDisplay.textContent = '1.00x';
-                multiplierDisplay.style.color = '#ffd700';
-                betBtn.disabled = false;
-                cashoutBtn.disabled = true;
-                
-                if (currentUser) {
-                    removeLiveBet(currentUser.username);
-                }
-                
-                updateUI();
-                drawCanvas();
-                
-                ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#ffd700';
-                ctx.font = 'bold 40px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('🚪 EXITED', canvas.width/2, canvas.height/2 - 20);
-                ctx.font = '20px sans-serif';
-                ctx.fillStyle = '#aaa';
-                ctx.fillText('Your bet was refunded: ' + betAmount + ' 🪙', canvas.width/2, canvas.height/2 + 40);
-                ctx.textAlign = 'left';
-                
-                alert('🚪 You have exited the game.\n✅ Your bet of ' + betAmount + ' coins has been refunded.');
-            } else {
-                if (currentUser) {
-                    removeLiveBet(currentUser.username);
-                }
-            }
-            
-            closeExitModal();
-            
-            setTimeout(() => {
-                isExiting = false;
-                logout();
-            }, 500);
-        }
-
-        // ============================================================
-        //  LIVE BETS SYSTEM
-        // ============================================================
-        function updateLiveBet(username, betAmount, status, multiplier) {
-            liveBets[username] = {
-                username: username,
-                bet: betAmount,
-                status: status || 'waiting',
-                multiplier: multiplier || 1.00,
-                timestamp: Date.now()
-            };
-            renderLiveBets();
-        }
-
-        function removeLiveBet(username) {
-            delete liveBets[username];
-            renderLiveBets();
-        }
-
-        function renderLiveBets() {
-            const container = document.getElementById('liveBetsContainer');
-            if (!container) return;
-
-            const users = Object.values(liveBets);
-            const count = users.length;
-
-            document.getElementById('betCount').textContent = count + ' player' + (count !== 1 ? 's' : '');
-
-            if (count === 0) {
-                container.innerHTML = '<div class="no-bets">No active bets. Be the first to play! 🚀</div>';
-                return;
-            }
-
-            users.sort((a, b) => b.timestamp - a.timestamp);
-
-            let html = '';
-            users.forEach(bet => {
-                const isYou = bet.username === currentUser?.username;
-                const statusText = bet.status === 'waiting' ? '⏳ Waiting' :
-                                  bet.status === 'playing' ? '✈️ Playing' :
-                                  bet.status === 'cashed' ? '💰 Cashed Out!' :
-                                  '💥 Lost';
-                const statusDot = bet.status === 'waiting' ? 'waiting' :
-                                 bet.status === 'playing' ? 'playing' :
-                                 bet.status === 'cashed' ? 'cashed' : 'lost';
-                const multText = bet.status === 'playing' || bet.status === 'cashed' ? 
-                                 bet.multiplier.toFixed(2) + 'x' : '';
-
-                html += `
-                    <div class="bet-card">
-                        <div class="bet-user">
-                            ${bet.username}
-                            ${isYou ? '<span class="you-badge">YOU</span>' : ''}
-                        </div>
-                        <div class="bet-amount">🪙 ${bet.bet}</div>
-                        <div class="bet-status">
-                            <span class="status-dot ${statusDot}"></span>
-                            ${statusText}
-                            ${multText ? ' at ' + multText : ''}
-                        </div>
-                        <div class="bet-time">${new Date(bet.timestamp).toLocaleTimeString()}</div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        function startLiveBetUpdates() {
-            if (betUpdateInterval) clearInterval(betUpdateInterval);
-            betUpdateInterval = setInterval(() => {
-                Object.keys(liveBets).forEach(username => {
-                    if (liveBets[username].status === 'playing') {
-                        liveBets[username].multiplier = currentMultiplier || 1.00;
-                    }
-                });
-                renderLiveBets();
-            }, 1000);
-        }
-
-        // ============================================================
-        //  ADMIN: REFERRAL MANAGEMENT
-        // ============================================================
-        function renderAdminReferrals() {
-            const container = document.getElementById('adminReferralsContainer');
-            if (!container) return;
-            
-            const allRefs = getAllReferrals();
-            
-            // Update stats
-            document.getElementById('adminTotalReferrals').textContent = allRefs.length;
-            let totalBonus = allRefs.reduce((sum, ref) => sum + ref.bonus, 0);
-            document.getElementById('adminReferralBonus').textContent = totalBonus + ' 🪙';
-            
-            if (allRefs.length === 0) {
-                container.innerHTML = '<p style="color:#636e72;font-size:13px;">No referrals yet.</p>';
-                return;
-            }
-            
-            let html = `<table class="user-table">
-                <tr>
-                    <th>Referrer</th>
-                    <th>New User</th>
-                    <th>Bonus</th>
-                    <th>Date</th>
-                </tr>`;
-            allRefs.slice().reverse().forEach(ref => {
-                html += `
-                    <tr>
-                        <td><strong>${ref.referrer}</strong></td>
-                        <td>${ref.newUser}</td>
-                        <td style="color:#ffd700;">+${ref.bonus} 🪙</td>
-                        <td style="font-size:12px;color:#636e72;">${new Date(ref.date).toLocaleDateString()}</td>
-                    </tr>
-                `;
-            });
-            html += `</table>`;
-            container.innerHTML = html;
-        }
-
-        function saveReferralSettings() {
-            const bonus = parseInt(document.getElementById('adminReferralBonusAmount').value);
-            if (isNaN(bonus) || bonus < 1) {
-                alert('Please enter a valid bonus amount!');
-                return;
-            }
-            referralSettings.bonusAmount = bonus;
-            saveData();
-            alert('✅ Referral settings saved! Bonus: ' + bonus + ' coins');
-        }
-
-        function loadReferralSettingsToUI() {
-            document.getElementById('adminReferralBonusAmount').value = referralSettings.bonusAmount || 50;
-        }
-
-        // ============================================================
-        //  ADMIN: CRASH CONTROL
-        // ============================================================
-        let adminAutoCrashTimeout = null;
-
-        function adminForceStart() {
-            if (!currentUser) return alert('Please login first!');
-            if (!isPlaying) {
-                startRound();
-                addAdminLog('🚀 Force started a new round');
-            } else {
-                addAdminLog('⚠️ Game already in progress');
-            }
-        }
-
-        function adminForceCrash() {
-            if (!isPlaying || isCrashed) {
-                addAdminLog('⚠️ No active game to crash');
-                return;
-            }
-            const setCrash = parseFloat(document.getElementById('adminSetCrash').value);
-            if (isNaN(setCrash) || setCrash < 1.01) {
-                addAdminLog('⚠️ Invalid crash multiplier. Use at least 1.01');
-                return;
-            }
-            if (currentMultiplier < setCrash) {
-                crashMultiplier = setCrash;
-                addAdminLog('💥 Admin forced crash at ' + setCrash.toFixed(2) + 'x');
-            } else {
-                crashMultiplier = currentMultiplier;
-                crashRound();
-                addAdminLog('💥 Admin forced immediate crash at ' + currentMultiplier.toFixed(2) + 'x');
-            }
-        }
-
-        function adminSetAutoCrash() {
-            const seconds = parseInt(document.getElementById('adminAutoCrashTimer').value);
-            if (isNaN(seconds) || seconds < 1) {
-                addAdminLog('⚠️ Invalid timer value');
-                return;
-            }
-            if (!isPlaying) {
-                addAdminLog('⚠️ No active game to set timer for');
-                return;
-            }
-            
-            if (adminAutoCrashTimeout) {
-                clearTimeout(adminAutoCrashTimeout);
-            }
-
-            let remaining = seconds;
-            const timerDisplay = document.getElementById('adminTimerDisplay');
-            
-            addAdminLog('⏱️ Auto-crash timer started: ' + seconds + ' seconds');
-
-            adminAutoCrashTimeout = setTimeout(function() {
-                if (isPlaying && !isCrashed) {
-                    adminForceCrash();
-                    addAdminLog('⏱️ Auto-crash triggered after ' + seconds + ' seconds');
-                }
-                document.getElementById('adminTimerDisplay').textContent = '--';
-            }, seconds * 1000);
-
-            const timerInterval = setInterval(function() {
-                remaining--;
-                if (remaining <= 0) {
-                    clearInterval(timerInterval);
-                    timerDisplay.textContent = '💥';
-                    return;
-                }
-                if (!isPlaying) {
-                    clearInterval(timerInterval);
-                    timerDisplay.textContent = '--';
-                    return;
-                }
-                timerDisplay.textContent = remaining + 's';
-            }, 1000);
-        }
-
-        function adminResetRound() {
-            if (isPlaying) {
-                addAdminLog('⚠️ Cannot reset during active game');
-                return;
-            }
-            resetRoundUI();
-            addAdminLog('🔄 Round reset');
-        }
-
-        function addAdminLog(message) {
-            const log = document.getElementById('adminActionLog');
-            const timestamp = new Date().toLocaleTimeString();
-            if (log.innerHTML === 'No actions yet.') {
-                log.innerHTML = '';
-            }
-            log.innerHTML = `<div style="color:#aaa;font-size:12px;padding:2px 0;">[${timestamp}] ${message}</div>` + log.innerHTML;
-            const entries = log.getElementsByTagName('div');
-            while (entries.length > 10) {
-                entries[entries.length - 1].remove();
-            }
-        }
-
-        // ============================================================
         //  ADMIN: QR SETTINGS
         // ============================================================
         function loadQRSettingsToUI() {
             const adminUPI = document.getElementById('adminUPI');
             const adminPayee = document.getElementById('adminPayee');
-            const adminQRUrl = document.getElementById('adminQRUrl');
             const adminBankDetails = document.getElementById('adminBankDetails');
             
-            if (adminUPI) adminUPI.value = qrSettings.upiId || 'example@upi';
-            if (adminPayee) adminPayee.value = qrSettings.payeeName || 'Gaming Store';
-            if (adminQRUrl) adminQRUrl.value = qrSettings.qrUrl || '';
+            if (adminUPI) adminUPI.value = qrSettings.upiId || YOUR_UPI_ID;
+            if (adminPayee) adminPayee.value = qrSettings.payeeName || YOUR_PAYEE_NAME;
             if (adminBankDetails) adminBankDetails.value = qrSettings.bankDetails || '';
             updateQRPreview();
         }
 
         function saveQRSettings() {
-            qrSettings.upiId = document.getElementById('adminUPI').value.trim() || 'example@upi';
-            qrSettings.payeeName = document.getElementById('adminPayee').value.trim() || 'Gaming Store';
-            qrSettings.qrUrl = document.getElementById('adminQRUrl').value.trim();
+            const upiId = document.getElementById('adminUPI').value.trim() || YOUR_UPI_ID;
+            const payeeName = document.getElementById('adminPayee').value.trim() || YOUR_PAYEE_NAME;
+            
+            qrSettings.upiId = upiId;
+            qrSettings.payeeName = payeeName;
             qrSettings.bankDetails = document.getElementById('adminBankDetails').value.trim();
+            
+            qrSettings.qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=' + upiId + '&pn=' + encodeURIComponent(payeeName) + '&am=0&cu=INR';
+            
             saveData();
             updateQRPreview();
-            alert('✅ QR settings saved!');
+            alert('✅ QR settings saved! Your UPI ID is now: ' + upiId);
         }
 
         function updateQRPreview() {
             const preview = document.getElementById('adminQRPreview');
             const text = document.getElementById('adminQRPreviewText');
-            const upiId = document.getElementById('adminUPI')?.value || 'example@upi';
-            const payee = document.getElementById('adminPayee')?.value || 'Gaming Store';
+            const upiId = document.getElementById('adminUPI')?.value || YOUR_UPI_ID;
+            const payee = document.getElementById('adminPayee')?.value || YOUR_PAYEE_NAME;
             
             if (preview && text) {
                 const upiData = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payee)}&am=0&cu=INR`;
@@ -2490,145 +1434,7 @@
         }
 
         // ============================================================
-        //  ADMIN: USER MANAGEMENT
-        // ============================================================
-        function renderAdminUsers() {
-            const container = document.getElementById('adminUsersContainer');
-            if (!container) return;
-            const search = document.getElementById('adminSearch')?.value?.toLowerCase() || '';
-            let users = Object.values(data.users);
-            if (search) users = users.filter(u => u.username.includes(search));
-
-            if (users.length === 0) {
-                container.innerHTML = '<p style="color:#636e72;">No users found.</p>';
-                return;
-            }
-
-            let html = `<table class="user-table">
-                <tr><th>User</th><th>🪙 Coins</th><th>🎮 Games</th><th>🏆 Wins</th><th>💀 Losses</th><th>Referrals</th><th>Actions</th></tr>`;
-            users.forEach(u => {
-                const refCount = (u.referrals || []).length;
-                html += `
-                    <tr>
-                        <td><strong>${u.username}</strong> ${u.username === currentUser?.username ? '⭐' : ''}</td>
-                        <td>${Math.floor(u.coins)}</td>
-                        <td>${u.totalGames}</td>
-                        <td style="color:#00b894;">${u.wins}</td>
-                        <td style="color:#e17055;">${u.losses}</td>
-                        <td style="color:#fdcb6e;">${refCount}</td>
-                        <td class="actions">
-                            <input type="number" id="adminAmt_${u.username}" value="50" style="width:50px;">
-                            <button class="btn btn-success btn-sm" onclick="adminAddCoins('${u.username}')">+</button>
-                            <button class="btn btn-danger btn-sm" onclick="adminDeductCoins('${u.username}')">-</button>
-                            <button class="btn btn-danger btn-sm" onclick="adminDeleteUser('${u.username}')">🗑️</button>
-                            <button class="btn btn-info btn-sm" onclick="viewUserHistory('${u.username}')">📜</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            html += `</table>`;
-            container.innerHTML = html;
-        }
-
-        function adminAddCoins(username) {
-            const inp = document.getElementById(`adminAmt_${username}`);
-            if (!inp) return;
-            const amount = parseInt(inp.value);
-            if (isNaN(amount) || amount < 1) return alert('Enter a valid amount!');
-            const user = getUser(username);
-            user.coins += amount;
-            saveData();
-            addTransaction(username, 'admin_add', amount, 'admin', 'Admin added ' + amount + ' coins');
-            renderAdminUsers();
-            if (currentUser && currentUser.username === username) updateUI();
-        }
-
-        function adminDeductCoins(username) {
-            const inp = document.getElementById(`adminAmt_${username}`);
-            if (!inp) return;
-            const amount = parseInt(inp.value);
-            if (isNaN(amount) || amount < 1) return alert('Enter a valid amount!');
-            const user = getUser(username);
-            if (user.coins < amount) return alert('Not enough coins!');
-            user.coins -= amount;
-            saveData();
-            addTransaction(username, 'admin_deduct', amount, 'admin', 'Admin deducted ' + amount + ' coins');
-            renderAdminUsers();
-            if (currentUser && currentUser.username === username) updateUI();
-        }
-
-        function adminDeleteUser(username) {
-            if (!confirm(`Delete user "${username}"? This cannot be undone!`)) return;
-            delete data.users[username];
-            saveData();
-            renderAdminUsers();
-            renderAdminStats();
-            if (currentUser && currentUser.username === username) {
-                logout();
-            }
-        }
-
-        function viewUserHistory(username) {
-            const user = getUser(username);
-            const logs = data.transactions.filter(t => t.username === username).reverse().slice(0, 20);
-            let msg = `📜 History for ${username}\nCoins: ${Math.floor(user.coins)}\nGames: ${user.totalGames}\nWins: ${user.wins}\nLosses: ${user.losses}\nReferrals: ${(user.referrals || []).length}\n\n`;
-            if (logs.length === 0) {
-                msg += 'No transactions yet.';
-            } else {
-                logs.forEach(t => {
-                    const sign = t.type === 'win' || t.type === 'admin_add' || t.type === 'deposit_approved' || t.type === 'referral_bonus' ? '+' : '-';
-                    msg += `${t.date.slice(0,10)} ${t.game}: ${sign}${t.amount} (${t.type}) - ${t.details || ''}\n`;
-                });
-            }
-            alert(msg);
-        }
-
-        // ============================================================
-        //  ADMIN: STATS
-        // ============================================================
-        function renderAdminStats() {
-            const users = Object.values(data.users);
-            const statUsers = document.getElementById('statUsers');
-            const statCoins = document.getElementById('statCoins');
-            const statGames = document.getElementById('statGames');
-            const statTotalReferrals = document.getElementById('statTotalReferrals');
-            const statPendingDeposits = document.getElementById('statPendingDeposits');
-            const statPendingWithdraw = document.getElementById('statPendingWithdraw');
-            const statTotalDeposits = document.getElementById('statTotalDeposits');
-
-            if (statUsers) statUsers.textContent = users.length;
-            if (statCoins) {
-                let totalCoins = users.reduce((sum, u) => sum + u.coins, 0);
-                statCoins.textContent = Math.floor(totalCoins);
-            }
-            if (statGames) statGames.textContent = data.globalStats.totalGames || 0;
-            
-            if (statTotalReferrals) {
-                let totalRefs = 0;
-                users.forEach(u => {
-                    if (u.referrals) totalRefs += u.referrals.length;
-                });
-                statTotalReferrals.textContent = totalRefs;
-            }
-
-            if (statPendingDeposits) {
-                const pendingDeposits = data.deposits.filter(d => d.status === 'pending').length;
-                statPendingDeposits.textContent = pendingDeposits;
-            }
-
-            if (statPendingWithdraw) {
-                const pendingWithdraw = data.withdrawals.filter(w => w.status === 'pending').length;
-                statPendingWithdraw.textContent = pendingWithdraw;
-            }
-
-            if (statTotalDeposits) {
-                const totalDeposits = data.deposits.filter(d => d.status === 'approved').reduce((sum, d) => sum + d.amount, 0);
-                statTotalDeposits.textContent = '₹' + totalDeposits;
-            }
-        }
-
-        // ============================================================
-        //  GAME STATE
+        //  GAME STATE (FULL GAME)
         // ============================================================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -2655,10 +1461,6 @@
         const historyBar = document.getElementById('historyBar');
 
         function generateCrashPoint() {
-            const adminSet = parseFloat(document.getElementById('adminSetCrash')?.value || '0');
-            if (adminSet > 1) {
-                return adminSet;
-            }
             const r = Math.random();
             let point;
             if (r < 0.10) point = 1.00 + Math.random() * 0.25;
@@ -2670,7 +1472,7 @@
         }
 
         function startRound() {
-            if (isPlaying || !currentUser || isExiting) return;
+            if (isPlaying || !currentUser) return;
             betAmount = parseInt(betInput.value);
             const minBet = settings.minBet || 1;
             const maxBet = settings.maxBet || 500;
@@ -2698,16 +1500,13 @@
             multiplierDisplay.style.color = '#ffd700';
             updateUI();
 
-            updateLiveBet(currentUser.username, betAmount, 'playing', currentMultiplier);
-            updateAdminStatus();
-
             startTime = performance.now();
             if (animationId) cancelAnimationFrame(animationId);
             animate();
         }
 
         function cashOut() {
-            if (!isPlaying || isCrashed || isCashedOut || !currentUser || isExiting) return;
+            if (!isPlaying || isCrashed || isCashedOut || !currentUser) return;
             isCashedOut = true;
             cashOutMultiplier = currentMultiplier;
             const winAmount = Math.floor(betAmount * currentMultiplier);
@@ -2723,22 +1522,11 @@
             addHistory(currentMultiplier, true);
             isPlaying = false;
             updateUI();
-            updateAdminStatus();
-
-            updateLiveBet(currentUser.username, betAmount, 'cashed', cashOutMultiplier);
-
-            setTimeout(() => { 
-                if (!isCrashed) resetRoundUI(); 
-                setTimeout(() => {
-                    if (!isExiting) {
-                        removeLiveBet(currentUser.username);
-                    }
-                }, 5000);
-            }, 1500);
+            setTimeout(() => { if (!isCrashed) resetRoundUI(); }, 1500);
         }
 
         function crashRound() {
-            if (isCrashed || !currentUser || isExiting) return;
+            if (isCrashed || !currentUser) return;
             isCrashed = true;
             isPlaying = false;
             const user = getUser(currentUser.username);
@@ -2755,19 +1543,6 @@
             const py = canvas.height - 30 - (crashMultiplier * 12);
             spawnExplosion(px, py);
             updateUI();
-            updateAdminStatus();
-
-            Object.keys(liveBets).forEach(username => {
-                if (liveBets[username].status === 'playing') {
-                    updateLiveBet(username, liveBets[username].bet, 'lost', crashMultiplier);
-                    setTimeout(() => {
-                        if (!isExiting) {
-                            removeLiveBet(username);
-                        }
-                    }, 5000);
-                }
-            });
-
             setTimeout(() => resetRoundUI(), 2500);
         }
 
@@ -2781,37 +1556,7 @@
                 multiplierDisplay.textContent = '1.00x';
                 multiplierDisplay.style.color = '#ffd700';
             }
-            updateAdminStatus();
             drawCanvas();
-        }
-
-        function updateAdminStatus() {
-            const indicator = document.getElementById('adminStatusIndicator');
-            const text = document.getElementById('adminStatusText');
-            const multDisplay = document.getElementById('adminMultiplierDisplay');
-            const crashBtn = document.getElementById('adminForceCrash');
-
-            if (!indicator || !text || !multDisplay) return;
-
-            if (isCrashed) {
-                indicator.className = 'status-indicator crashed';
-                text.textContent = '💥 CRASHED';
-                if (crashBtn) crashBtn.disabled = true;
-            } else if (isPlaying) {
-                indicator.className = 'status-indicator flying';
-                text.textContent = '✈️ FLYING';
-                if (crashBtn) crashBtn.disabled = false;
-            } else if (isCashedOut) {
-                indicator.className = 'status-indicator cashed';
-                text.textContent = '💰 CASHED OUT';
-                if (crashBtn) crashBtn.disabled = true;
-            } else {
-                indicator.className = 'status-indicator ready';
-                text.textContent = '🟢 READY';
-                if (crashBtn) crashBtn.disabled = true;
-            }
-
-            multDisplay.textContent = currentMultiplier.toFixed(2) + 'x';
         }
 
         function addHistory(multiplier, won) {
@@ -3058,12 +1803,6 @@
                     spawnExplosion(px, py);
                 }
                 multiplierDisplay.textContent = currentMultiplier.toFixed(2) + 'x';
-                const adminMult = document.getElementById('adminMultiplierDisplay');
-                if (adminMult) adminMult.textContent = currentMultiplier.toFixed(2) + 'x';
-                
-                if (currentUser) {
-                    updateLiveBet(currentUser.username, betAmount, 'playing', currentMultiplier);
-                }
             }
 
             drawCanvas();
@@ -3244,12 +1983,9 @@
                 renderAdminUsers();
                 renderAdminDeposits();
                 renderAdminWithdrawals();
-                renderAdminReferrals();
                 renderAdminStats();
                 loadSettingsToUI();
                 loadQRSettingsToUI();
-                loadReferralSettingsToUI();
-                updateAdminStatus();
             } else if (pwd !== null) {
                 alert('Wrong password!');
             }
@@ -3263,13 +1999,131 @@
             const content = document.getElementById(`adminTab-${tab}`);
             if (content) content.classList.add('active');
             if (tab === 'users') renderAdminUsers();
-            if (tab === 'referrals') renderAdminReferrals();
             if (tab === 'deposits') renderAdminDeposits();
             if (tab === 'withdrawals') renderAdminWithdrawals();
-            if (tab === 'crash') updateAdminStatus();
             if (tab === 'stats') renderAdminStats();
             if (tab === 'qr') loadQRSettingsToUI();
-            if (tab === 'settings') loadSettingsToUI();
+        }
+
+        function renderAdminUsers() {
+            const container = document.getElementById('adminUsersContainer');
+            if (!container) return;
+            const search = document.getElementById('adminSearch')?.value?.toLowerCase() || '';
+            let users = Object.values(data.users);
+            if (search) users = users.filter(u => u.username.includes(search));
+
+            if (users.length === 0) {
+                container.innerHTML = '<p style="color:#636e72;">No users found.</p>';
+                return;
+            }
+
+            let html = `<table class="user-table">
+                <tr><th>User</th><th>🪙 Coins</th><th>🎮 Games</th><th>🏆 Wins</th><th>💀 Losses</th><th>Actions</th></tr>`;
+            users.forEach(u => {
+                html += `
+                    <tr>
+                        <td><strong>${u.username}</strong> ${u.username === currentUser?.username ? '⭐' : ''}</td>
+                        <td>${Math.floor(u.coins)}</td>
+                        <td>${u.totalGames}</td>
+                        <td style="color:#00b894;">${u.wins}</td>
+                        <td style="color:#e17055;">${u.losses}</td>
+                        <td class="actions">
+                            <input type="number" id="adminAmt_${u.username}" value="50" style="width:50px;">
+                            <button class="btn btn-success btn-sm" onclick="adminAddCoins('${u.username}')">+</button>
+                            <button class="btn btn-danger btn-sm" onclick="adminDeductCoins('${u.username}')">-</button>
+                            <button class="btn btn-danger btn-sm" onclick="adminDeleteUser('${u.username}')">🗑️</button>
+                            <button class="btn btn-info btn-sm" onclick="viewUserHistory('${u.username}')">📜</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            html += `</table>`;
+            container.innerHTML = html;
+        }
+
+        function adminAddCoins(username) {
+            const inp = document.getElementById(`adminAmt_${username}`);
+            if (!inp) return;
+            const amount = parseInt(inp.value);
+            if (isNaN(amount) || amount < 1) return alert('Enter a valid amount!');
+            const user = getUser(username);
+            user.coins += amount;
+            saveData();
+            addTransaction(username, 'admin_add', amount, 'admin', 'Admin added ' + amount + ' coins');
+            renderAdminUsers();
+            if (currentUser && currentUser.username === username) updateUI();
+        }
+
+        function adminDeductCoins(username) {
+            const inp = document.getElementById(`adminAmt_${username}`);
+            if (!inp) return;
+            const amount = parseInt(inp.value);
+            if (isNaN(amount) || amount < 1) return alert('Enter a valid amount!');
+            const user = getUser(username);
+            if (user.coins < amount) return alert('Not enough coins!');
+            user.coins -= amount;
+            saveData();
+            addTransaction(username, 'admin_deduct', amount, 'admin', 'Admin deducted ' + amount + ' coins');
+            renderAdminUsers();
+            if (currentUser && currentUser.username === username) updateUI();
+        }
+
+        function adminDeleteUser(username) {
+            if (!confirm(`Delete user "${username}"? This cannot be undone!`)) return;
+            delete data.users[username];
+            saveData();
+            renderAdminUsers();
+            renderAdminStats();
+            if (currentUser && currentUser.username === username) {
+                logout();
+            }
+        }
+
+        function viewUserHistory(username) {
+            const user = getUser(username);
+            const logs = data.transactions.filter(t => t.username === username).reverse().slice(0, 20);
+            let msg = `📜 History for ${username}\nCoins: ${Math.floor(user.coins)}\nGames: ${user.totalGames}\nWins: ${user.wins}\nLosses: ${user.losses}\n\n`;
+            if (logs.length === 0) {
+                msg += 'No transactions yet.';
+            } else {
+                logs.forEach(t => {
+                    const sign = t.type === 'win' || t.type === 'admin_add' || t.type === 'deposit_approved' ? '+' : '-';
+                    msg += `${t.date.slice(0,10)} ${t.game}: ${sign}${t.amount} (${t.type}) - ${t.details || ''}\n`;
+                });
+            }
+            alert(msg);
+        }
+
+        function renderAdminStats() {
+            const users = Object.values(data.users);
+            const statUsers = document.getElementById('statUsers');
+            const statCoins = document.getElementById('statCoins');
+            const statGames = document.getElementById('statGames');
+            const statPendingDeposits = document.getElementById('statPendingDeposits');
+            const statPendingWithdraw = document.getElementById('statPendingWithdraw');
+            const statTotalDeposits = document.getElementById('statTotalDeposits');
+
+            if (statUsers) statUsers.textContent = users.length;
+            if (statCoins) {
+                let totalCoins = users.reduce((sum, u) => sum + u.coins, 0);
+                statCoins.textContent = Math.floor(totalCoins);
+            }
+            if (statGames) statGames.textContent = data.globalStats.totalGames || 0;
+
+            if (statPendingDeposits) {
+                const pendingDeposits = data.deposits.filter(d => d.status === 'pending').length;
+                statPendingDeposits.textContent = pendingDeposits;
+            }
+
+            if (statPendingWithdraw) {
+                const pendingWithdraw = data.withdrawals.filter(w => w.status === 'pending').length;
+                statPendingWithdraw.textContent = pendingWithdraw;
+            }
+
+            if (statTotalDeposits) {
+                const totalDeposits = data.deposits.filter(d => d.status === 'approved').reduce((sum, d) => sum + d.amount, 0);
+                statTotalDeposits.textContent = '₹' + totalDeposits;
+            }
         }
 
         function saveSettings() {
@@ -3310,7 +2164,7 @@
         }
 
         function resetAllData() {
-            if (!confirm('⚠️ Delete ALL data (users, transactions, deposits, withdrawals, referrals)? This cannot be undone!')) return;
+            if (!confirm('⚠️ Delete ALL data (users, transactions, deposits, withdrawals)? This cannot be undone!')) return;
             if (!confirm('Are you absolutely sure?')) return;
             localStorage.removeItem(STORAGE_KEY);
             location.reload();
@@ -3321,16 +2175,16 @@
         // ============================================================
         betBtn.addEventListener('click', startRound);
         cashoutBtn.addEventListener('click', cashOut);
-        resetBtn.addEventListener('click', function() {
-            if (!isPlaying) {
-                resetRoundUI();
-            }
-        });
+        resetBtn.addEventListener('click', () => {});
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && !cashoutBtn.disabled) {
                 e.preventDefault();
                 cashOut();
             }
+        });
+
+        document.getElementById('withdrawIFSC').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
         });
 
         // ============================================================
@@ -3346,13 +2200,9 @@
                 drawCanvas();
                 betInput.value = Math.min(10, Math.floor(user.coins));
                 document.getElementById('loginModal').classList.add('hidden');
-                // Generate referral code if not exists
-                getReferralCode(currentUser.username);
             }
             speed = settings.speed || 2.0;
             drawCanvas();
-            updateAdminStatus();
-            startLiveBetUpdates();
         }
 
         // Initialize
@@ -3371,11 +2221,14 @@
         document.getElementById('depositAmount').addEventListener('input', function() {
             const amount = this.value || 0;
             const displayAmount = document.getElementById('displayAmount');
-            if (displayAmount) {
-                displayAmount.textContent = '₹' + amount;
-            }
-            if (amount > 0 && qrSettings) {
-                const upiData = `upi://pay?pa=${qrSettings.upiId || 'example@upi'}&pn=${encodeURIComponent(qrSettings.payeeName || 'Gaming Store')}&am=${amount}&cu=INR`;
+            const qrAmountDisplay = document.getElementById('qrAmountDisplay');
+            if (displayAmount) displayAmount.textContent = '₹' + amount;
+            if (qrAmountDisplay) qrAmountDisplay.textContent = '₹' + amount;
+            
+            if (amount > 0) {
+                const upiId = qrSettings.upiId || YOUR_UPI_ID;
+                const payee = qrSettings.payeeName || YOUR_PAYEE_NAME;
+                const upiData = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payee)}&am=${amount}&cu=INR`;
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiData)}`;
                 const qrImage = document.getElementById('qrImage');
                 if (qrImage) {
@@ -3384,14 +2237,11 @@
             }
         });
 
-        document.getElementById('withdrawIFSC').addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
-        });
-
-        console.log('✈️ Aviator with Referral System loaded!');
+        console.log('✈️ Aviator with Your UPI loaded!');
         console.log('🔐 Admin password: admin2026');
-        console.log('🎯 Share referral codes & earn bonuses!');
-        console.log('💥 Admin can control crashes.');
+        console.log('💡 Press SPACE to cash out!');
+        console.log('📱 Your UPI ID: ' + YOUR_UPI_ID);
+        console.log('✅ QR code is set to your UPI: ' + YOUR_UPI_ID);
     </script>
 </body>
 </html>
