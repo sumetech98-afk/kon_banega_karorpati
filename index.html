@@ -264,14 +264,14 @@
             background: #4a3a55;
         }
 
-        /* ===== QR + SUBMIT PROOF OVERLAY ===== */
-        .qr-submit-overlay {
+        /* ===== QR + PAYMENT PAGE OVERLAY ===== */
+        .qr-payment-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.88);
+            background: rgba(0, 0, 0, 0.92);
             backdrop-filter: blur(10px);
             display: none;
             align-items: center;
@@ -279,13 +279,13 @@
             z-index: 4000;
             padding: 20px;
         }
-        .qr-submit-overlay.active {
+        .qr-payment-overlay.active {
             display: flex;
         }
-        .qr-submit-panel {
+        .qr-payment-panel {
             background: #1e2538;
             border-radius: 32px;
-            max-width: 400px;
+            max-width: 480px;
             width: 100%;
             padding: 28px 24px 32px;
             border: 2px solid #ffd700;
@@ -293,50 +293,224 @@
             animation: modalPop 0.25s ease;
             max-height: 95vh;
             overflow-y: auto;
+        }
+        .qr-payment-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        .qr-payment-panel::-webkit-scrollbar-thumb {
+            background: #ffd700;
+            border-radius: 10px;
+        }
+
+        .qr-payment-panel .panel-header {
             text-align: center;
+            margin-bottom: 20px;
         }
-        .qr-submit-panel h2 {
+        .qr-payment-panel .panel-header h2 {
             color: #ffd700;
-            font-size: 20px;
-            margin-bottom: 6px;
+            font-size: 22px;
         }
-        .qr-submit-panel .sub-text {
+        .qr-payment-panel .panel-header h2 i {
+            margin-right: 8px;
+        }
+        .qr-payment-panel .panel-header .sub-text {
             color: #aab;
             font-size: 13px;
-            margin-bottom: 16px;
+            margin-top: 4px;
         }
-        .qr-submit-panel .qr-container {
-            background: #fff;
+
+        .qr-payment-panel .box-code-display {
+            text-align: center;
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            background: #0a0e1a;
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .payment-row {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .qr-section {
+            background: #121724;
             border-radius: 16px;
-            padding: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid #2a3045;
+        }
+        .qr-section .qr-label {
+            color: #aab;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        .qr-section .qr-container {
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px;
             display: inline-block;
-            margin: 0 auto 16px;
+            margin: 0 auto;
         }
-        .qr-submit-panel .qr-container #qrCodeContainer {
-            width: 180px;
-            height: 180px;
+        .qr-section .qr-container #qrCodeContainer {
+            width: 160px;
+            height: 160px;
         }
-        .qr-submit-panel .qr-container #qrCodeContainer img {
+        .qr-section .qr-container #qrCodeContainer img {
             width: 100% !important;
             height: 100% !important;
         }
-        .qr-submit-panel .upi-id-display {
+        .qr-section .upi-id-display {
             color: #aab;
-            font-size: 14px;
-            margin-bottom: 14px;
-        }
-        .qr-submit-panel .upi-id-display strong {
-            color: #ffd700;
-            font-size: 16px;
+            font-size: 13px;
+            margin-top: 8px;
             word-break: break-all;
         }
-        .qr-submit-panel .copy-upi-btn {
+        .qr-section .upi-id-display strong {
+            color: #ffd700;
+            font-size: 15px;
+        }
+        .qr-section .copy-upi-btn {
             width: 100%;
-            padding: 12px;
-            border-radius: 14px;
+            padding: 10px;
+            border-radius: 12px;
             border: 1px solid #ffd700;
             background: #2a3045;
             color: #ffd700;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .qr-section .copy-upi-btn:hover {
+            background: #ffd70022;
+            border-color: #ffd70088;
+        }
+
+        .manual-payment-section {
+            background: #121724;
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid #2a3045;
+        }
+        .manual-payment-section .section-title {
+            color: #aab;
+            font-size: 13px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .manual-payment-section .section-title i {
+            margin-right: 6px;
+            color: #4fc3f7;
+        }
+
+        .app-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .app-buttons .app-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px 8px;
+            border-radius: 12px;
+            border: 2px solid #3a4055;
+            background: #0a0e1a;
+            color: #aab;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .app-buttons .app-btn i {
+            font-size: 18px;
+        }
+        .app-buttons .app-btn.active {
+            border-color: #4caf50;
+            background: #4caf5022;
+            color: #4caf50;
+        }
+        .app-buttons .app-btn.phonepay {
+            border-color: #5f259f;
+            color: #9b59b6;
+        }
+        .app-buttons .app-btn.phonepay.active {
+            border-color: #5f259f;
+            background: #5f259f33;
+            color: #9b59b6;
+        }
+        .app-buttons .app-btn.paytm {
+            border-color: #00baf2;
+            color: #00baf2;
+        }
+        .app-buttons .app-btn.paytm.active {
+            border-color: #00baf2;
+            background: #00baf233;
+            color: #00baf2;
+        }
+        .app-buttons .app-btn.gpay {
+            border-color: #4285f4;
+            color: #4285f4;
+        }
+        .app-buttons .app-btn.gpay.active {
+            border-color: #4285f4;
+            background: #4285f433;
+            color: #4285f4;
+        }
+        .app-buttons .app-btn:hover {
+            transform: scale(1.02);
+            border-color: #ffd70088;
+        }
+
+        .manual-payment-section .input-group {
+            margin-bottom: 10px;
+        }
+        .manual-payment-section .input-group label {
+            color: #aab;
+            font-size: 12px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .manual-payment-section .input-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #3a4055;
+            background: #0a0e1a;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .manual-payment-section .input-group input:focus {
+            border-color: #4caf50;
+        }
+        .manual-payment-section .input-group input[readonly] {
+            color: #ffd700;
+            font-weight: 700;
+        }
+        .manual-payment-section .pay-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            color: #fff;
             font-weight: 700;
             font-size: 16px;
             cursor: pointer;
@@ -345,71 +519,73 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            margin-bottom: 10px;
+            margin-top: 4px;
         }
-        .qr-submit-panel .copy-upi-btn:hover {
-            background: #ffd70022;
-            border-color: #ffd70088;
-        }
-        .qr-submit-panel .submit-proof-btn-qr {
-            width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            border: none;
-            background: #2196F3;
-            color: #fff;
-            font-weight: 700;
-            font-size: 17px;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .qr-submit-panel .submit-proof-btn-qr:hover {
-            background: #1976D2;
+        .manual-payment-section .pay-btn:hover {
             transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
         }
-        .qr-submit-panel .close-qr-btn {
+        .manual-payment-section .pay-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .payment-success-msg {
+            text-align: center;
+            padding: 12px;
+            display: none;
+            margin-top: 10px;
+        }
+        .payment-success-msg.active {
+            display: block;
+        }
+        .payment-success-msg i {
+            font-size: 36px;
+            color: #4caf50;
+        }
+        .payment-success-msg h4 {
+            color: #fff;
+            margin: 4px 0;
+        }
+        .payment-success-msg p {
+            color: #aab;
+            font-size: 14px;
+        }
+
+        .qr-payment-panel .close-payment-btn {
             width: 100%;
             padding: 12px;
-            margin-top: 10px;
+            margin-top: 12px;
             border-radius: 14px;
             border: none;
             background: #3a3045;
             color: #ccc;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 16px;
             cursor: pointer;
+            transition: 0.2s;
         }
-        .qr-submit-panel .close-qr-btn:hover {
+        .qr-payment-panel .close-payment-btn:hover {
             background: #4a3a55;
         }
-        .qr-submit-panel .box-info {
-            color: #4fc3f7;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
+
+        .amount-display-box {
+            text-align: center;
+            background: #0a0e1a;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #4caf50;
+            margin-bottom: 10px;
         }
-        .qr-submit-panel .box-code-display {
-            color: #ffd700;
+        .amount-display-box .amount-label {
+            color: #aab;
+            font-size: 12px;
+        }
+        .amount-display-box .amount-value {
+            color: #4caf50;
             font-size: 28px;
             font-weight: 900;
-            letter-spacing: 2px;
-            margin-bottom: 4px;
-        }
-        .qr-submit-panel .note-text {
-            color: #ff9800;
-            font-size: 12px;
-            margin-bottom: 12px;
-        }
-        .qr-submit-panel .amount-display {
-            color: #4caf50;
-            font-size: 22px;
-            font-weight: 900;
-            margin-bottom: 8px;
         }
 
         /* ===== HEADER ===== */
@@ -1023,6 +1199,49 @@
             border-color: #4fc3f7;
         }
 
+        /* User sales stats in history modal */
+        .user-sales-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 12px;
+        }
+        .user-sales-item {
+            background: #121724;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border-left: 3px solid #4fc3f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ccc;
+            font-size: 14px;
+        }
+        .user-sales-item .username {
+            color: #4fc3f7;
+            font-weight: 600;
+        }
+        .user-sales-item .sales-count {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .user-sales-item .sales-count .box-icon {
+            font-size: 14px;
+            margin-right: 4px;
+        }
+        .user-sales-empty {
+            text-align: center;
+            color: #666;
+            padding: 30px 0;
+        }
+        .user-sales-empty i {
+            font-size: 40px;
+            opacity: 0.3;
+            margin-bottom: 10px;
+            display: block;
+        }
+
         @media (max-width: 460px) {
             #appContainer {
                 padding: 14px 10px 20px;
@@ -1070,9 +1289,12 @@
             .help-panel {
                 padding: 20px 16px;
             }
-            .qr-submit-panel .qr-container #qrCodeContainer {
-                width: 140px;
-                height: 140px;
+            .qr-payment-panel {
+                padding: 20px 16px;
+            }
+            .qr-section .qr-container #qrCodeContainer {
+                width: 130px;
+                height: 130px;
             }
             #whatsappBtn {
                 width: 50px;
@@ -1084,6 +1306,21 @@
             .history-link-btn {
                 font-size: 10px;
                 padding: 3px 8px;
+            }
+            .user-sales-item {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            .user-sales-item .sales-count {
+                font-size: 14px;
+            }
+            .app-buttons .app-btn {
+                font-size: 11px;
+                padding: 8px 6px;
+                min-width: 60px;
+            }
+            .app-buttons .app-btn i {
+                font-size: 14px;
             }
         }
         @media (max-width: 380px) {
@@ -1099,6 +1336,14 @@
             }
             .results-grid {
                 grid-template-columns: repeat(3, 1fr);
+            }
+            .app-buttons .app-btn {
+                font-size: 10px;
+                padding: 6px 4px;
+                min-width: 50px;
+            }
+            .app-buttons .app-btn i {
+                font-size: 12px;
             }
         }
     </style>
@@ -1201,26 +1446,84 @@
         </div>
     </div>
 
-    <!-- ===== QR + SUBMIT PROOF OVERLAY ===== -->
-    <div class="qr-submit-overlay" id="qrSubmitOverlay">
-        <div class="qr-submit-panel">
-            <h2><i class="fas fa-qrcode"></i> Pay ₹25 via UPI</h2>
-            <div class="sub-text">Scan QR code or copy UPI ID to pay</div>
-            <div class="box-info">📦 Box Code</div>
-            <div class="box-code-display" id="qrBoxCodeDisplay">----</div>
-            <div class="amount-display">💵 ₹25</div>
-            <div class="qr-container">
-                <div id="qrCodeContainer"></div>
+    <!-- ===== QR + PAYMENT PAGE OVERLAY ===== -->
+    <div class="qr-payment-overlay" id="qrPaymentOverlay">
+        <div class="qr-payment-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-qrcode"></i> Pay & Play</h2>
+                <div class="sub-text">Scan QR code or use manual payment option</div>
             </div>
-            <div class="upi-id-display">
-                UPI ID: <strong id="qrUpiId">s6154632725482301@slc</strong>
+
+            <div class="box-code-display" id="paymentBoxCode">📦 ----</div>
+
+            <div class="payment-row">
+                <!-- QR Section -->
+                <div class="qr-section">
+                    <div class="qr-label">📱 Scan to Pay</div>
+                    <div class="qr-container">
+                        <div id="paymentQrCode"></div>
+                    </div>
+                    <div class="upi-id-display">
+                        UPI: <strong id="paymentUpiId">s6154632725482301@slc</strong>
+                    </div>
+                    <button class="copy-upi-btn" id="paymentCopyUpiBtn">
+                        <i class="fas fa-copy"></i> Copy UPI ID
+                    </button>
+                </div>
+
+                <!-- Manual Payment Section -->
+                <div class="manual-payment-section">
+                    <div class="section-title"><i class="fas fa-hand-pointer"></i> Or Pay Manually</div>
+
+                    <div class="amount-display-box">
+                        <div class="amount-label">Amount to Pay</div>
+                        <div class="amount-value" id="paymentAmountDisplay">₹25</div>
+                    </div>
+
+                    <div class="app-buttons">
+                        <button class="app-btn phonepay active" data-app="phonepay">
+                            <i class="fas fa-mobile-alt"></i> PhonePe
+                        </button>
+                        <button class="app-btn paytm" data-app="paytm">
+                            <i class="fas fa-mobile-alt"></i> Paytm
+                        </button>
+                        <button class="app-btn gpay" data-app="gpay">
+                            <i class="fas fa-mobile-alt"></i> GPay
+                        </button>
+                    </div>
+
+                    <div class="input-group">
+                        <label><i class="fas fa-rupee-sign"></i> Amount (₹)</label>
+                        <input type="number" id="manualAmount" value="25" min="1" step="1" />
+                    </div>
+
+                    <div class="input-group">
+                        <label><i class="fas fa-hashtag"></i> Box Code</label>
+                        <input type="text" id="manualBoxCode" readonly style="color:#ffd700;font-weight:700;letter-spacing:1px;" />
+                    </div>
+
+                    <div class="input-group">
+                        <label><i class="fas fa-phone"></i> UPI Payment Number</label>
+                        <input type="text" id="manualUpiPhone" placeholder="Enter UPI registered phone number" />
+                    </div>
+
+                    <button class="pay-btn" id="manualPayBtn">
+                        <i class="fas fa-check-circle"></i> Pay Now
+                    </button>
+
+                    <div class="payment-success-msg" id="paymentSuccessMsg">
+                        <i class="fas fa-check-circle"></i>
+                        <h4>✅ Payment Initiated!</h4>
+                        <p>Please complete payment in your UPI app.<br>After payment, click "Submit Proof" below.</p>
+                    </div>
+
+                    <button class="submit-proof-btn-qr" id="paymentSubmitProofBtn" style="width:100%;padding:12px;border-radius:14px;border:none;background:#2196F3;color:#fff;font-weight:700;font-size:16px;cursor:pointer;transition:0.2s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;">
+                        <i class="fas fa-file-invoice"></i> 📤 Submit Payment Proof
+                    </button>
+                </div>
             </div>
-            <button class="copy-upi-btn" id="qrCopyUpiBtn"><i class="fas fa-copy"></i> 📋 Copy UPI ID</button>
-            <div class="note-text">💡 UPI ID कॉपी करें → PhonePe/GPay/UPI ऐप खोलें → ₹25 Pay करें → नीचे Proof Submit करें</div>
-            <button class="submit-proof-btn-qr" id="qrSubmitProofBtn">
-                <i class="fas fa-file-invoice"></i> 📤 Payment Proof Submit
-            </button>
-            <button class="close-qr-btn" id="qrCloseBtn"><i class="fas fa-times"></i> Close</button>
+
+            <button class="close-payment-btn" id="closePaymentBtn"><i class="fas fa-times"></i> Close</button>
         </div>
     </div>
 
@@ -1237,10 +1540,7 @@
                         <i class="fas fa-trophy"></i> Winner
                     </a>
                     <button id="resultsBtn"><i class="fas fa-list"></i> Prize Box</button>
-                    <!-- History button now directly opens the link -->
-                    <a href="https://docs.google.com/spreadsheets/d/1cze_ymNi3UCqN0EcM8NX1KIAKCz_eKCYK6mSsfyDg6k/edit?usp=sharing" target="_blank" class="history-link-btn">
-                        <i class="fas fa-history"></i> History
-                    </a>
+                    <button id="historyBtn"><i class="fas fa-history"></i> History</button>
                     <button id="refreshBtn"><i class="fas fa-sync-alt"></i></button>
                 </div>
             </div>
@@ -1268,6 +1568,20 @@
             <h2><i class="fas fa-trophy"></i> All Box Prizes</h2>
             <div class="results-grid" id="resultsGrid"></div>
             <button class="modal-close-btn" id="resultsCloseBtn"><i class="fas fa-times"></i> Close</button>
+        </div>
+    </div>
+
+    <!-- ===== HISTORY MODAL WITH USER SALES ===== -->
+    <div class="modal-overlay" id="historyOverlay">
+        <div class="modal-panel">
+            <h2><i class="fas fa-history"></i> User Sales Report</h2>
+            <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
+                <a href="https://sumetech98-afk.github.io/History/" target="_blank" class="history-link-btn">
+                    <i class="fas fa-external-link-alt"></i> Full History Page
+                </a>
+            </div>
+            <div id="userSalesList" class="user-sales-list"></div>
+            <button class="modal-close-btn" id="historyCloseBtn"><i class="fas fa-times"></i> Close</button>
         </div>
     </div>
 
@@ -1514,52 +1828,84 @@
         });
 
         // ============================================================
-        //  QR + SUBMIT OVERLAY
+        //  QR + PAYMENT PAGE
         // ============================================================
-        var qrSubmitOverlay = document.getElementById('qrSubmitOverlay');
-        var qrCodeContainer = document.getElementById('qrCodeContainer');
-        var qrBoxCodeDisplay = document.getElementById('qrBoxCodeDisplay');
-        var qrUpiId = document.getElementById('qrUpiId');
-        var qrCopyUpiBtn = document.getElementById('qrCopyUpiBtn');
-        var qrSubmitProofBtn = document.getElementById('qrSubmitProofBtn');
-        var qrCloseBtn = document.getElementById('qrCloseBtn');
-        var qrBoxCode = '';
-        var qrBoxSerial = 0;
+        var qrPaymentOverlay = document.getElementById('qrPaymentOverlay');
+        var paymentQrCode = document.getElementById('paymentQrCode');
+        var paymentBoxCode = document.getElementById('paymentBoxCode');
+        var paymentUpiId = document.getElementById('paymentUpiId');
+        var paymentCopyUpiBtn = document.getElementById('paymentCopyUpiBtn');
+        var paymentAmountDisplay = document.getElementById('paymentAmountDisplay');
+        var manualAmount = document.getElementById('manualAmount');
+        var manualBoxCode = document.getElementById('manualBoxCode');
+        var manualUpiPhone = document.getElementById('manualUpiPhone');
+        var manualPayBtn = document.getElementById('manualPayBtn');
+        var paymentSuccessMsg = document.getElementById('paymentSuccessMsg');
+        var paymentSubmitProofBtn = document.getElementById('paymentSubmitProofBtn');
+        var closePaymentBtn = document.getElementById('closePaymentBtn');
+        var appBtns = document.querySelectorAll('.app-btn');
 
-        qrUpiId.textContent = UPI_ID;
+        var currentPaymentBoxCode = '';
+        var currentPaymentBoxSerial = 0;
 
-        function generateQRCodeInOverlay(boxCode, boxSerial) {
-            qrBoxCode = boxCode;
-            qrBoxSerial = boxSerial;
-            qrBoxCodeDisplay.textContent = boxCode;
-            qrCodeContainer.innerHTML = '';
+        paymentUpiId.textContent = UPI_ID;
+
+        // App button selection
+        appBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                appBtns.forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+            });
+        });
+
+        // Amount change updates display
+        manualAmount.addEventListener('input', function() {
+            var val = parseFloat(this.value) || 0;
+            paymentAmountDisplay.textContent = '₹' + val;
+        });
+
+        function openPaymentPage(boxCode, boxSerial) {
+            currentPaymentBoxCode = boxCode;
+            currentPaymentBoxSerial = boxSerial;
+            paymentBoxCode.textContent = '📦 ' + boxCode;
+            manualBoxCode.value = boxCode;
+            manualUpiPhone.value = '';
+            manualAmount.value = FIXED_AMOUNT;
+            paymentAmountDisplay.textContent = '₹' + FIXED_AMOUNT;
+            paymentSuccessMsg.classList.remove('active');
+
+            // Generate QR
+            paymentQrCode.innerHTML = '';
             var upiString = 'upi://pay?pa=' + encodeURIComponent(UPI_ID) +
                 '&pn=' + encodeURIComponent(PAYEE_NAME) +
                 '&am=' + FIXED_AMOUNT +
                 '&tn=' + encodeURIComponent('Karorpati_' + boxCode) +
                 '&cu=INR';
-            new QRCode(qrCodeContainer, {
+            new QRCode(paymentQrCode, {
                 text: upiString,
-                width: 180,
-                height: 180,
+                width: 160,
+                height: 160,
                 colorDark: '#000000',
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.H
             });
-            qrSubmitOverlay.classList.add('active');
+
+            qrPaymentOverlay.classList.add('active');
         }
 
-        function closeQRSubmitOverlay() { qrSubmitOverlay.classList.remove('active'); }
+        function closePaymentPage() {
+            qrPaymentOverlay.classList.remove('active');
+        }
 
-        qrCopyUpiBtn.addEventListener('click', function() {
+        paymentCopyUpiBtn.addEventListener('click', function() {
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(UPI_ID).then(function() {
                     showToast('✅ UPI ID copied!', 'success');
-                })['catch'](function() { fallbackCopy(); });
-            } else { fallbackCopy(); }
+                })['catch'](function() { fallbackCopyPayment(); });
+            } else { fallbackCopyPayment(); }
         });
 
-        function fallbackCopy() {
+        function fallbackCopyPayment() {
             var ta = document.createElement('textarea');
             ta.value = UPI_ID;
             document.body.appendChild(ta);
@@ -1569,13 +1915,72 @@
             showToast('✅ UPI ID copied!', 'success');
         }
 
-        qrSubmitProofBtn.addEventListener('click', function() {
-            closeQRSubmitOverlay();
-            proofBoxCode.value = qrBoxCode;
+        manualPayBtn.addEventListener('click', function() {
+            var amount = parseFloat(manualAmount.value);
+            var boxCode = manualBoxCode.value.trim();
+            var upiPhone = manualUpiPhone.value.trim();
+
+            if (!amount || amount < 1) {
+                showToast('Please enter a valid amount.', 'error');
+                return;
+            }
+            if (!boxCode) {
+                showToast('Box code is required.', 'error');
+                return;
+            }
+            if (!upiPhone || upiPhone.length < 10) {
+                showToast('Please enter a valid UPI phone number.', 'error');
+                return;
+            }
+
+            // Get selected app
+            var selectedApp = 'PhonePe';
+            appBtns.forEach(function(b) {
+                if (b.classList.contains('active')) {
+                    selectedApp = b.textContent.trim();
+                }
+            });
+
+            // Open UPI app with payment intent
+            var upiIntent = 'upi://pay?pa=' + encodeURIComponent(UPI_ID) +
+                '&pn=' + encodeURIComponent(PAYEE_NAME) +
+                '&am=' + amount +
+                '&tn=' + encodeURIComponent('Karorpati_' + boxCode) +
+                '&cu=INR';
+
+            // Try to open UPI app
+            var appUrls = {
+                'PhonePe': 'phonepe://pay?',
+                'Paytm': 'paytmmp://pay?',
+                'GPay': 'gpay://pay?'
+            };
+
+            var appUrl = appUrls[selectedApp] || '';
+            if (appUrl) {
+                window.location.href = appUrl + 'pa=' + encodeURIComponent(UPI_ID) +
+                    '&pn=' + encodeURIComponent(PAYEE_NAME) +
+                    '&am=' + amount +
+                    '&tn=' + encodeURIComponent('Karorpati_' + boxCode) +
+                    '&cu=INR';
+            }
+
+            // Fallback: open UPI intent
+            setTimeout(function() {
+                window.location.href = upiIntent;
+            }, 500);
+
+            paymentSuccessMsg.classList.add('active');
+            showToast('📱 Opening ' + selectedApp + ' for payment...', 'info');
+        });
+
+        paymentSubmitProofBtn.addEventListener('click', function() {
+            closePaymentPage();
+            // Open proof modal with box code
+            proofBoxCode.value = currentPaymentBoxCode;
             proofUserName.value = currentUser ? currentUser.username : 'Guest';
             proofUserPhone.value = currentUser && currentUser.phone ? currentUser.phone : 'Not provided';
-            proofAmount.value = '₹' + FIXED_AMOUNT;
-            proofUpiPhone.value = '';
+            proofAmount.value = '₹' + (parseFloat(manualAmount.value) || FIXED_AMOUNT);
+            proofUpiPhone.value = manualUpiPhone.value || '';
             proofTxId.value = '';
             proofSuccessMsg.classList.remove('active');
             proofSubmitBtn.style.display = 'flex';
@@ -1584,8 +1989,8 @@
             proofOverlay.classList.add('active');
         });
 
-        qrCloseBtn.addEventListener('click', closeQRSubmitOverlay);
-        qrSubmitOverlay.addEventListener('click', function(e) { if (e.target === qrSubmitOverlay) closeQRSubmitOverlay(); });
+        closePaymentBtn.addEventListener('click', closePaymentPage);
+        qrPaymentOverlay.addEventListener('click', function(e) { if (e.target === qrPaymentOverlay) closePaymentPage(); });
 
         // ============================================================
         //  STATE
@@ -1619,6 +2024,11 @@
         var resultsOverlay = document.getElementById('resultsOverlay');
         var resultsGrid = document.getElementById('resultsGrid');
         var resultsCloseBtn = document.getElementById('resultsCloseBtn');
+
+        var historyBtn = document.getElementById('historyBtn');
+        var historyOverlay = document.getElementById('historyOverlay');
+        var historyCloseBtn = document.getElementById('historyCloseBtn');
+        var userSalesList = document.getElementById('userSalesList');
 
         var refreshBtn = document.getElementById('refreshBtn');
 
@@ -1654,26 +2064,39 @@
             if (register) {
                 authBtn.textContent = 'Register';
                 authSub.textContent = 'Create your account';
-                toggleLink.parentElement.innerHTML = 'Already have an account? <a id="toggleAuthLink">Login</a>';
+                toggleLink.textContent = 'Login';
+                toggleLink.onclick = function(e) {
+                    e.preventDefault();
+                    switchAuthMode(false);
+                };
             } else {
                 authBtn.textContent = 'Login';
                 authSub.textContent = 'Login to play and win';
-                toggleLink.parentElement.innerHTML = 'Don\'t have an account? <a id="toggleAuthLink">Register</a>';
+                toggleLink.textContent = 'Register';
+                toggleLink.onclick = function(e) {
+                    e.preventDefault();
+                    switchAuthMode(true);
+                };
             }
             authError.textContent = '';
-            var tLink = document.getElementById('toggleAuthLink');
-            if (tLink) {
-                tLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    switchAuthMode(!isRegisterMode);
-                });
-            }
+            authPhone.style.display = 'block';
+            document.querySelector('.input-group label[for="authPhone"]').style.display = 'block';
         }
+
+        toggleLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (isRegisterMode) {
+                switchAuthMode(false);
+            } else {
+                switchAuthMode(true);
+            }
+        });
 
         function handleAuth() {
             var username = authUsername.value.trim();
             var phone = authPhone.value.trim();
             var password = authPassword.value.trim();
+
             if (!username || !password) {
                 authError.textContent = 'Please fill all fields.';
                 return;
@@ -1710,11 +2133,10 @@
                 authPhone.value = '';
                 authPassword.value = '';
             } else {
-                // Login
                 var users2 = loadUsers();
                 var user = users2[username];
                 if (!user) {
-                    authError.textContent = 'User not found.';
+                    authError.textContent = 'User not found. Please register first.';
                     return;
                 }
                 if (user.password !== password) {
@@ -1737,7 +2159,7 @@
         }
 
         // ============================================================
-        //  GAME DATA – MINIMUM PRIZE ₹1000
+        //  GAME DATA
         // ============================================================
         var PRIZE_POOL = [
             { prize: 10000000, count: 1 },
@@ -1832,16 +2254,10 @@
             var boxCode = box.code;
             var boxSerial = idx + 1;
 
-            proofBoxCode.value = boxCode;
-            proofUserName.value = currentUser ? currentUser.username : 'Guest';
-            proofUserPhone.value = currentUser && currentUser.phone ? currentUser.phone : 'Not provided';
-            proofAmount.value = '₹' + FIXED_AMOUNT;
-            proofUpiPhone.value = '';
-            proofTxId.value = '';
-
-            generateQRCodeInOverlay(boxCode, boxSerial);
-            showToast('📲 बॉक्स कोड: ' + boxCode + ' | UPI ID कॉपी करें और ₹25 pay करें', 'info');
-            resultMsg.textContent = '📦 बॉक्स कोड: ' + boxCode + ' | UPI ID कॉपी करें → Pay करें → Proof Submit करें';
+            // Open payment page instead of QR overlay
+            openPaymentPage(boxCode, boxSerial);
+            showToast('📲 बॉक्स कोड: ' + boxCode + ' | Pay ₹' + FIXED_AMOUNT + ' via UPI', 'info');
+            resultMsg.textContent = '📦 बॉक्स कोड: ' + boxCode + ' | Payment page opened';
             resultMsg.className = 'result-msg info';
 
             isPlaying = false;
@@ -1852,25 +2268,6 @@
         // ============================================================
         //  PROOF MODAL
         // ============================================================
-        function openProofModal(boxCode, boxSerial) {
-            proofBoxCode.value = boxCode;
-            proofUserName.value = currentUser ? currentUser.username : 'Guest';
-            proofUserPhone.value = currentUser && currentUser.phone ? currentUser.phone : 'Not provided';
-            proofAmount.value = '₹' + FIXED_AMOUNT;
-            proofUpiPhone.value = '';
-            proofTxId.value = '';
-            proofSuccessMsg.classList.remove('active');
-            proofSubmitBtn.style.display = 'flex';
-            proofSubmitBtn.disabled = false;
-            proofSubmitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit to Admin';
-            proofOverlay.classList.add('active');
-            isPlaying = false;
-            playBtn.disabled = false;
-            playBtn.innerHTML = '<i class="fas fa-play"></i> Pick Box & Pay <span class="price-tag">₹25</span>';
-            if (detectionInterval) { clearInterval(detectionInterval);
-                detectionInterval = null; }
-        }
-
         function closeProofModal() {
             proofOverlay.classList.remove('active');
             boxData.forEach(function(b) { b.selected = false; });
@@ -1887,6 +2284,7 @@
             var boxCode = proofBoxCode.value.trim();
             var username = proofUserName.value.trim();
             var userPhone = proofUserPhone.value.trim();
+            var amount = parseFloat(proofAmount.value.replace('₹', '')) || FIXED_AMOUNT;
 
             if (!upiPhone || upiPhone.length < 10) {
                 showToast('Please enter a valid UPI payment number!', 'error');
@@ -1920,7 +2318,7 @@
                 upi_phone: upiPhone,
                 box_code: boxCode,
                 box_serial: serial,
-                amount: FIXED_AMOUNT,
+                amount: amount,
                 txid: txId
             });
 
@@ -1930,7 +2328,7 @@
             hfUpiPhone.value = upiPhone;
             hfBoxCode.value = boxCode;
             hfBoxSerial.value = serial;
-            hfAmount.value = FIXED_AMOUNT;
+            hfAmount.value = amount;
             hfTxid.value = txId;
             document.getElementById('emailForm').submit();
 
@@ -1968,6 +2366,58 @@
         resultsOverlay.addEventListener('click', function(e) { if (e.target === resultsOverlay) resultsOverlay.classList
                 .remove('active'); });
         resultsBtn.addEventListener('click', openResults);
+
+        // ============================================================
+        //  HISTORY MODAL
+        // ============================================================
+        function openHistory() {
+            var records = getRecords();
+            var users = loadUsers();
+
+            var userSales = {};
+            records.forEach(function(rec) {
+                var uname = rec.username || 'Guest';
+                if (!userSales[uname]) {
+                    userSales[uname] = 0;
+                }
+                userSales[uname]++;
+            });
+
+            var sortedUsers = Object.keys(userSales).sort(function(a, b) {
+                return userSales[b] - userSales[a];
+            });
+
+            userSalesList.innerHTML = '';
+
+            if (sortedUsers.length === 0) {
+                userSalesList.innerHTML = '<div class="user-sales-empty"><i class="fas fa-box-open"></i>No boxes sold yet.</div>';
+            } else {
+                sortedUsers.forEach(function(uname) {
+                    var count = userSales[uname];
+                    var div = document.createElement('div');
+                    div.className = 'user-sales-item';
+                    div.innerHTML = '<span class="username"><i class="fas fa-user"></i> ' + uname +
+                        '</span><span class="sales-count"><span class="box-icon">📦</span> ' + count + ' box' +
+                        (count > 1 ? 'es' : '') + '</span>';
+                    userSalesList.appendChild(div);
+                });
+
+                var totalDiv = document.createElement('div');
+                totalDiv.className = 'user-sales-item';
+                totalDiv.style.borderLeftColor = '#ffd700';
+                totalDiv.innerHTML =
+                    '<span class="username" style="color:#ffd700;"><i class="fas fa-chart-bar"></i> Total Boxes Sold</span><span class="sales-count" style="color:#ffd700;font-size:18px;">📦 ' +
+                    records.length + '</span>';
+                userSalesList.appendChild(totalDiv);
+            }
+
+            historyOverlay.classList.add('active');
+        }
+
+        historyCloseBtn.addEventListener('click', function() { historyOverlay.classList.remove('active'); });
+        historyOverlay.addEventListener('click', function(e) { if (e.target === historyOverlay) historyOverlay.classList
+                .remove('active'); });
+        historyBtn.addEventListener('click', openHistory);
 
         // ============================================================
         //  REFRESH
