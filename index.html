@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Kon Banega Karorpati</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+    </script>
     <style>
         * {
             margin: 0;
@@ -26,21 +25,26 @@
         #appContainer {
             max-width: 480px;
             width: 100%;
-            background: rgba(26,31,47,0.92);
+            background: rgba(26, 31, 47, 0.92);
             backdrop-filter: blur(8px);
             border-radius: 36px;
             padding: 20px 16px 28px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,215,0,0.12);
-            border: 1px solid rgba(255,215,0,0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 215, 0, 0.12);
+            border: 1px solid rgba(255, 215, 0, 0.15);
             display: none;
             margin: 10px 0;
         }
-        #appContainer.active { display: block; }
+        #appContainer.active {
+            display: block;
+        }
 
         .auth-overlay {
             position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(11,14,26,0.96);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 14, 26, 0.96);
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
@@ -48,7 +52,9 @@
             z-index: 5000;
             padding: 20px;
         }
-        .auth-overlay.hidden { display: none; }
+        .auth-overlay.hidden {
+            display: none;
+        }
         .auth-box {
             max-width: 380px;
             width: 100%;
@@ -56,13 +62,30 @@
             border-radius: 40px;
             padding: 32px 24px;
             border: 1px solid #ffd70055;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
             animation: modalPop 0.3s ease;
         }
-        .auth-box h2 { color: #ffd700; text-align: center; font-size: 28px; margin-bottom: 8px; }
-        .auth-box .sub { color: #aab; text-align: center; font-size: 14px; margin-bottom: 24px; }
-        .auth-box .input-group { margin-bottom: 16px; }
-        .auth-box .input-group label { color: #aab; font-size: 13px; display: block; margin-bottom: 4px; }
+        .auth-box h2 {
+            color: #ffd700;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .auth-box .sub {
+            color: #aab;
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .auth-box .input-group {
+            margin-bottom: 16px;
+        }
+        .auth-box .input-group label {
+            color: #aab;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
+        }
         .auth-box .input-group input {
             width: 100%;
             padding: 14px 16px;
@@ -74,7 +97,9 @@
             outline: none;
             transition: 0.2s;
         }
-        .auth-box .input-group input:focus { border-color: #ffd700; }
+        .auth-box .input-group input:focus {
+            border-color: #ffd700;
+        }
         .auth-box .auth-btn {
             width: 100%;
             padding: 14px;
@@ -88,24 +113,28 @@
             transition: 0.2s;
             margin-top: 8px;
         }
-        .auth-box .auth-btn:hover { background: #e6c200; transform: scale(1.01); }
+        .auth-box .auth-btn:hover {
+            background: #e6c200;
+            transform: scale(1.01);
+        }
         .auth-box .switch-link {
             text-align: center;
             margin-top: 16px;
             color: #aab;
             font-size: 14px;
         }
-        .auth-box .switch-link a { color: #ffd700; cursor: pointer; text-decoration: underline; }
-        .auth-box .auth-error { color: #f44336; font-size: 13px; text-align: center; margin-top: 8px; min-height: 20px; }
-        .auth-box .admin-register-link {
-            display: inline-block;
-            margin-left: 8px;
-            color: #ffd70088;
-            font-size: 13px;
+        .auth-box .switch-link a {
+            color: #ffd700;
             cursor: pointer;
             text-decoration: underline;
         }
-        .auth-box .admin-register-link:hover { color: #ffd700; }
+        .auth-box .auth-error {
+            color: #f44336;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 8px;
+            min-height: 20px;
+        }
         .auth-help-btn {
             display: inline-block;
             margin-top: 6px;
@@ -118,12 +147,17 @@
             border: none;
             padding: 4px 8px;
         }
-        .auth-help-btn:hover { color: #ffd700; }
+        .auth-help-btn:hover {
+            color: #ffd700;
+        }
 
         .help-overlay {
             position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.85);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
             display: none;
             align-items: center;
@@ -131,7 +165,9 @@
             z-index: 7000;
             padding: 20px;
         }
-        .help-overlay.active { display: flex; }
+        .help-overlay.active {
+            display: flex;
+        }
         .help-panel {
             background: #1e2538;
             border-radius: 32px;
@@ -141,13 +177,25 @@
             overflow-y: auto;
             padding: 28px 24px;
             border: 2px solid #ffd700;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
             animation: modalPop 0.25s ease;
         }
-        .help-panel::-webkit-scrollbar { width: 4px; }
-        .help-panel::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 10px; }
-        .help-panel h2 { color: #ffd700; text-align: center; margin-bottom: 16px; font-size: 22px; }
-        .help-panel h2 i { margin-right: 8px; }
+        .help-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        .help-panel::-webkit-scrollbar-thumb {
+            background: #ffd700;
+            border-radius: 10px;
+        }
+        .help-panel h2 {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 22px;
+        }
+        .help-panel h2 i {
+            margin-right: 8px;
+        }
         .help-panel .help-lang-tabs {
             display: flex;
             gap: 10px;
@@ -170,24 +218,35 @@
             background: #ffd70022;
             color: #ffd700;
         }
-        .help-panel .help-lang-tabs button:hover { border-color: #ffd70088; }
-        .help-content { color: #ccc; font-size: 14px; line-height: 1.7; }
-        .help-content h3 { color: #ffd700; font-size: 16px; margin-top: 12px; margin-bottom: 4px; }
-        .help-content ul { padding-left: 20px; margin: 6px 0 10px; }
-        .help-content ul li { margin-bottom: 4px; }
-        .help-content .highlight { color: #ffd700; font-weight: 600; }
-        .help-content .step { color: #4fc3f7; font-weight: 600; }
-        #adminCommissionInfo {
-            display: none;
-            margin-top: 20px;
-            padding: 15px;
-            background: #2a3045;
-            border-radius: 12px;
-            border: 1px solid #ffd700;
+        .help-panel .help-lang-tabs button:hover {
+            border-color: #ffd70088;
         }
-        #adminCommissionInfo h3 { color: #ffd700; font-size: 18px; margin-bottom: 8px; }
-        #adminCommissionInfo p { color: #ccc; font-size: 14px; margin: 4px 0; }
-        #adminCommissionInfo strong { color: #4fc3f7; }
+        .help-content {
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        .help-content h3 {
+            color: #ffd700;
+            font-size: 16px;
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+        .help-content ul {
+            padding-left: 20px;
+            margin: 6px 0 10px;
+        }
+        .help-content ul li {
+            margin-bottom: 4px;
+        }
+        .help-content .highlight {
+            color: #ffd700;
+            font-weight: 600;
+        }
+        .help-content .step {
+            color: #4fc3f7;
+            font-weight: 600;
+        }
         .help-close-btn {
             display: block;
             width: 100%;
@@ -201,13 +260,18 @@
             font-size: 16px;
             cursor: pointer;
         }
-        .help-close-btn:hover { background: #4a3a55; }
+        .help-close-btn:hover {
+            background: #4a3a55;
+        }
 
         /* ===== QR + SUBMIT PROOF OVERLAY ===== */
         .qr-submit-overlay {
             position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.88);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
             backdrop-filter: blur(10px);
             display: none;
             align-items: center;
@@ -215,7 +279,9 @@
             z-index: 4000;
             padding: 20px;
         }
-        .qr-submit-overlay.active { display: flex; }
+        .qr-submit-overlay.active {
+            display: flex;
+        }
         .qr-submit-panel {
             background: #1e2538;
             border-radius: 32px;
@@ -223,14 +289,22 @@
             width: 100%;
             padding: 28px 24px 32px;
             border: 2px solid #ffd700;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
             animation: modalPop 0.25s ease;
             max-height: 95vh;
             overflow-y: auto;
             text-align: center;
         }
-        .qr-submit-panel h2 { color: #ffd700; font-size: 20px; margin-bottom: 6px; }
-        .qr-submit-panel .sub-text { color: #aab; font-size: 13px; margin-bottom: 16px; }
+        .qr-submit-panel h2 {
+            color: #ffd700;
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+        .qr-submit-panel .sub-text {
+            color: #aab;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
         .qr-submit-panel .qr-container {
             background: #fff;
             border-radius: 16px;
@@ -238,10 +312,24 @@
             display: inline-block;
             margin: 0 auto 16px;
         }
-        .qr-submit-panel .qr-container #qrCodeContainer { width: 180px; height: 180px; }
-        .qr-submit-panel .qr-container #qrCodeContainer img { width:100% !important; height:100% !important; }
-        .qr-submit-panel .upi-id-display { color: #aab; font-size: 14px; margin-bottom: 14px; }
-        .qr-submit-panel .upi-id-display strong { color: #ffd700; font-size: 16px; word-break: break-all; }
+        .qr-submit-panel .qr-container #qrCodeContainer {
+            width: 180px;
+            height: 180px;
+        }
+        .qr-submit-panel .qr-container #qrCodeContainer img {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .qr-submit-panel .upi-id-display {
+            color: #aab;
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
+        .qr-submit-panel .upi-id-display strong {
+            color: #ffd700;
+            font-size: 16px;
+            word-break: break-all;
+        }
         .qr-submit-panel .copy-upi-btn {
             width: 100%;
             padding: 12px;
@@ -259,7 +347,10 @@
             gap: 8px;
             margin-bottom: 10px;
         }
-        .qr-submit-panel .copy-upi-btn:hover { background: #ffd70022; border-color: #ffd70088; }
+        .qr-submit-panel .copy-upi-btn:hover {
+            background: #ffd70022;
+            border-color: #ffd70088;
+        }
         .qr-submit-panel .submit-proof-btn-qr {
             width: 100%;
             padding: 14px;
@@ -277,7 +368,10 @@
             justify-content: center;
             gap: 10px;
         }
-        .qr-submit-panel .submit-proof-btn-qr:hover { background: #1976D2; transform: scale(1.02); }
+        .qr-submit-panel .submit-proof-btn-qr:hover {
+            background: #1976D2;
+            transform: scale(1.02);
+        }
         .qr-submit-panel .close-qr-btn {
             width: 100%;
             padding: 12px;
@@ -290,11 +384,33 @@
             font-size: 15px;
             cursor: pointer;
         }
-        .qr-submit-panel .close-qr-btn:hover { background: #4a3a55; }
-        .qr-submit-panel .box-info { color: #4fc3f7; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-        .qr-submit-panel .box-code-display { color: #ffd700; font-size: 28px; font-weight: 900; letter-spacing: 2px; margin-bottom: 4px; }
-        .qr-submit-panel .note-text { color: #ff9800; font-size: 12px; margin-bottom: 12px; }
-        .qr-submit-panel .amount-display { color: #4caf50; font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+        .qr-submit-panel .close-qr-btn:hover {
+            background: #4a3a55;
+        }
+        .qr-submit-panel .box-info {
+            color: #4fc3f7;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .qr-submit-panel .box-code-display {
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+        .qr-submit-panel .note-text {
+            color: #ff9800;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+        .qr-submit-panel .amount-display {
+            color: #4caf50;
+            font-size: 22px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
 
         /* ===== HEADER ===== */
         .header {
@@ -305,9 +421,23 @@
             flex-wrap: wrap;
             gap: 6px;
         }
-        .header .title-area { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-        .header .title-area h1 { color: #ffd700; font-size: 20px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 30px rgba(255,215,0,0.25); line-height: 1.2; }
-        .header .title-area h1 i { margin-right: 6px; }
+        .header .title-area {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .header .title-area h1 {
+            color: #ffd700;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.25);
+            line-height: 1.2;
+        }
+        .header .title-area h1 i {
+            margin-right: 6px;
+        }
         .youtube-live-btn {
             display: inline-flex;
             align-items: center;
@@ -324,12 +454,28 @@
             cursor: pointer;
             animation: pulse-youtube 2s infinite;
         }
-        .youtube-live-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #ff000066; }
-        .youtube-live-btn i { font-size: 14px; }
-        .youtube-live-btn .live-text { background: #ffffff22; padding: 0 6px; border-radius: 4px; font-size: 9px; letter-spacing: 0.5px; }
+        .youtube-live-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ff000066;
+        }
+        .youtube-live-btn i {
+            font-size: 14px;
+        }
+        .youtube-live-btn .live-text {
+            background: #ffffff22;
+            padding: 0 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            letter-spacing: 0.5px;
+        }
         @keyframes pulse-youtube {
-            0%,100% { box-shadow: 0 0 0 0 #ff000044; }
-            50% { box-shadow: 0 0 20px 6px #ff000022; }
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 #ff000044;
+            }
+            50% {
+                box-shadow: 0 0 20px 6px #ff000022;
+            }
         }
 
         /* === WINNER BUTTON STYLES === */
@@ -347,11 +493,11 @@
             transition: 0.2s;
             border: 1px solid #ffd700;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(255,215,0,0.2);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
         }
         .winner-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(255,215,0,0.4);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
             background: linear-gradient(135deg, #ffe082, #f57c00);
         }
         .winner-btn i {
@@ -379,44 +525,21 @@
             align-items: center;
             gap: 4px;
         }
-        .header .btn-group button:hover { background: #ffd70022; border-color: #ffd700; }
+        .header .btn-group button:hover {
+            background: #ffd70022;
+            border-color: #ffd700;
+        }
         .header .user-info {
             display: flex;
             align-items: center;
             gap: 6px;
             flex-wrap: wrap;
         }
-        .header .user-info .username-badge { color: #aab; font-size: 13px; font-weight: 500; }
-        .header .user-info .admin-btn {
-            background: #2a3045;
-            border: 1px solid #ffd700;
-            color: #ffd700;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-            display: none;
-            align-items: center;
-            gap: 4px;
+        .header .user-info .username-badge {
+            color: #aab;
+            font-size: 13px;
+            font-weight: 500;
         }
-        .header .user-info .admin-btn:hover { background: #ffd70022; border-color: #ffd70088; }
-        .header .user-info .profit-btn {
-            background: #1a4a2a;
-            border: 1px solid #4caf50;
-            color: #4caf50;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-            display: none;
-            align-items: center;
-            gap: 4px;
-        }
-        .header .user-info .profit-btn:hover { background: #4caf5022; border-color: #4caf50; }
         .logout-btn {
             background: #3a2a2a;
             border: 1px solid #7d3a3a;
@@ -431,9 +554,13 @@
             align-items: center;
             gap: 4px;
         }
-        .logout-btn:hover { background: #4f2a2a; }
+        .logout-btn:hover {
+            background: #4f2a2a;
+        }
 
-        .box-grid-wrapper { width: 100%; }
+        .box-grid-wrapper {
+            width: 100%;
+        }
         .box-grid {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
@@ -461,20 +588,68 @@
             padding: 2px;
             user-select: none;
         }
-        .box-item .box-code { font-size: 13px; font-weight: 900; color: #fff; letter-spacing: 0.5px; line-height: 1.2; text-align: center; text-shadow: 0 0 10px rgba(255,215,0,0.1); }
-        .box-item .box-prize { font-size: 7px; font-weight: 700; color: #4caf50; display: none; }
-        .box-item:hover:not(.disabled):not(.revealed) { transform: scale(1.04); border-color: #ffd70088; box-shadow: 0 0 20px rgba(255,215,0,0.1); }
-        .box-item.selected { border-color: #ffd700; box-shadow: 0 0 25px rgba(255,215,0,0.25); transform: scale(1.05); }
-        .box-item.disabled { cursor: not-allowed; opacity: 0.5; }
-        .box-item.revealed { cursor: default; transform: scale(1); }
-        .box-item.revealed .box-prize { display: block; }
-        .box-item.revealed .box-code { font-size: 11px; }
-        .box-item.win-box { border-color: #4caf50; background: #1e3a2f; box-shadow: 0 0 30px #4caf5044; }
-        .box-item.win-box .box-prize { color: #4caf50; font-size: 9px; }
-        .box-item.lose-box { border-color: #f44336; background: #3a1e2a; box-shadow: 0 0 30px #f4433644; }
-        .box-item.lose-box .box-prize { color: #f44336; }
+        .box-item .box-code {
+            font-size: 13px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+        }
+        .box-item .box-prize {
+            font-size: 7px;
+            font-weight: 700;
+            color: #4caf50;
+            display: none;
+        }
+        .box-item:hover:not(.disabled):not(.revealed) {
+            transform: scale(1.04);
+            border-color: #ffd70088;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+        .box-item.selected {
+            border-color: #ffd700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.25);
+            transform: scale(1.05);
+        }
+        .box-item.disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .box-item.revealed {
+            cursor: default;
+            transform: scale(1);
+        }
+        .box-item.revealed .box-prize {
+            display: block;
+        }
+        .box-item.revealed .box-code {
+            font-size: 11px;
+        }
+        .box-item.win-box {
+            border-color: #4caf50;
+            background: #1e3a2f;
+            box-shadow: 0 0 30px #4caf5044;
+        }
+        .box-item.win-box .box-prize {
+            color: #4caf50;
+            font-size: 9px;
+        }
+        .box-item.lose-box {
+            border-color: #f44336;
+            background: #3a1e2a;
+            box-shadow: 0 0 30px #f4433644;
+        }
+        .box-item.lose-box .box-prize {
+            color: #f44336;
+        }
 
-        .play-controls { display: flex; justify-content: center; margin: 14px 0 8px; }
+        .play-controls {
+            display: flex;
+            justify-content: center;
+            margin: 14px 0 8px;
+        }
         .play-btn {
             padding: 14px 30px;
             border-radius: 16px;
@@ -488,12 +663,28 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 0 30px rgba(255,215,0,0.15);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
         }
-        .play-btn:hover { transform: scale(1.04); box-shadow: 0 8px 30px rgba(255,215,0,0.3); }
-        .play-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .play-btn i { font-size: 18px; }
-        .play-btn .price-tag { background: #1a1f2f44; padding: 2px 12px; border-radius: 30px; font-size: 14px; font-weight: 700; color: #1a1f2f; }
+        .play-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.3);
+        }
+        .play-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .play-btn i {
+            font-size: 18px;
+        }
+        .play-btn .price-tag {
+            background: #1a1f2f44;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1f2f;
+        }
 
         .result-msg {
             text-align: center;
@@ -505,15 +696,30 @@
             padding: 6px;
             border-radius: 12px;
         }
-        .result-msg.win { color: #4caf50; background: #4caf5011; }
-        .result-msg.lose { color: #f44336; background: #f4433611; }
-        .result-msg.info { color: #ffd700; background: #ffd70011; }
-        .result-msg.error { color: #f44336; background: #f4433611; }
+        .result-msg.win {
+            color: #4caf50;
+            background: #4caf5011;
+        }
+        .result-msg.lose {
+            color: #f44336;
+            background: #f4433611;
+        }
+        .result-msg.info {
+            color: #ffd700;
+            background: #ffd70011;
+        }
+        .result-msg.error {
+            color: #f44336;
+            background: #f4433611;
+        }
 
         .modal-overlay {
             position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.85);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
             display: none;
             align-items: center;
@@ -521,7 +727,9 @@
             z-index: 3000;
             padding: 20px;
         }
-        .modal-overlay.active { display: flex; }
+        .modal-overlay.active {
+            display: flex;
+        }
         .modal-panel {
             background: #1e2538;
             border-radius: 32px;
@@ -531,13 +739,25 @@
             overflow-y: auto;
             padding: 28px 24px;
             border: 2px solid #ffd700;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
             animation: modalPop 0.25s ease;
         }
-        .modal-panel::-webkit-scrollbar { width: 4px; }
-        .modal-panel::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 10px; }
-        .modal-panel h2 { color: #ffd700; text-align: center; margin-bottom: 16px; font-size: 22px; }
-        .modal-panel h2 i { margin-right: 8px; }
+        .modal-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        .modal-panel::-webkit-scrollbar-thumb {
+            background: #ffd700;
+            border-radius: 10px;
+        }
+        .modal-panel h2 {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 22px;
+        }
+        .modal-panel h2 i {
+            margin-right: 8px;
+        }
         .modal-close-btn {
             display: block;
             width: 100%;
@@ -551,214 +771,42 @@
             font-size: 16px;
             cursor: pointer;
         }
-        .modal-close-btn:hover { background: #4a3a55; }
+        .modal-close-btn:hover {
+            background: #4a3a55;
+        }
 
         .results-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 6px;
         }
-        .results-grid .r-item { background: #121724; padding: 4px 2px; border-radius: 8px; border: 1px solid #2a3045; text-align: center; font-size: 11px; color: #ccc; }
-        .results-grid .r-item .r-num { font-weight: 700; color: #ffd700; font-size: 11px; }
-        .results-grid .r-item .r-prize { font-weight: 700; color: #4caf50; font-size: 10px; }
-
-        .admin-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        .admin-tabs button {
-            padding: 8px 14px;
-            border-radius: 12px;
-            border: none;
-            background: #2a3045;
-            color: #aab;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .admin-tabs button.active { background: #ffd70022; color: #ffd700; border: 1px solid #ffd700; }
-        .admin-tabs button:hover { background: #ffd70011; }
-        .admin-tabs .profit-tab { border: 1px solid #4caf50; color: #4caf50; }
-        .admin-tabs .profit-tab.active { background: #4caf5033; border-color: #4caf50; color: #4caf50; }
-
-        .admin-section { display: none; }
-        .admin-section.active { display: block; }
-
-        .admin-section .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #aab;
-            font-size: 13px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .admin-section .section-header .header-actions { display: flex; gap: 6px; }
-        .admin-section .section-header .header-actions button {
-            background: none;
-            border: 1px solid #3a4055;
-            color: #aab;
-            padding: 2px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .admin-section .section-header .header-actions button:hover { border-color: #ffd700; color: #ffd700; }
-        .admin-section .section-header .header-actions .pdf-btn { border-color: #f44336; color: #f44336; }
-        .admin-section .section-header .header-actions .pdf-btn:hover { border-color: #ff4444; background: #ff444411; color: #ff4444; }
-
-        .admin-user-item {
+        .results-grid .r-item {
             background: #121724;
-            padding: 10px 14px;
-            border-radius: 12px;
-            border-left: 3px solid #4fc3f7;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #ccc;
-            margin-bottom: 8px;
-        }
-        .admin-user-item .u-name { color: #4fc3f7; font-weight: 600; min-width: 70px; }
-        .admin-user-item .u-phone { color: #81c784; }
-        .admin-user-item .u-role { font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #ffd70022; color: #ffd700; }
-        .admin-user-item .u-status { font-size: 11px; padding: 2px 8px; border-radius: 12px; cursor: pointer; }
-        .admin-user-item .u-status.active { background: #4caf5033; color: #4caf50; }
-        .admin-user-item .u-status.disabled { background: #f4433633; color: #f44336; }
-        .admin-user-item .u-plays { color: #aab; font-size: 12px; }
-        .admin-user-item .u-regdate { font-size: 10px; color: #666; }
-        .admin-user-item .u-actions { display: flex; gap: 4px; margin-left: auto; }
-        .admin-user-item .u-actions button {
-            background: none;
-            border: 1px solid #3a4055;
-            color: #aab;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .admin-user-item .u-actions button:hover { border-color: #ffd700; color: #ffd700; }
-        .admin-user-item .u-actions .del-btn:hover { border-color: #f44336; color: #f44336; }
-
-        .admin-record-item {
-            background: #121724;
-            padding: 10px 14px;
-            border-radius: 12px;
-            border-left: 3px solid #ffd700;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #ccc;
-            margin-bottom: 8px;
-        }
-        .admin-record-item .r-user { color: #4fc3f7; font-weight: 600; min-width: 70px; }
-        .admin-record-item .r-admin { color: #ffd700; font-weight: 600; }
-        .admin-record-item .r-phone { color: #81c784; }
-        .admin-record-item .r-upi { color: #81c784; }
-        .admin-record-item .r-box-code { color: #ffd700; font-weight: 900; font-size: 16px; letter-spacing: 1px; background: #ffd70022; padding: 2px 10px; border-radius: 8px; }
-        .admin-record-item .r-prize { color: #4caf50; font-weight: 700; font-size: 13px; }
-        .admin-record-item .r-txid { color: #4caf50; font-size: 12px; }
-        .admin-record-item .r-status {
-            font-size: 11px;
-            padding: 2px 10px;
-            border-radius: 20px;
-            background: #ff980033;
-            color: #ff9800;
-            cursor: pointer;
-        }
-        .admin-record-item .r-status.done { background: #4caf5033; color: #4caf50; }
-        .admin-record-item .r-time { font-size: 10px; color: #666; }
-        .admin-record-item .r-actions { display: flex; gap: 4px; flex-wrap: wrap; }
-        .admin-record-item .r-actions button {
-            background: none;
-            border: 1px solid #3a4055;
-            color: #aab;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .admin-record-item .r-actions .verify-btn:hover { border-color: #4caf50; color: #4caf50; }
-        .admin-record-item .r-actions .unverify-btn:hover { border-color: #ff9800; color: #ff9800; }
-        .admin-record-item .r-actions .mark-win-btn { border-color: #ffd700; color: #ffd700; }
-        .admin-record-item .r-actions .mark-win-btn:hover { background: #ffd70022; border-color: #ffd700; }
-        .admin-record-item .r-actions .mark-lose-btn { border-color: #f44336; color: #f44336; }
-        .admin-record-item .r-actions .mark-lose-btn:hover { background: #f4433622; border-color: #f44336; }
-
-        .profit-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        .profit-stat-card { background: #121724; border-radius: 12px; padding: 14px 12px; border: 1px solid #2a3045; text-align: center; }
-        .profit-stat-card .label { color: #aab; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .profit-stat-card .value { color: #fff; font-size: 22px; font-weight: 900; margin-top: 4px; }
-        .profit-stat-card .value.green { color: #4caf50; }
-        .profit-stat-card .value.gold { color: #ffd700; }
-        .profit-stat-card .value.pink { color: #ff6b6b; }
-        .profit-stat-card .value.blue { color: #4fc3f7; }
-        .profit-stat-card .value.purple { color: #ce93d8; }
-        .profit-stat-card .sub-text { color: #666; font-size: 10px; margin-top: 2px; }
-        .profit-total {
-            background: #1a2a3a;
-            border: 2px solid #4caf50;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            margin-top: 6px;
-        }
-        .profit-total .label { color: #aab; font-size: 13px; font-weight: 600; }
-        .profit-total .value { color: #4caf50; font-size: 32px; font-weight: 900; margin-top: 4px; }
-        .profit-total .value .currency { font-size: 20px; font-weight: 700; }
-        .profit-breakdown {
-            margin-top: 14px;
-            background: #121724;
-            border-radius: 12px;
-            padding: 14px;
+            padding: 4px 2px;
+            border-radius: 8px;
             border: 1px solid #2a3045;
-        }
-        .profit-breakdown .row {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px solid #1a1f2f;
-            font-size: 14px;
+            text-align: center;
+            font-size: 11px;
             color: #ccc;
         }
-        .profit-breakdown .row:last-child { border-bottom: none; }
-        .profit-breakdown .row .label { color: #aab; }
-        .profit-breakdown .row .value { font-weight: 700; }
-        .profit-breakdown .row .value.green { color: #4caf50; }
-        .profit-breakdown .row .value.gold { color: #ffd700; }
-        .profit-breakdown .row .value.pink { color: #ff6b6b; }
-        .profit-breakdown .row .value.blue { color: #4fc3f7; }
-        .profit-breakdown .row.total {
-            font-size: 16px;
+        .results-grid .r-item .r-num {
             font-weight: 700;
-            border-top: 2px solid #4caf50;
-            padding-top: 10px;
-            margin-top: 6px;
-            color: #fff;
+            color: #ffd700;
+            font-size: 11px;
         }
-        .profit-breakdown .row.total .value { color: #4caf50; font-size: 20px; }
-        .profit-empty { text-align: center; color: #666; padding: 30px 0; font-size: 14px; }
-        .profit-empty i { font-size: 40px; margin-bottom: 12px; opacity: 0.3; }
+        .results-grid .r-item .r-prize {
+            font-weight: 700;
+            color: #4caf50;
+            font-size: 10px;
+        }
 
         .proof-overlay {
             position: fixed;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.85);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
             display: none;
             align-items: center;
@@ -766,7 +814,9 @@
             z-index: 3500;
             padding: 20px;
         }
-        .proof-overlay.active { display: flex; }
+        .proof-overlay.active {
+            display: flex;
+        }
         .proof-panel {
             background: #1e2538;
             border-radius: 32px;
@@ -774,17 +824,36 @@
             width: 100%;
             padding: 28px 24px;
             border: 2px solid #4caf50;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
             animation: modalPop 0.25s ease;
             max-height: 95vh;
             overflow-y: auto;
         }
-        .proof-panel::-webkit-scrollbar { width: 4px; }
-        .proof-panel::-webkit-scrollbar-thumb { background: #4caf50; border-radius: 10px; }
-        .proof-panel h2 { color: #4caf50; text-align: center; margin-bottom: 16px; font-size: 20px; }
-        .proof-panel h2 i { margin-right: 8px; }
-        .proof-panel .input-group { margin-bottom: 12px; }
-        .proof-panel .input-group label { color: #aab; font-size: 13px; display: block; margin-bottom: 4px; }
+        .proof-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        .proof-panel::-webkit-scrollbar-thumb {
+            background: #4caf50;
+            border-radius: 10px;
+        }
+        .proof-panel h2 {
+            color: #4caf50;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+        .proof-panel h2 i {
+            margin-right: 8px;
+        }
+        .proof-panel .input-group {
+            margin-bottom: 12px;
+        }
+        .proof-panel .input-group label {
+            color: #aab;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
+        }
         .proof-panel .input-group input {
             width: 100%;
             padding: 10px 14px;
@@ -795,8 +864,15 @@
             font-size: 15px;
             outline: none;
         }
-        .proof-panel .input-group input:focus { border-color: #4caf50; }
-        .proof-panel .input-group input[readonly] { background: #0a0e1a; color: #ffd700; font-weight: 700; cursor: default; }
+        .proof-panel .input-group input:focus {
+            border-color: #4caf50;
+        }
+        .proof-panel .input-group input[readonly] {
+            background: #0a0e1a;
+            color: #ffd700;
+            font-weight: 700;
+            cursor: default;
+        }
         .proof-panel .submit-proof-btn {
             width: 100%;
             padding: 12px;
@@ -813,13 +889,33 @@
             justify-content: center;
             gap: 8px;
         }
-        .proof-panel .submit-proof-btn:hover { background: #45a049; }
-        .proof-panel .submit-proof-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .proof-panel .proof-success-msg { text-align: center; padding: 12px; display: none; }
-        .proof-panel .proof-success-msg.active { display: block; }
-        .proof-panel .proof-success-msg i { font-size: 36px; color: #4caf50; }
-        .proof-panel .proof-success-msg h4 { color: #fff; margin: 4px 0; }
-        .proof-panel .proof-success-msg p { color: #aab; font-size: 14px; }
+        .proof-panel .submit-proof-btn:hover {
+            background: #45a049;
+        }
+        .proof-panel .submit-proof-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .proof-panel .proof-success-msg {
+            text-align: center;
+            padding: 12px;
+            display: none;
+        }
+        .proof-panel .proof-success-msg.active {
+            display: block;
+        }
+        .proof-panel .proof-success-msg i {
+            font-size: 36px;
+            color: #4caf50;
+        }
+        .proof-panel .proof-success-msg h4 {
+            color: #fff;
+            margin: 4px 0;
+        }
+        .proof-panel .proof-success-msg p {
+            color: #aab;
+            font-size: 14px;
+        }
         .proof-close-btn {
             width: 100%;
             padding: 12px;
@@ -832,7 +928,9 @@
             font-size: 16px;
             cursor: pointer;
         }
-        .proof-close-btn:hover { background: #4a3a55; }
+        .proof-close-btn:hover {
+            background: #4a3a55;
+        }
 
         .toast {
             position: fixed;
@@ -844,23 +942,40 @@
             padding: 14px 28px;
             border-radius: 60px;
             border: 1px solid #ffd70055;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
             font-weight: 500;
             display: none;
             z-index: 6000;
             max-width: 90%;
             text-align: center;
         }
-        .toast.show { display: block; animation: fadeUp 0.3s ease; }
-        @keyframes fadeUp {
-            0% { opacity:0; transform: translateX(-50%) translateY(20px); }
-            100% { opacity:1; transform: translateX(-50%) translateY(0); }
+        .toast.show {
+            display: block;
+            animation: fadeUp 0.3s ease;
         }
-        .toast.success { border-color: #4caf50; }
-        .toast.error { border-color: #f44336; }
-        .toast.warning { border-color: #ff9800; }
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        .toast.success {
+            border-color: #4caf50;
+        }
+        .toast.error {
+            border-color: #f44336;
+        }
+        .toast.warning {
+            border-color: #ff9800;
+        }
 
-        .hidden-form { display: none; }
+        .hidden-form {
+            display: none;
+        }
 
         /* WhatsApp Floating Button */
         #whatsappBtn {
@@ -876,7 +991,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             transition: transform 0.2s;
             text-decoration: none;
         }
@@ -889,34 +1004,78 @@
         }
 
         @media (max-width: 460px) {
-            #appContainer { padding: 14px 10px 20px; }
-            .box-grid { gap: 3px; padding: 4px; }
-            .box-item { min-height: 32px; border-radius: 4px; }
-            .box-item .box-code { font-size: 10px; }
-            .header .title-area h1 { font-size: 16px; }
-            .header .title-area .btn-group button { font-size: 10px; padding: 2px 8px; }
-            .header .btn-group .youtube-live-btn { font-size: 10px; padding: 3px 8px; }
-            .winner-btn { font-size: 10px; padding: 3px 10px; }
-            .play-btn { font-size: 15px; padding: 12px 20px; }
-            .play-btn .price-tag { font-size: 12px; }
-            .admin-user-item, .admin-record-item { font-size: 12px; flex-direction: column; align-items: stretch; }
-            .admin-user-item .u-actions { margin-left: 0; }
-            .modal-panel { padding: 20px 16px; max-width: 100%; }
-            .results-grid { grid-template-columns: repeat(4,1fr); }
-            .help-panel { padding: 20px 16px; }
-            .qr-submit-panel .qr-container #qrCodeContainer { width: 140px; height: 140px; }
-            .profit-stats { grid-template-columns: 1fr 1fr; gap: 6px; }
-            .profit-stat-card .value { font-size: 18px; }
-            .profit-total .value { font-size: 26px; }
-            #whatsappBtn { width: 50px; height: 50px; }
-            #whatsappBtn i { font-size: 26px; }
+            #appContainer {
+                padding: 14px 10px 20px;
+            }
+            .box-grid {
+                gap: 3px;
+                padding: 4px;
+            }
+            .box-item {
+                min-height: 32px;
+                border-radius: 4px;
+            }
+            .box-item .box-code {
+                font-size: 10px;
+            }
+            .header .title-area h1 {
+                font-size: 16px;
+            }
+            .header .title-area .btn-group button {
+                font-size: 10px;
+                padding: 2px 8px;
+            }
+            .header .btn-group .youtube-live-btn {
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+            .winner-btn {
+                font-size: 10px;
+                padding: 3px 10px;
+            }
+            .play-btn {
+                font-size: 15px;
+                padding: 12px 20px;
+            }
+            .play-btn .price-tag {
+                font-size: 12px;
+            }
+            .modal-panel {
+                padding: 20px 16px;
+                max-width: 100%;
+            }
+            .results-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .help-panel {
+                padding: 20px 16px;
+            }
+            .qr-submit-panel .qr-container #qrCodeContainer {
+                width: 140px;
+                height: 140px;
+            }
+            #whatsappBtn {
+                width: 50px;
+                height: 50px;
+            }
+            #whatsappBtn i {
+                font-size: 26px;
+            }
         }
         @media (max-width: 380px) {
-            .box-item .box-code { font-size: 8px; }
-            .box-item { min-height: 28px; }
-            .box-grid { gap: 2px; padding: 3px; }
-            .results-grid { grid-template-columns: repeat(3,1fr); }
-            .profit-stats { grid-template-columns: 1fr 1fr; }
+            .box-item .box-code {
+                font-size: 8px;
+            }
+            .box-item {
+                min-height: 28px;
+            }
+            .box-grid {
+                gap: 2px;
+                padding: 3px;
+            }
+            .results-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
@@ -936,10 +1095,6 @@
                     <label><i class="fas fa-phone"></i> Phone Number</label>
                     <input type="text" id="authPhone" placeholder="Enter phone number" />
                 </div>
-                <div class="input-group" id="adminKeyGroup" style="display:none;">
-                    <label><i class="fas fa-key"></i> Admin Secret Key</label>
-                    <input type="password" id="authAdminKey" placeholder="Enter admin secret key" />
-                </div>
                 <div class="input-group">
                     <label><i class="fas fa-lock"></i> Password</label>
                     <input type="password" id="authPassword" placeholder="Enter password" />
@@ -948,7 +1103,6 @@
                 <div class="auth-error" id="authError"></div>
                 <div class="switch-link" id="authSwitch">
                     Don't have an account? <a id="toggleAuthLink">Register</a>
-                    <span class="admin-register-link" id="adminRegisterLink">| Admin Register</span>
                 </div>
                 <div style="text-align:center; margin-top:8px;">
                     <button class="auth-help-btn" id="helpBtn"><i class="fas fa-question-circle"></i> ❓ Help / सहायता</button>
@@ -977,16 +1131,6 @@
                     <li><span class="step">5.</span> <strong>Submit Proof</strong> – After payment, click "Payment Proof Submit" and fill the form with the <span class="highlight">box code</span>, transaction ID, and UPI phone number.</li>
                     <li><span class="step">6.</span> <strong>Win Prize</strong> – Admin will verify your payment and reveal your box prize!</li>
                 </ul>
-                <h3>👑 Admin Features</h3>
-                <ul>
-                    <li>Login as <span class="highlight">admin</span> / <span class="highlight">admin123</span></li>
-                    <li>View all users and their total plays</li>
-                    <li>Verify or unverify payment records by box code</li>
-                    <li>Mark boxes as Win or Lose</li>
-                    <li>View <span class="highlight">Profit Details</span> with commission breakdown</li>
-                    <li>Enable/disable user accounts</li>
-                    <li>Download PDF reports (Users, Payments, Profit, Full Report)</li>
-                </ul>
                 <h3>📱 Payment Details</h3>
                 <ul>
                     <li><strong>Amount:</strong> ₹25 (fixed)</li>
@@ -1014,16 +1158,6 @@
                     <li><span class="step">5.</span> <strong>प्रूफ जमा करें</strong> – भुगतान के बाद, "Payment Proof Submit" क्लिक करें और <span class="highlight">बॉक्स कोड</span>, Transaction ID और UPI phone number डालें।</li>
                     <li><span class="step">6.</span> <strong>इनाम जीतें</strong> – एडमिन आपके भुगतान की पुष्टि करेगा और आपका बॉक्स इनाम रिवील करेगा!</li>
                 </ul>
-                <h3>👑 एडमिन फीचर्स</h3>
-                <ul>
-                    <li><span class="highlight">admin</span> / <span class="highlight">admin123</span> से लॉगिन करें</li>
-                    <li>सभी यूजर्स और उनके कुल प्ले देखें</li>
-                    <li>बॉक्स कोड के आधार पर पेमेंट रिकॉर्ड वेरिफाई/अनवेरिफाई करें</li>
-                    <li>बॉक्स को Win या Lose मार्क करें</li>
-                    <li><span class="highlight">Profit Details</span> देखें – कमीशन ब्रेकडाउन के साथ</li>
-                    <li>यूजर अकाउंट को इनेबल/डिसेबल करें</li>
-                    <li>PDF रिपोर्ट डाउनलोड करें (यूजर्स, पेमेंट्स, प्रॉफिट, पूरी रिपोर्ट)</li>
-                </ul>
                 <h3>📱 भुगतान विवरण</h3>
                 <ul>
                     <li><strong>राशि:</strong> ₹25 (निश्चित)</li>
@@ -1039,16 +1173,6 @@
                     <li>ईमेल के माध्यम से एडमिन से संपर्क करें: <span class="highlight">sumetech98@gmail.com</span></li>
                 </ul>
             </div>
-
-            <!-- Admin Commission Section (visible only to admin) -->
-            <div id="adminCommissionInfo">
-                <h3><i class="fas fa-coins"></i> Admin Commission Details</h3>
-                <div>
-                    <p>📊 <strong>5%</strong> commission on every user win</p>
-                    <p>💰 <strong>₹10</strong> commission per coupon (box)</p>
-                </div>
-            </div>
-
             <button class="help-close-btn" id="helpCloseBtn"><i class="fas fa-times"></i> Close / बंद करें</button>
         </div>
     </div>
@@ -1085,15 +1209,9 @@
                     <a href="https://www.youtube.com/@Baby_dancer98" target="_blank" class="youtube-live-btn" title="Watch Live Results on YouTube">
                         <i class="fab fa-youtube"></i> Live Result <span class="live-text">🔴 LIVE</span>
                     </a>
-
-                    <!-- ============================================================ -->
-                    <!--  🏆 WINNER BUTTON – अपनी लिंक यहाँ बदलें (href="YOUR_LINK_HERE")  -->
-                    <!-- ============================================================ -->
                     <a href="https://sumetech98-afk.github.io/Prize-show/" target="_blank" class="winner-btn" title="Winner Details">
                         <i class="fas fa-trophy"></i> Winner
                     </a>
-                    <!-- ============================================================ -->
-
                     <button id="resultsBtn"><i class="fas fa-list"></i> Prize Box</button>
                     <button id="historyBtn"><i class="fas fa-history"></i> History</button>
                     <button id="refreshBtn"><i class="fas fa-sync-alt"></i></button>
@@ -1101,8 +1219,6 @@
             </div>
             <div class="user-info">
                 <span class="username-badge" id="usernameDisplay">user</span>
-                <button class="admin-btn" id="adminBtn"><i class="fas fa-user-shield"></i> Admin Panel</button>
-                <button class="profit-btn" id="profitBtn"><i class="fas fa-coins"></i> Profit</button>
                 <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </div>
@@ -1137,74 +1253,7 @@
         </div>
     </div>
 
-    <!-- ===== ADMIN PANEL MODAL ===== -->
-    <div class="modal-overlay" id="adminOverlay">
-        <div class="modal-panel" style="max-width:650px;">
-            <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
-            <div class="admin-tabs">
-                <button class="active" data-tab="users"><i class="fas fa-users"></i> Users</button>
-                <button data-tab="payments"><i class="fas fa-receipt"></i> Payments</button>
-                <button data-tab="profit" class="profit-tab"><i class="fas fa-coins"></i> Profit</button>
-                <button data-tab="fullreport" style="border:1px solid #f44336; color:#f44336;"><i class="fas fa-file-pdf"></i> Full Report</button>
-            </div>
-            <div class="admin-section active" id="adminUsersSection">
-                <div class="section-header">
-                    <span id="userCount">0 users</span>
-                    <div class="header-actions">
-                        <button id="adminRefreshUsers"><i class="fas fa-sync"></i></button>
-                        <button class="pdf-btn" id="pdfUsersBtn"><i class="fas fa-file-pdf"></i> PDF</button>
-                    </div>
-                </div>
-                <div id="adminUsersContainer"></div>
-            </div>
-            <div class="admin-section" id="adminPaymentsSection">
-                <div class="section-header">
-                    <span id="paymentCount">0 records</span>
-                    <div class="header-actions">
-                        <button id="adminRefreshPayments"><i class="fas fa-sync"></i></button>
-                        <button class="pdf-btn" id="pdfPaymentsBtn"><i class="fas fa-file-pdf"></i> PDF</button>
-                    </div>
-                </div>
-                <div id="adminPaymentsContainer"></div>
-            </div>
-            <div class="admin-section" id="adminProfitSection">
-                <div class="section-header">
-                    <span><i class="fas fa-coins" style="color:#ffd700;"></i> Admin Profit Details</span>
-                    <div class="header-actions">
-                        <button id="adminRefreshProfit"><i class="fas fa-sync"></i></button>
-                        <button class="pdf-btn" id="pdfProfitBtn"><i class="fas fa-file-pdf"></i> PDF</button>
-                    </div>
-                </div>
-                <div id="adminProfitContainer"></div>
-            </div>
-            <div class="admin-section" id="adminFullReportSection">
-                <div class="section-header">
-                    <span>Complete Data Report</span>
-                    <button class="pdf-btn" id="pdfFullReportBtn" style="background:none; border:1px solid #f44336; color:#f44336; padding:4px 16px; border-radius:12px; cursor:pointer; font-weight:700;">
-                        <i class="fas fa-file-pdf"></i> Download Full PDF
-                    </button>
-                </div>
-                <div style="color:#aab; font-size:13px; margin-top:8px; padding:12px; background:#121724; border-radius:12px; text-align:center;">
-                    <p><i class="fas fa-info-circle"></i> This will generate a complete PDF report with:</p>
-                    <p style="margin-top:4px;">📊 <strong>Users</strong> – All registered users with their details</p>
-                    <p>💳 <strong>Payments</strong> – All payment records with box codes and verification status</p>
-                    <p>💰 <strong>Profit</strong> – Complete admin profit breakdown</p>
-                </div>
-            </div>
-            <button class="modal-close-btn" id="adminCloseBtn"><i class="fas fa-times"></i> Close</button>
-        </div>
-    </div>
-
-    <!-- ===== PROFIT DETAILS MODAL (Quick View) ===== -->
-    <div class="modal-overlay" id="profitModal">
-        <div class="modal-panel" style="max-width:500px;">
-            <h2><i class="fas fa-coins" style="color:#4caf50;"></i> Admin Profit Details</h2>
-            <div id="profitModalContent"></div>
-            <button class="modal-close-btn" id="profitModalCloseBtn"><i class="fas fa-times"></i> Close</button>
-        </div>
-    </div>
-
-    <!-- ===== PROOF MODAL (with auto-filled User & Admin name) ===== -->
+    <!-- ===== PROOF MODAL ===== -->
     <div class="proof-overlay" id="proofOverlay">
         <div class="proof-panel">
             <h2><i class="fas fa-file-invoice"></i> Submit Payment Proof</h2>
@@ -1214,10 +1263,6 @@
             <div class="input-group">
                 <label><i class="fas fa-user"></i> User Name (auto)</label>
                 <input type="text" id="proofUserName" readonly style="background:#0a0e1a; color:#4fc3f7; font-weight:700;" />
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-user-shield"></i> Admin Name (auto)</label>
-                <input type="text" id="proofAdminName" readonly style="background:#0a0e1a; color:#ffd700; font-weight:700;" />
             </div>
             <div class="input-group">
                 <label><i class="fas fa-phone"></i> User's Contact Number</label>
@@ -1294,10 +1339,7 @@
         // ============================================================
         var UPI_ID = 's6154632725482301@slc';
         var PAYEE_NAME = 'Karorpati Game';
-        var ADMIN_SECRET_KEY = 'admin@123';
         var FIXED_AMOUNT = 25;
-        var COUPON_COMMISSION = 10;
-        var WIN_COMMISSION_PERCENT = 5;
 
         // ============================================================
         //  LOCAL STORAGE DATABASE
@@ -1305,11 +1347,13 @@
         function loadUsers() {
             var data = localStorage.getItem('karorpati_users');
             if (data) {
-                try { return JSON.parse(data); } catch(e) { return {}; }
+                try { return JSON.parse(data); } catch (e) { return {}; }
             }
             var defaults = {
-                admin: { username:'admin', password:'admin123', phone:'9999999999', status:'active', role:'admin', registeredAt:Date.now() },
-                demo: { username:'demo', password:'demo123', phone:'9876543210', status:'active', role:'user', registeredAt:Date.now() }
+                admin: { username: 'admin', password: 'admin123', phone: '9999999999', status: 'active', role: 'admin',
+                    registeredAt: Date.now() },
+                demo: { username: 'demo', password: 'demo123', phone: '9876543210', status: 'active', role: 'user',
+                    registeredAt: Date.now() }
             };
             localStorage.setItem('karorpati_users', JSON.stringify(defaults));
             return defaults;
@@ -1359,7 +1403,7 @@
         function getRecords() {
             var data = localStorage.getItem('karorpati_records');
             if (data) {
-                try { return JSON.parse(data); } catch(e) { return []; }
+                try { return JSON.parse(data); } catch (e) { return []; }
             }
             return [];
         }
@@ -1413,7 +1457,7 @@
                 document.getElementById('reg_registered_at').value = new Date().toLocaleString('en-IN');
                 document.getElementById('registerForm').submit();
                 console.log('Registration email sent for:', username);
-            } catch(e) {
+            } catch (e) {
                 console.error('Error sending registration email:', e);
             }
         }
@@ -1427,19 +1471,14 @@
         var helpLangTabs = document.querySelectorAll('.help-lang-tabs button');
         var helpContentEn = document.getElementById('helpContentEn');
         var helpContentHi = document.getElementById('helpContentHi');
-        var adminCommissionInfo = document.getElementById('adminCommissionInfo');
 
         helpBtn.addEventListener('click', function() {
             helpOverlay.classList.add('active');
-            if (currentUser && currentUser.role === 'admin') {
-                adminCommissionInfo.style.display = 'block';
-            } else {
-                adminCommissionInfo.style.display = 'none';
-            }
         });
 
         helpCloseBtn.addEventListener('click', function() { helpOverlay.classList.remove('active'); });
-        helpOverlay.addEventListener('click', function(e) { if (e.target === helpOverlay) helpOverlay.classList.remove('active'); });
+        helpOverlay.addEventListener('click', function(e) { if (e.target === helpOverlay) helpOverlay.classList.remove(
+            'active'); });
 
         helpLangTabs.forEach(function(tab) {
             tab.addEventListener('click', function() {
@@ -1516,14 +1555,6 @@
             closeQRSubmitOverlay();
             proofBoxCode.value = qrBoxCode;
             proofUserName.value = currentUser ? currentUser.username : 'Guest';
-            var adminName = 'admin';
-            if (currentUser && currentUser.role === 'admin') {
-                adminName = currentUser.username;
-            } else {
-                var users = loadUsers();
-                if (users['admin']) adminName = users['admin'].username;
-            }
-            proofAdminName.value = adminName;
             proofUserPhone.value = currentUser && currentUser.phone ? currentUser.phone : 'Not provided';
             proofAmount.value = '₹' + FIXED_AMOUNT;
             proofUpiPhone.value = '';
@@ -1546,7 +1577,6 @@
         var boxData = [];
         var isPlaying = false;
         var detectionInterval = null;
-        var isAdminRegisterMode = false;
 
         // ============================================================
         //  DOM REFS
@@ -1556,17 +1586,12 @@
         var authUsername = document.getElementById('authUsername');
         var authPhone = document.getElementById('authPhone');
         var authPassword = document.getElementById('authPassword');
-        var authAdminKey = document.getElementById('authAdminKey');
-        var adminKeyGroup = document.getElementById('adminKeyGroup');
         var authBtn = document.getElementById('authBtn');
         var authError = document.getElementById('authError');
         var toggleLink = document.getElementById('toggleAuthLink');
-        var adminRegisterLink = document.getElementById('adminRegisterLink');
         var authSub = document.getElementById('authSub');
         var usernameDisplay = document.getElementById('usernameDisplay');
         var logoutBtn = document.getElementById('logoutBtn');
-        var adminBtn = document.getElementById('adminBtn');
-        var profitBtn = document.getElementById('profitBtn');
 
         var boxGrid = document.getElementById('boxGrid');
         var playBtn = document.getElementById('playBtn');
@@ -1584,29 +1609,8 @@
 
         var refreshBtn = document.getElementById('refreshBtn');
 
-        var adminOverlay = document.getElementById('adminOverlay');
-        var adminUsersContainer = document.getElementById('adminUsersContainer');
-        var adminPaymentsContainer = document.getElementById('adminPaymentsContainer');
-        var adminProfitContainer = document.getElementById('adminProfitContainer');
-        var userCount = document.getElementById('userCount');
-        var paymentCount = document.getElementById('paymentCount');
-        var adminRefreshUsers = document.getElementById('adminRefreshUsers');
-        var adminRefreshPayments = document.getElementById('adminRefreshPayments');
-        var adminRefreshProfit = document.getElementById('adminRefreshProfit');
-        var adminCloseBtn = document.getElementById('adminCloseBtn');
-        var adminTabs = document.querySelectorAll('.admin-tabs button');
-        var pdfUsersBtn = document.getElementById('pdfUsersBtn');
-        var pdfPaymentsBtn = document.getElementById('pdfPaymentsBtn');
-        var pdfProfitBtn = document.getElementById('pdfProfitBtn');
-        var pdfFullReportBtn = document.getElementById('pdfFullReportBtn');
-
-        var profitModal = document.getElementById('profitModal');
-        var profitModalContent = document.getElementById('profitModalContent');
-        var profitModalCloseBtn = document.getElementById('profitModalCloseBtn');
-
         var proofOverlay = document.getElementById('proofOverlay');
         var proofUserName = document.getElementById('proofUserName');
-        var proofAdminName = document.getElementById('proofAdminName');
         var proofUserPhone = document.getElementById('proofUserPhone');
         var proofUpiPhone = document.getElementById('proofUpiPhone');
         var proofBoxCode = document.getElementById('proofBoxCode');
@@ -1628,46 +1632,27 @@
         var toast = document.getElementById('toast');
 
         // ============================================================
-        //  AUTH – with Admin Replace on first register + Email on registration
+        //  AUTH
         // ============================================================
         var isRegisterMode = false;
 
-        function switchAuthMode(register, adminRegister) {
-            if (adminRegister === undefined) adminRegister = false;
+        function switchAuthMode(register) {
             isRegisterMode = register;
-            isAdminRegisterMode = adminRegister;
             if (register) {
-                if (adminRegister) {
-                    authBtn.textContent = 'Register as Admin';
-                    authSub.textContent = 'Create admin account (requires secret key)';
-                    adminKeyGroup.style.display = 'block';
-                    toggleLink.parentElement.innerHTML = 'Already have an account? <a id="toggleAuthLink">Login</a>';
-                    adminRegisterLink.style.display = 'none';
-                } else {
-                    authBtn.textContent = 'Register';
-                    authSub.textContent = 'Create your account';
-                    adminKeyGroup.style.display = 'none';
-                    toggleLink.parentElement.innerHTML = 'Already have an account? <a id="toggleAuthLink">Login</a> &nbsp;|&nbsp; <span class="admin-register-link" id="adminRegisterLink">Admin Register</span>';
-                }
+                authBtn.textContent = 'Register';
+                authSub.textContent = 'Create your account';
+                toggleLink.parentElement.innerHTML = 'Already have an account? <a id="toggleAuthLink">Login</a>';
             } else {
                 authBtn.textContent = 'Login';
                 authSub.textContent = 'Login to play and win';
-                adminKeyGroup.style.display = 'none';
-                toggleLink.parentElement.innerHTML = 'Don\'t have an account? <a id="toggleAuthLink">Register</a> &nbsp;|&nbsp; <span class="admin-register-link" id="adminRegisterLink">Admin Register</span>';
+                toggleLink.parentElement.innerHTML = 'Don\'t have an account? <a id="toggleAuthLink">Register</a>';
             }
             authError.textContent = '';
             var tLink = document.getElementById('toggleAuthLink');
             if (tLink) {
                 tLink.addEventListener('click', function(e) {
                     e.preventDefault();
-                    switchAuthMode(!isRegisterMode, false);
-                });
-            }
-            var aLink = document.getElementById('adminRegisterLink');
-            if (aLink) {
-                aLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    switchAuthMode(true, true);
+                    switchAuthMode(!isRegisterMode);
                 });
             }
         }
@@ -1687,68 +1672,30 @@
                     return;
                 }
                 var users = loadUsers();
-
-                if (isAdminRegisterMode) {
-                    // Admin Register – replace existing 'admin' account
-                    var key = authAdminKey.value.trim();
-                    if (key !== ADMIN_SECRET_KEY) {
-                        authError.textContent = 'Invalid admin secret key.';
-                        return;
-                    }
-                    // Replace admin account
-                    users['admin'] = {
-                        username: username,
-                        password: password,
-                        phone: phone,
-                        status: 'active',
-                        role: 'admin',
-                        registeredAt: Date.now()
-                    };
-                    // Remove any other admin accounts (keep only one)
-                    for (var u in users) {
-                        if (users[u].role === 'admin' && u !== 'admin') {
-                            delete users[u];
-                        }
-                    }
-                    saveUsers(users);
-                    authError.textContent = '';
-                    showToast('✅ Admin account created! Please login.', 'success');
-                    // Send registration email for admin
-                    sendRegistrationEmail('Admin Registration', username, phone, 'admin');
-                    switchAuthMode(false, false);
-                    authUsername.value = '';
-                    authPhone.value = '';
-                    authPassword.value = '';
-                    authAdminKey.value = '';
-                } else {
-                    // Normal user register
-                    if (users[username]) {
-                        authError.textContent = 'Username already exists.';
-                        return;
-                    }
-                    if (username === 'admin') {
-                        authError.textContent = 'Admin username reserved. Use Admin Register.';
-                        return;
-                    }
-                    users[username] = {
-                        username: username,
-                        password: password,
-                        phone: phone,
-                        status: 'active',
-                        role: 'user',
-                        registeredAt: Date.now()
-                    };
-                    saveUsers(users);
-                    authError.textContent = '';
-                    showToast('✅ Registration successful! Please login.', 'success');
-                    // Send registration email for user
-                    sendRegistrationEmail('User Registration', username, phone, 'user');
-                    switchAuthMode(false, false);
-                    authUsername.value = '';
-                    authPhone.value = '';
-                    authPassword.value = '';
-                    authAdminKey.value = '';
+                if (users[username]) {
+                    authError.textContent = 'Username already exists.';
+                    return;
                 }
+                if (username === 'admin') {
+                    authError.textContent = 'Admin username reserved.';
+                    return;
+                }
+                users[username] = {
+                    username: username,
+                    password: password,
+                    phone: phone,
+                    status: 'active',
+                    role: 'user',
+                    registeredAt: Date.now()
+                };
+                saveUsers(users);
+                authError.textContent = '';
+                showToast('✅ Registration successful! Please login.', 'success');
+                sendRegistrationEmail('User Registration', username, phone, 'user');
+                switchAuthMode(false);
+                authUsername.value = '';
+                authPhone.value = '';
+                authPassword.value = '';
             } else {
                 // Login
                 var users2 = loadUsers();
@@ -1770,13 +1717,6 @@
                 authOverlay.classList.add('hidden');
                 appContainer.classList.add('active');
                 usernameDisplay.textContent = username;
-                if (user.role === 'admin') {
-                    adminBtn.style.display = 'inline-flex';
-                    profitBtn.style.display = 'inline-flex';
-                } else {
-                    adminBtn.style.display = 'none';
-                    profitBtn.style.display = 'none';
-                }
                 initGame();
                 showToast('Welcome ' + username + '!', 'success');
                 authError.textContent = '';
@@ -1799,13 +1739,18 @@
 
         function generateBoxData() {
             var prizes = [];
-            PRIZE_POOL.forEach(function(p) { for (var i=0; i<p.count; i++) prizes.push(p.prize); });
-            for (var i=prizes.length-1; i>0; i--) { var j = Math.floor(Math.random()*(i+1)); var temp=prizes[i]; prizes[i]=prizes[j]; prizes[j]=temp; }
+            PRIZE_POOL.forEach(function(p) { for (var i = 0; i < p.count; i++) prizes.push(p.prize); });
+            for (var i = prizes.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var temp = prizes[i];
+                prizes[i] = prizes[j];
+                prizes[j] = temp; }
             var codes = [];
-            while (codes.length < 100) { var c = String(Math.floor(1000 + Math.random()*9000)); if (codes.indexOf(c)===-1) codes.push(c); }
-            for (var i=codes.length-1; i>0; i--) { var j = Math.floor(Math.random()*(i+1)); var temp=codes[i]; codes[i]=codes[j]; codes[j]=temp; }
+            while (codes.length < 100) { var c = String(Math.floor(1000 + Math.random() * 9000)); if (codes.indexOf(c) === -1)
+                    codes.push(c); }
+            for (var i = codes.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var temp = codes[i];
+                codes[i] = codes[j];
+                codes[j] = temp; }
             var data = [];
-            for (var i=0; i<100; i++) {
+            for (var i = 0; i < 100; i++) {
                 data.push({ code: codes[i], prize: prizes[i] || 0, revealed: false, won: false, selected: false });
             }
             return data;
@@ -1817,7 +1762,8 @@
                 var div = document.createElement('div');
                 div.className = 'box-item';
                 div.dataset.index = idx;
-                div.innerHTML = '<span class="box-code">' + box.code + '</span><span class="box-prize">' + (box.revealed ? (box.won ? '🎉 +₹' + box.prize : '😞 ₹0') : '') + '</span>';
+                div.innerHTML = '<span class="box-code">' + box.code + '</span><span class="box-prize">' + (box.revealed ?
+                    (box.won ? '🎉 +₹' + box.prize : '😞 ₹0') : '') + '</span>';
                 if (box.revealed) {
                     div.classList.add('revealed');
                     if (box.won) div.classList.add('win-box');
@@ -1834,7 +1780,7 @@
             if (isPlaying) return;
             if (boxData[index].revealed) return;
             if (!currentUser) { showToast('Please login first.', 'error'); return; }
-            boxData.forEach(function(b,i) { b.selected = (i===index); });
+            boxData.forEach(function(b, i) { b.selected = (i === index); });
             selectedBox = index;
             renderBoxes();
             resultMsg.textContent = '📦 Box Code: ' + boxData[index].code + ' | Click "Pick Box & Pay" (₹25) to play!';
@@ -1875,14 +1821,6 @@
 
             proofBoxCode.value = boxCode;
             proofUserName.value = currentUser ? currentUser.username : 'Guest';
-            var adminName = 'admin';
-            if (currentUser && currentUser.role === 'admin') {
-                adminName = currentUser.username;
-            } else {
-                var users = loadUsers();
-                if (users['admin']) adminName = users['admin'].username;
-            }
-            proofAdminName.value = adminName;
             proofUserPhone.value = currentUser && currentUser.phone ? currentUser.phone : 'Not provided';
             proofAmount.value = '₹' + FIXED_AMOUNT;
             proofUpiPhone.value = '';
@@ -1904,14 +1842,6 @@
         function openProofModal(boxCode, boxSerial) {
             proofBoxCode.value = boxCode;
             proofUserName.value = currentUser ? currentUser.username : 'Guest';
-            var adminName = 'admin';
-            if (currentUser && currentUser.role === 'admin') {
-                adminName = currentUser.username;
-            } else {
-                var users = loadUsers();
-                if (users['admin']) adminName = users['admin'].username;
-            }
-            proofAdminName.value = adminName;
             proofUserPhone.value = currentUser && currentUser.phone ? currentUser.phone : 'Not provided';
             proofAmount.value = '₹' + FIXED_AMOUNT;
             proofUpiPhone.value = '';
@@ -1924,7 +1854,8 @@
             isPlaying = false;
             playBtn.disabled = false;
             playBtn.innerHTML = '<i class="fas fa-play"></i> Pick Box & Pay <span class="price-tag">₹25</span>';
-            if (detectionInterval) { clearInterval(detectionInterval); detectionInterval = null; }
+            if (detectionInterval) { clearInterval(detectionInterval);
+                detectionInterval = null; }
         }
 
         function closeProofModal() {
@@ -1942,7 +1873,6 @@
             var txId = proofTxId.value.trim();
             var boxCode = proofBoxCode.value.trim();
             var username = proofUserName.value.trim();
-            var adminName = proofAdminName.value.trim();
             var userPhone = proofUserPhone.value.trim();
 
             if (!upiPhone || upiPhone.length < 10) {
@@ -1959,8 +1889,16 @@
             }
 
             var serial = -1;
-            for (var i=0; i<boxData.length; i++) {
-                if (boxData[i].code === boxCode) { serial = i+1; break; }
+            for (var i = 0; i < boxData.length; i++) {
+                if (boxData[i].code === boxCode) { serial = i + 1; break; }
+            }
+
+            var adminName = 'admin';
+            if (currentUser && currentUser.role === 'admin') {
+                adminName = currentUser.username;
+            } else {
+                var users = loadUsers();
+                if (users['admin']) adminName = users['admin'].username;
             }
 
             addRecord({
@@ -1987,7 +1925,7 @@
             proofSuccessMsg.classList.add('active');
             showToast('✅ Proof submitted! Box ' + boxCode + ' | Admin will verify within 24 hours.', 'success');
 
-            for (var i=0; i<boxData.length; i++) {
+            for (var i = 0; i < boxData.length; i++) {
                 if (boxData[i].code === boxCode && !boxData[i].revealed) {
                     boxData[i].revealed = true;
                     boxData[i].won = false;
@@ -2007,13 +1945,15 @@
             boxData.forEach(function(box, idx) {
                 var div = document.createElement('div');
                 div.className = 'r-item';
-                div.innerHTML = '<div class="r-num">#' + (idx+1) + '</div><div class="r-prize">₹' + box.prize.toLocaleString() + '</div>';
+                div.innerHTML = '<div class="r-num">#' + (idx + 1) + '</div><div class="r-prize">₹' + box.prize
+                    .toLocaleString() + '</div>';
                 resultsGrid.appendChild(div);
             });
             resultsOverlay.classList.add('active');
         }
         resultsCloseBtn.addEventListener('click', function() { resultsOverlay.classList.remove('active'); });
-        resultsOverlay.addEventListener('click', function(e) { if (e.target === resultsOverlay) resultsOverlay.classList.remove('active'); });
+        resultsOverlay.addEventListener('click', function(e) { if (e.target === resultsOverlay) resultsOverlay.classList
+                .remove('active'); });
         resultsBtn.addEventListener('click', openResults);
 
         // ============================================================
@@ -2028,20 +1968,25 @@
                 var sorted = records.slice().reverse();
                 sorted.forEach(function(rec) {
                     var div = document.createElement('div');
-                    div.style.cssText = 'background:#121724;padding:10px 14px;border-radius:12px;border-left:3px solid #ffd700;display:flex;flex-wrap:wrap;gap:4px;font-size:13px;color:#ccc;';
+                    div.style.cssText =
+                        'background:#121724;padding:10px 14px;border-radius:12px;border-left:3px solid #ffd700;display:flex;flex-wrap:wrap;gap:4px;font-size:13px;color:#ccc;';
                     var date = new Date(rec.timestamp);
-                    var dateStr = date.toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+                    var dateStr = date.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit',
+                        minute: '2-digit' });
                     var winStatus = rec.win ? '🎉 Won' : '😞 Lost';
                     var winColor = rec.win ? '#4caf50' : '#f44336';
                     div.innerHTML =
                         '<span style="color:#4fc3f7;font-weight:600;">User: ' + (rec.username || 'Guest') +
-                        '</span><span style="color:#ffd700;font-weight:600;">Admin: ' + (rec.admin_name || 'admin') +
-                        '</span><span style="color:#ffd700;font-weight:900;font-size:16px;letter-spacing:1px;background:#ffd70022;padding:0 8px;border-radius:6px;">' + (rec.box_code || '----') +
-                        '</span><span>₹' + rec.amount + '</span><span style="color:' + winColor + ';font-weight:700;">' + winStatus +
+                        '</span><span style="color:#ffd700;font-weight:900;font-size:16px;letter-spacing:1px;background:#ffd70022;padding:0 8px;border-radius:6px;">' +
+                        (rec.box_code || '----') +
+                        '</span><span>₹' + rec.amount + '</span><span style="color:' + winColor + ';font-weight:700;">' +
+                        winStatus +
                         '</span><span style="color:#aab;">📞 ' + (rec.user_phone || 'N/A') +
                         '</span><span style="color:#81c784;">📱 UPI: ' + (rec.upi_phone || 'N/A') +
                         '</span><span style="color:#4caf50;font-size:12px;">' + rec.txid +
-                        '</span><span style="font-size:11px;padding:2px 10px;border-radius:20px;background:' + (rec.status === 'done' ? '#4caf5033' : '#ff980033') + ';color:' + (rec.status === 'done' ? '#4caf50' : '#ff9800') + ';">' + (rec.status === 'done' ? '✅ Verified' : '⏳ Pending') +
+                        '</span><span style="font-size:11px;padding:2px 10px;border-radius:20px;background:' + (rec
+                            .status === 'done' ? '#4caf5033' : '#ff980033') + ';color:' + (rec.status === 'done' ?
+                            '#4caf50' : '#ff9800') + ';">' + (rec.status === 'done' ? '✅ Verified' : '⏳ Pending') +
                         '</span><span style="font-size:10px;color:#666;">' + dateStr + '</span>';
                     historyList.appendChild(div);
                 });
@@ -2049,589 +1994,9 @@
             historyOverlay.classList.add('active');
         }
         historyCloseBtn.addEventListener('click', function() { historyOverlay.classList.remove('active'); });
-        historyOverlay.addEventListener('click', function(e) { if (e.target === historyOverlay) historyOverlay.classList.remove('active'); });
+        historyOverlay.addEventListener('click', function(e) { if (e.target === historyOverlay) historyOverlay.classList
+                .remove('active'); });
         historyBtn.addEventListener('click', openHistory);
-
-        // ============================================================
-        //  PROFIT CALCULATIONS
-        // ============================================================
-        function calculateProfit() {
-            var records = getRecords();
-            var totalCoupons = records.length;
-            var couponRevenue = totalCoupons * COUPON_COMMISSION;
-
-            var totalPrizeWon = 0;
-            records.forEach(function(rec) {
-                if (rec.status === 'done' && rec.win === true) {
-                    for (var i=0; i<boxData.length; i++) {
-                        if (boxData[i].code === rec.box_code) {
-                            totalPrizeWon += boxData[i].prize || 0;
-                            break;
-                        }
-                    }
-                }
-            });
-
-            var winCommission = (totalPrizeWon * WIN_COMMISSION_PERCENT) / 100;
-            var totalProfit = couponRevenue + winCommission;
-
-            return {
-                totalCoupons: totalCoupons,
-                couponRevenue: couponRevenue,
-                totalPrizeWon: totalPrizeWon,
-                winCommission: winCommission,
-                totalProfit: totalProfit,
-                records: records
-            };
-        }
-
-        function renderProfitDetails(container, showClose) {
-            var profit = calculateProfit();
-            var html = '';
-
-            if (profit.totalCoupons === 0 && profit.totalPrizeWon === 0) {
-                html = '<div class="profit-empty"><i class="fas fa-coins"></i><br>No data available yet.<br><span style="font-size:12px;color:#888;">Start accepting payments to see profit details.</span></div>';
-            } else {
-                html = `
-                    <div class="profit-stats">
-                        <div class="profit-stat-card"><div class="label">📦 Total Coupons</div><div class="value blue">${profit.totalCoupons}</div><div class="sub-text">Boxes played</div></div>
-                        <div class="profit-stat-card"><div class="label">💰 Coupon Revenue</div><div class="value gold">₹${profit.couponRevenue.toLocaleString()}</div><div class="sub-text">₹${COUPON_COMMISSION} × ${profit.totalCoupons}</div></div>
-                        <div class="profit-stat-card"><div class="label">🏆 Total Prize Won</div><div class="value pink">₹${profit.totalPrizeWon.toLocaleString()}</div><div class="sub-text">By verified users</div></div>
-                        <div class="profit-stat-card"><div class="label">📊 Commission (${WIN_COMMISSION_PERCENT}%)</div><div class="value purple">₹${profit.winCommission.toLocaleString()}</div><div class="sub-text">${WIN_COMMISSION_PERCENT}% of total wins</div></div>
-                    </div>
-                    <div class="profit-total"><div class="label">💎 Total Admin Profit</div><div class="value">₹${profit.totalProfit.toLocaleString()} <span class="currency">INR</span></div></div>
-                    <div class="profit-breakdown">
-                        <div class="row"><span class="label">Coupon Revenue (₹${COUPON_COMMISSION} × ${profit.totalCoupons})</span><span class="value gold">+₹${profit.couponRevenue.toLocaleString()}</span></div>
-                        <div class="row"><span class="label">Commission (${WIN_COMMISSION_PERCENT}% of ₹${profit.totalPrizeWon.toLocaleString()})</span><span class="value purple">+₹${profit.winCommission.toLocaleString()}</span></div>
-                        <div class="row total"><span class="label">Total Profit</span><span class="value">₹${profit.totalProfit.toLocaleString()}</span></div>
-                    </div>
-                `;
-            }
-
-            container.innerHTML = html;
-        }
-
-        // ============================================================
-        //  ADMIN PANEL
-        // ============================================================
-        function formatDate(ts) {
-            if (!ts) return 'N/A';
-            var d = new Date(ts);
-            return d.toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-        }
-
-        function renderAdminUsers() {
-            var users = loadUsers();
-            var records = getRecords();
-            var usernames = Object.keys(users);
-            userCount.textContent = usernames.length + ' users';
-            adminUsersContainer.innerHTML = '';
-            if (usernames.length === 0) {
-                adminUsersContainer.innerHTML = '<div style="text-align:center;color:#666;padding:20px 0;">No users registered.</div>';
-                return;
-            }
-            usernames.forEach(function(un) {
-                var u = users[un];
-                var userPayments = records.filter(function(r) { return r.username === un; });
-                var totalPlays = userPayments.length;
-                var div = document.createElement('div');
-                div.className = 'admin-user-item';
-                div.innerHTML =
-                    '<span class="u-name">' + un +
-                    '</span><span class="u-phone">📞 ' + (u.phone || 'N/A') +
-                    '</span><span class="u-role">' + (u.role || 'user') +
-                    '</span><span class="u-status ' + (u.status === 'active' ? 'active' : 'disabled') + '">' + (u.status === 'active' ? '✅ Active' : '⛔ Disabled') +
-                    '</span><span class="u-plays">🎮 ' + totalPlays + ' plays</span><span class="u-regdate">📅 ' + formatDate(u.registeredAt) +
-                    '</span><div class="u-actions"><button class="toggle-status" data-user="' + un + '">' + (u.status === 'active' ? 'Disable' : 'Enable') +
-                    '</button><button class="del-btn" data-user="' + un + '"><i class="fas fa-trash"></i></button></div>';
-                adminUsersContainer.appendChild(div);
-            });
-
-            document.querySelectorAll('.toggle-status').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    var un = this.dataset.user;
-                    var users = loadUsers();
-                    if (users[un]) {
-                        var newStatus = users[un].status === 'active' ? 'disabled' : 'active';
-                        users[un].status = newStatus;
-                        saveUsers(users);
-                        if (currentUser && currentUser.username === un) {
-                            if (newStatus === 'disabled') {
-                                showToast('Your account has been disabled by admin.', 'error');
-                                logoutUser();
-                            } else {
-                                currentUser.status = newStatus;
-                            }
-                        }
-                        renderAdminUsers();
-                        showToast('User ' + un + ' ' + (newStatus === 'active' ? 'enabled' : 'disabled'), 'info');
-                    }
-                });
-            });
-            document.querySelectorAll('.del-btn').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    var un = this.dataset.user;
-                    if (un === 'admin') { showToast('Cannot delete admin.', 'error'); return; }
-                    if (confirm('Are you sure you want to delete user "' + un + '"? Payment records will be kept for history.')) {
-                        if (deleteUser(un)) {
-                            if (currentUser && currentUser.username === un) { logoutUser(); }
-                            renderAdminUsers();
-                            showToast('User ' + un + ' deleted.', 'warning');
-                        }
-                    }
-                });
-            });
-        }
-
-        function renderAdminPayments() {
-            var records = getRecords();
-            paymentCount.textContent = records.length + ' records';
-            adminPaymentsContainer.innerHTML = '';
-            if (records.length === 0) {
-                adminPaymentsContainer.innerHTML = '<div style="text-align:center;color:#666;padding:20px 0;">No payment records yet.</div>';
-                return;
-            }
-            var sorted = records.slice().reverse();
-            sorted.forEach(function(rec, idx) {
-                var div = document.createElement('div');
-                div.className = 'admin-record-item';
-                var date = new Date(rec.timestamp);
-                var dateStr = date.toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
-
-                var prizeAmt = 0;
-                for (var i=0; i<boxData.length; i++) {
-                    if (boxData[i].code === rec.box_code) { prizeAmt = boxData[i].prize || 0; break; }
-                }
-
-                var winStatus = rec.win ? '🎉 Win' : '😞 Lose';
-                var winColor = rec.win ? '#4caf50' : '#f44336';
-
-                div.innerHTML =
-                    '<span class="r-user">User: ' + (rec.username || 'Guest') +
-                    '</span><span class="r-admin">Admin: ' + (rec.admin_name || 'admin') +
-                    '</span><span class="r-phone">📞 ' + (rec.user_phone || 'N/A') +
-                    '</span><span class="r-upi">📱 ' + (rec.upi_phone || 'N/A') +
-                    '</span><span class="r-box-code">' + (rec.box_code || '----') +
-                    '</span><span class="r-prize">₹' + prizeAmt.toLocaleString() +
-                    '</span><span style="color:' + winColor + ';font-weight:700;font-size:12px;">' + winStatus +
-                    '</span><span class="r-txid">' + rec.txid +
-                    '</span><span class="r-status ' + (rec.status === 'done' ? 'done' : '') + '" data-idx="' + idx + '">' + (rec.status === 'done' ? '✅ Verified' : '⏳ Pending') +
-                    '</span><span class="r-time">' + dateStr +
-                    '</span><div class="r-actions">' +
-                    (rec.status === 'done' ? '<button class="unverify-btn" data-idx="' + idx + '">↩️ Unverify</button>' : '<button class="verify-btn" data-idx="' + idx + '">✅ Verify</button>') +
-                    (rec.status === 'done' && !rec.win ? '<button class="mark-win-btn" data-idx="' + idx + '">🏆 Mark Win</button>' : '') +
-                    (rec.status === 'done' && rec.win ? '<button class="mark-lose-btn" data-idx="' + idx + '">❌ Mark Lose</button>' : '') +
-                    '</div>';
-                adminPaymentsContainer.appendChild(div);
-            });
-
-            document.querySelectorAll('.verify-btn').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    var idx = parseInt(this.dataset.idx);
-                    var records = getRecords();
-                    var realIndex = records.length - 1 - idx;
-                    if (records[realIndex]) {
-                        records[realIndex].status = 'done';
-                        saveRecords(records);
-                        renderAdminPayments();
-                        showToast('✅ Record verified.', 'success');
-                    }
-                });
-            });
-
-            document.querySelectorAll('.unverify-btn').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    var idx = parseInt(this.dataset.idx);
-                    var records = getRecords();
-                    var realIndex = records.length - 1 - idx;
-                    if (records[realIndex]) {
-                        records[realIndex].status = 'pending';
-                        saveRecords(records);
-                        renderAdminPayments();
-                        showToast('↩️ Record unverified.', 'warning');
-                    }
-                });
-            });
-
-            document.querySelectorAll('.mark-win-btn').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    var idx = parseInt(this.dataset.idx);
-                    var records = getRecords();
-                    var realIndex = records.length - 1 - idx;
-                    if (records[realIndex]) {
-                        records[realIndex].win = true;
-                        var boxCode = records[realIndex].box_code;
-                        for (var i=0; i<boxData.length; i++) {
-                            if (boxData[i].code === boxCode) {
-                                boxData[i].won = true;
-                                boxData[i].revealed = true;
-                                break;
-                            }
-                        }
-                        saveRecords(records);
-                        renderAdminPayments();
-                        renderBoxes();
-                        showToast('🏆 Box marked as WIN!', 'success');
-                    }
-                });
-            });
-
-            document.querySelectorAll('.mark-lose-btn').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    var idx = parseInt(this.dataset.idx);
-                    var records = getRecords();
-                    var realIndex = records.length - 1 - idx;
-                    if (records[realIndex]) {
-                        records[realIndex].win = false;
-                        var boxCode = records[realIndex].box_code;
-                        for (var i=0; i<boxData.length; i++) {
-                            if (boxData[i].code === boxCode) {
-                                boxData[i].won = false;
-                                boxData[i].revealed = true;
-                                break;
-                            }
-                        }
-                        saveRecords(records);
-                        renderAdminPayments();
-                        renderBoxes();
-                        showToast('❌ Box marked as LOSE.', 'warning');
-                    }
-                });
-            });
-
-            document.querySelectorAll('.r-status').forEach(function(el) {
-                el.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    var idx = parseInt(this.dataset.idx);
-                    var records = getRecords();
-                    var realIndex = records.length - 1 - idx;
-                    if (records[realIndex]) {
-                        records[realIndex].status = records[realIndex].status === 'done' ? 'pending' : 'done';
-                        saveRecords(records);
-                        renderAdminPayments();
-                        showToast('Status updated.', 'info');
-                    }
-                });
-            });
-        }
-
-        function renderAdminProfit() {
-            renderProfitDetails(adminProfitContainer, false);
-        }
-
-        function renderAdminPanel() {
-            renderAdminUsers();
-            renderAdminPayments();
-            renderAdminProfit();
-        }
-
-        function openAdminPanel() {
-            if (!currentUser || currentUser.role !== 'admin') {
-                showToast('Access denied. Admin only.', 'error');
-                return;
-            }
-            renderAdminPanel();
-            adminOverlay.classList.add('active');
-        }
-
-        function closeAdminPanel() { adminOverlay.classList.remove('active'); }
-
-        adminBtn.addEventListener('click', openAdminPanel);
-        adminCloseBtn.addEventListener('click', closeAdminPanel);
-        adminOverlay.addEventListener('click', function(e) { if (e.target === adminOverlay) closeAdminPanel(); });
-        adminRefreshUsers.addEventListener('click', renderAdminUsers);
-        adminRefreshPayments.addEventListener('click', renderAdminPayments);
-        adminRefreshProfit.addEventListener('click', renderAdminProfit);
-
-        adminTabs.forEach(function(tab) {
-            tab.addEventListener('click', function() {
-                adminTabs.forEach(function(t) { t.classList.remove('active'); });
-                this.classList.add('active');
-                var target = this.dataset.tab;
-                document.querySelectorAll('.admin-section').forEach(function(s) { s.classList.remove('active'); });
-                var sectionMap = {
-                    'users': 'adminUsersSection',
-                    'payments': 'adminPaymentsSection',
-                    'profit': 'adminProfitSection',
-                    'fullreport': 'adminFullReportSection'
-                };
-                var section = document.getElementById(sectionMap[target]);
-                if (section) section.classList.add('active');
-                if (target === 'profit') renderAdminProfit();
-            });
-        });
-
-        // ============================================================
-        //  PROFIT BUTTON
-        // ============================================================
-        profitBtn.addEventListener('click', function() {
-            if (!currentUser || currentUser.role !== 'admin') {
-                showToast('Access denied. Admin only.', 'error');
-                return;
-            }
-            renderProfitDetails(profitModalContent, true);
-            profitModal.classList.add('active');
-        });
-
-        profitModalCloseBtn.addEventListener('click', function() { profitModal.classList.remove('active'); });
-        profitModal.addEventListener('click', function(e) { if (e.target === profitModal) profitModal.classList.remove('active'); });
-
-        // ============================================================
-        //  PDF GENERATION
-        // ============================================================
-        function getJsPDFLib() {
-            if (window.jspdf && typeof window.jspdf.jsPDF === 'function') return window.jspdf;
-            if (window.jsPDF && typeof window.jsPDF === 'function') return { jsPDF: window.jsPDF };
-            if (typeof window.jsPDF === 'function') return { jsPDF: window.jsPDF };
-            return null;
-        }
-
-        function checkPDFLib() {
-            var lib = getJsPDFLib();
-            if (!lib) { showToast('PDF library not loaded.', 'error'); return false; }
-            try {
-                var testDoc = new lib.jsPDF();
-                if (typeof testDoc.autoTable !== 'function') {
-                    showToast('PDF autotable plugin not loaded.', 'error');
-                    return false;
-                }
-            } catch(e) { showToast('PDF library error: ' + e.message, 'error'); return false; }
-            return true;
-        }
-
-        function generatePDF(title, tableData, columns, extraInfo) {
-            if (extraInfo === undefined) extraInfo = '';
-            try {
-                if (!checkPDFLib()) return;
-                var lib = getJsPDFLib();
-                var jsPDF = lib.jsPDF;
-                var doc = new jsPDF('landscape', 'pt', 'a4');
-
-                doc.setFontSize(22);
-                doc.setTextColor(255,215,0);
-                doc.text('🏆 Karorpati - Admin Report', 40, 50);
-                doc.setFontSize(12);
-                doc.setTextColor(170,170,187);
-                doc.text('Generated: ' + new Date().toLocaleString('en-IN'), 40, 75);
-                if (extraInfo) { doc.setFontSize(11); doc.text(extraInfo, 40, 95); }
-                doc.setTextColor(255,255,255);
-
-                doc.autoTable({
-                    head: [columns],
-                    body: tableData,
-                    startY: 110,
-                    theme: 'dark',
-                    styles: { fontSize: 8, cellPadding: 4, textColor: [220,220,220], lineColor: [255,215,0,30] },
-                    headStyles: { fillColor: [255,215,0], textColor: [26,31,47], fontStyle: 'bold', fontSize: 9 },
-                    alternateRowStyles: { fillColor: [30,37,56] },
-                    margin: { left: 30, right: 30 }
-                });
-
-                var pageCount = doc.internal.getNumberOfPages();
-                for (var i=1; i<=pageCount; i++) {
-                    doc.setPage(i);
-                    doc.setFontSize(8);
-                    doc.setTextColor(100,100,100);
-                    doc.text('Page ' + i + ' of ' + pageCount, doc.internal.pageSize.width - 80, doc.internal.pageSize.height - 20);
-                    doc.text('Karorpati - Admin Report', 40, doc.internal.pageSize.height - 20);
-                }
-                doc.save(title + '.pdf');
-                return true;
-            } catch(e) {
-                console.error('PDF Error:', e);
-                showToast('PDF generation failed: ' + e.message, 'error');
-                return false;
-            }
-        }
-
-        function downloadUsersPDF() {
-            try {
-                var users = loadUsers();
-                var records = getRecords();
-                var usernames = Object.keys(users);
-                if (usernames.length === 0) { showToast('No users to export.', 'error'); return; }
-                var columns = ['Username', 'Phone', 'Role', 'Status', 'Plays', 'Registered At'];
-                var rows = usernames.map(function(un) {
-                    var u = users[un];
-                    var plays = records.filter(function(r) { return r.username === un; }).length;
-                    return [un, u.phone || 'N/A', u.role || 'user', u.status || 'active', String(plays), formatDate(u.registeredAt)];
-                });
-                generatePDF('Karorpati_Users', rows, columns, 'Total Users: ' + usernames.length);
-                showToast('✅ Users PDF downloaded!', 'success');
-            } catch(e) { showToast('Error: ' + e.message, 'error'); }
-        }
-
-        function downloadPaymentsPDF() {
-            try {
-                var records = getRecords();
-                if (records.length === 0) { showToast('No payment records to export.', 'error'); return; }
-                var columns = ['User', 'Admin', 'User Phone', 'UPI Phone', 'Box Code', 'Prize', 'Win', 'TXID', 'Status', 'Date'];
-                var rows = records.slice().reverse().map(function(rec) {
-                    var date = new Date(rec.timestamp);
-                    var dateStr = date.toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
-                    var prizeAmt = 0;
-                    for (var i=0; i<boxData.length; i++) {
-                        if (boxData[i].code === rec.box_code) { prizeAmt = boxData[i].prize || 0; break; }
-                    }
-                    return [
-                        rec.username || 'Guest',
-                        rec.admin_name || 'admin',
-                        rec.user_phone || 'N/A',
-                        rec.upi_phone || 'N/A',
-                        rec.box_code || '----',
-                        '₹' + prizeAmt.toLocaleString(),
-                        rec.win ? 'Yes' : 'No',
-                        rec.txid,
-                        rec.status === 'done' ? 'Verified' : 'Pending',
-                        dateStr
-                    ];
-                });
-                generatePDF('Karorpati_Payments', rows, columns, 'Total Records: ' + records.length);
-                showToast('✅ Payments PDF downloaded!', 'success');
-            } catch(e) { showToast('Error: ' + e.message, 'error'); }
-        }
-
-        function downloadProfitPDF() {
-            try {
-                var profit = calculateProfit();
-                if (profit.totalCoupons === 0 && profit.totalPrizeWon === 0) {
-                    showToast('No profit data to export.', 'error');
-                    return;
-                }
-                var columns = ['Metric', 'Value'];
-                var rows = [
-                    ['Total Coupons (Boxes)', String(profit.totalCoupons)],
-                    ['Coupon Revenue (₹' + COUPON_COMMISSION + ' × ' + profit.totalCoupons + ')', '₹' + profit.couponRevenue.toLocaleString()],
-                    ['Total Prize Won by Users', '₹' + profit.totalPrizeWon.toLocaleString()],
-                    ['Admin Commission (' + WIN_COMMISSION_PERCENT + '%)', '₹' + profit.winCommission.toLocaleString()],
-                    ['---', '---'],
-                    ['Total Admin Profit', '₹' + profit.totalProfit.toLocaleString()]
-                ];
-                var extra = 'Coupon Commission: ₹' + COUPON_COMMISSION + ' per box | Win Commission: ' + WIN_COMMISSION_PERCENT + '%';
-                generatePDF('Karorpati_Profit', rows, columns, extra);
-                showToast('✅ Profit PDF downloaded!', 'success');
-            } catch(e) { showToast('Error: ' + e.message, 'error'); }
-        }
-
-        function downloadFullReportPDF() {
-            try {
-                var users = loadUsers();
-                var records = getRecords();
-                var usernames = Object.keys(users);
-
-                if (usernames.length === 0 && records.length === 0) {
-                    showToast('No data to export.', 'error');
-                    return;
-                }
-
-                if (!checkPDFLib()) return;
-                var lib = getJsPDFLib();
-                var jsPDF = lib.jsPDF;
-                var doc = new jsPDF('landscape', 'pt', 'a4');
-
-                doc.setFontSize(26);
-                doc.setTextColor(255,215,0);
-                doc.text('🏆 Karorpati - Complete Report', 40, 50);
-                doc.setFontSize(12);
-                doc.setTextColor(170,170,187);
-                var now = new Date().toLocaleString('en-IN');
-                doc.text('Generated: ' + now, 40, 75);
-                doc.setFontSize(11);
-                doc.setTextColor(200,200,200);
-
-                var profit = calculateProfit();
-                doc.text('Summary: ' + usernames.length + ' Users | ' + records.length + ' Payments | ' + records.filter(function(r) { return r.status === 'done'; }).length + ' Verified | ' + records.filter(function(r) { return r.status === 'pending'; }).length + ' Pending | Total Profit: ₹' + profit.totalProfit.toLocaleString(), 40, 98);
-
-                var yPos = 120;
-
-                // Users
-                if (usernames.length > 0) {
-                    doc.setFontSize(14);
-                    doc.setTextColor(255,215,0);
-                    doc.text('📊 Users (' + usernames.length + ')', 40, yPos);
-                    yPos += 10;
-                    var userCols = ['Username', 'Phone', 'Role', 'Status', 'Plays', 'Registered At'];
-                    var userRows = usernames.map(function(un) {
-                        var u = users[un];
-                        var plays = records.filter(function(r) { return r.username === un; }).length;
-                        return [un, u.phone || 'N/A', u.role || 'user', u.status || 'active', String(plays), formatDate(u.registeredAt)];
-                    });
-                    doc.autoTable({ head: [userCols], body: userRows, startY: yPos, theme: 'dark', styles: { fontSize: 7, cellPadding: 3, textColor: [220,220,220], lineColor: [255,215,0,20] }, headStyles: { fillColor: [255,215,0], textColor: [26,31,47], fontStyle: 'bold', fontSize: 8 }, alternateRowStyles: { fillColor: [30,37,56] }, margin: { left: 30, right: 30 } });
-                    yPos = doc.lastAutoTable.finalY + 20;
-                }
-
-                // Payments
-                if (records.length > 0) {
-                    if (yPos > 550) { doc.addPage(); yPos = 40; }
-                    doc.setFontSize(14);
-                    doc.setTextColor(255,215,0);
-                    doc.text('💳 Payments (' + records.length + ')', 40, yPos);
-                    yPos += 10;
-                    var payCols = ['User', 'Admin', 'User Phone', 'UPI Phone', 'Box Code', 'Prize', 'Win', 'TXID', 'Status', 'Date'];
-                    var payRows = records.slice().reverse().map(function(rec) {
-                        var date = new Date(rec.timestamp);
-                        var dateStr = date.toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
-                        var prizeAmt = 0;
-                        for (var i=0; i<boxData.length; i++) {
-                            if (boxData[i].code === rec.box_code) { prizeAmt = boxData[i].prize || 0; break; }
-                        }
-                        return [
-                            rec.username || 'Guest',
-                            rec.admin_name || 'admin',
-                            rec.user_phone || 'N/A',
-                            rec.upi_phone || 'N/A',
-                            rec.box_code || '----',
-                            '₹' + prizeAmt.toLocaleString(),
-                            rec.win ? '✅ Win' : '❌ Lose',
-                            rec.txid,
-                            rec.status === 'done' ? 'Verified' : 'Pending',
-                            dateStr
-                        ];
-                    });
-                    doc.autoTable({ head: [payCols], body: payRows, startY: yPos, theme: 'dark', styles: { fontSize: 7, cellPadding: 3, textColor: [220,220,220], lineColor: [255,215,0,20] }, headStyles: { fillColor: [255,215,0], textColor: [26,31,47], fontStyle: 'bold', fontSize: 8 }, alternateRowStyles: { fillColor: [30,37,56] }, margin: { left: 30, right: 30 } });
-                    yPos = doc.lastAutoTable.finalY + 20;
-                }
-
-                // Profit
-                if (yPos > 550) { doc.addPage(); yPos = 40; }
-                doc.setFontSize(14);
-                doc.setTextColor(255,215,0);
-                doc.text('💰 Profit Summary', 40, yPos);
-                yPos += 10;
-                var profitCols = ['Metric', 'Value'];
-                var profitRows = [
-                    ['Total Coupons (Boxes)', String(profit.totalCoupons)],
-                    ['Coupon Revenue (₹' + COUPON_COMMISSION + ' × ' + profit.totalCoupons + ')', '₹' + profit.couponRevenue.toLocaleString()],
-                    ['Total Prize Won by Users', '₹' + profit.totalPrizeWon.toLocaleString()],
-                    ['Admin Commission (' + WIN_COMMISSION_PERCENT + '%)', '₹' + profit.winCommission.toLocaleString()],
-                    ['---', '---'],
-                    ['Total Admin Profit', '₹' + profit.totalProfit.toLocaleString()]
-                ];
-                doc.autoTable({ head: [profitCols], body: profitRows, startY: yPos, theme: 'dark', styles: { fontSize: 8, cellPadding: 4, textColor: [220,220,220], lineColor: [255,215,0,20] }, headStyles: { fillColor: [255,215,0], textColor: [26,31,47], fontStyle: 'bold', fontSize: 9 }, alternateRowStyles: { fillColor: [30,37,56] }, margin: { left: 30, right: 30 } });
-
-                var pageCount = doc.internal.getNumberOfPages();
-                for (var i=1; i<=pageCount; i++) {
-                    doc.setPage(i);
-                    doc.setFontSize(8);
-                    doc.setTextColor(100,100,100);
-                    doc.text('Page ' + i + ' of ' + pageCount, doc.internal.pageSize.width - 80, doc.internal.pageSize.height - 20);
-                    doc.text('Karorpati - Complete Report', 40, doc.internal.pageSize.height - 20);
-                }
-                doc.save('Karorpati_Complete_Report.pdf');
-                showToast('✅ Full PDF Report downloaded!', 'success');
-            } catch(e) { showToast('Error: ' + e.message, 'error'); }
-        }
-
-        pdfUsersBtn.addEventListener('click', downloadUsersPDF);
-        pdfPaymentsBtn.addEventListener('click', downloadPaymentsPDF);
-        pdfProfitBtn.addEventListener('click', downloadProfitPDF);
-        pdfFullReportBtn.addEventListener('click', downloadFullReportPDF);
 
         // ============================================================
         //  REFRESH
@@ -2660,12 +2025,10 @@
             authUsername.value = '';
             authPhone.value = '';
             authPassword.value = '';
-            authAdminKey.value = '';
             authError.textContent = '';
-            switchAuthMode(false, false);
-            adminBtn.style.display = 'none';
-            profitBtn.style.display = 'none';
-            if (detectionInterval) { clearInterval(detectionInterval); detectionInterval = null; }
+            switchAuthMode(false);
+            if (detectionInterval) { clearInterval(detectionInterval);
+                detectionInterval = null; }
             showToast('Logged out.', 'info');
         }
 
@@ -2674,9 +2037,8 @@
         // ============================================================
         authBtn.addEventListener('click', handleAuth);
         authUsername.addEventListener('keypress', function(e) { if (e.key === 'Enter') authPhone.focus(); });
-        authPhone.addEventListener('keypress', function(e) { if (e.key === 'Enter') (isAdminRegisterMode ? authAdminKey : authPassword).focus(); });
+        authPhone.addEventListener('keypress', function(e) { if (e.key === 'Enter') authPassword.focus(); });
         authPassword.addEventListener('keypress', function(e) { if (e.key === 'Enter') handleAuth(); });
-        authAdminKey.addEventListener('keypress', function(e) { if (e.key === 'Enter') handleAuth(); });
 
         logoutBtn.addEventListener('click', logoutUser);
         playBtn.addEventListener('click', playGame);
@@ -2690,17 +2052,10 @@
             authOverlay.classList.add('hidden');
             appContainer.classList.add('active');
             usernameDisplay.textContent = currentUser.username;
-            if (currentUser.role === 'admin') {
-                adminBtn.style.display = 'inline-flex';
-                profitBtn.style.display = 'inline-flex';
-            } else {
-                adminBtn.style.display = 'none';
-                profitBtn.style.display = 'none';
-            }
             initGame();
             showToast('Welcome back ' + currentUser.username + '!', 'success');
         } else {
-            switchAuthMode(false, false);
+            switchAuthMode(false);
         }
     </script>
 </body>
