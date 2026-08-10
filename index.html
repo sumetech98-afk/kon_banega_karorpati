@@ -1003,6 +1003,26 @@
             font-size: 32px;
         }
 
+        .history-link-btn {
+            background: #1a4a6a;
+            border: 1px solid #4fc3f7;
+            color: #4fc3f7;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+        }
+        .history-link-btn:hover {
+            background: #4fc3f722;
+            border-color: #4fc3f7;
+        }
+
         @media (max-width: 460px) {
             #appContainer {
                 padding: 14px 10px 20px;
@@ -1060,6 +1080,10 @@
             }
             #whatsappBtn i {
                 font-size: 26px;
+            }
+            .history-link-btn {
+                font-size: 10px;
+                padding: 3px 8px;
             }
         }
         @media (max-width: 380px) {
@@ -1213,7 +1237,10 @@
                         <i class="fas fa-trophy"></i> Winner
                     </a>
                     <button id="resultsBtn"><i class="fas fa-list"></i> Prize Box</button>
-                    <button id="historyBtn"><i class="fas fa-history"></i> History</button>
+                    <!-- History button now directly opens the link -->
+                    <a href="https://docs.google.com/spreadsheets/d/1cze_ymNi3UCqN0EcM8NX1KIAKCz_eKCYK6mSsfyDg6k/edit?usp=sharing" target="_blank" class="history-link-btn">
+                        <i class="fas fa-history"></i> History
+                    </a>
                     <button id="refreshBtn"><i class="fas fa-sync-alt"></i></button>
                 </div>
             </div>
@@ -1241,15 +1268,6 @@
             <h2><i class="fas fa-trophy"></i> All Box Prizes</h2>
             <div class="results-grid" id="resultsGrid"></div>
             <button class="modal-close-btn" id="resultsCloseBtn"><i class="fas fa-times"></i> Close</button>
-        </div>
-    </div>
-
-    <!-- ===== HISTORY MODAL ===== -->
-    <div class="modal-overlay" id="historyOverlay">
-        <div class="modal-panel">
-            <h2><i class="fas fa-history"></i> Payment History</h2>
-            <div id="historyList" style="display:flex; flex-direction:column; gap:8px; margin-top:6px;"></div>
-            <button class="modal-close-btn" id="historyCloseBtn"><i class="fas fa-times"></i> Close</button>
         </div>
     </div>
 
@@ -1602,11 +1620,6 @@
         var resultsGrid = document.getElementById('resultsGrid');
         var resultsCloseBtn = document.getElementById('resultsCloseBtn');
 
-        var historyBtn = document.getElementById('historyBtn');
-        var historyOverlay = document.getElementById('historyOverlay');
-        var historyList = document.getElementById('historyList');
-        var historyCloseBtn = document.getElementById('historyCloseBtn');
-
         var refreshBtn = document.getElementById('refreshBtn');
 
         var proofOverlay = document.getElementById('proofOverlay');
@@ -1955,48 +1968,6 @@
         resultsOverlay.addEventListener('click', function(e) { if (e.target === resultsOverlay) resultsOverlay.classList
                 .remove('active'); });
         resultsBtn.addEventListener('click', openResults);
-
-        // ============================================================
-        //  HISTORY MODAL
-        // ============================================================
-        function openHistory() {
-            var records = getRecords();
-            historyList.innerHTML = '';
-            if (records.length === 0) {
-                historyList.innerHTML = '<div style="text-align:center;color:#666;padding:30px 0;">No records found.</div>';
-            } else {
-                var sorted = records.slice().reverse();
-                sorted.forEach(function(rec) {
-                    var div = document.createElement('div');
-                    div.style.cssText =
-                        'background:#121724;padding:10px 14px;border-radius:12px;border-left:3px solid #ffd700;display:flex;flex-wrap:wrap;gap:4px;font-size:13px;color:#ccc;';
-                    var date = new Date(rec.timestamp);
-                    var dateStr = date.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit',
-                        minute: '2-digit' });
-                    var winStatus = rec.win ? '🎉 Won' : '😞 Lost';
-                    var winColor = rec.win ? '#4caf50' : '#f44336';
-                    div.innerHTML =
-                        '<span style="color:#4fc3f7;font-weight:600;">User: ' + (rec.username || 'Guest') +
-                        '</span><span style="color:#ffd700;font-weight:900;font-size:16px;letter-spacing:1px;background:#ffd70022;padding:0 8px;border-radius:6px;">' +
-                        (rec.box_code || '----') +
-                        '</span><span>₹' + rec.amount + '</span><span style="color:' + winColor + ';font-weight:700;">' +
-                        winStatus +
-                        '</span><span style="color:#aab;">📞 ' + (rec.user_phone || 'N/A') +
-                        '</span><span style="color:#81c784;">📱 UPI: ' + (rec.upi_phone || 'N/A') +
-                        '</span><span style="color:#4caf50;font-size:12px;">' + rec.txid +
-                        '</span><span style="font-size:11px;padding:2px 10px;border-radius:20px;background:' + (rec
-                            .status === 'done' ? '#4caf5033' : '#ff980033') + ';color:' + (rec.status === 'done' ?
-                            '#4caf50' : '#ff9800') + ';">' + (rec.status === 'done' ? '✅ Verified' : '⏳ Pending') +
-                        '</span><span style="font-size:10px;color:#666;">' + dateStr + '</span>';
-                    historyList.appendChild(div);
-                });
-            }
-            historyOverlay.classList.add('active');
-        }
-        historyCloseBtn.addEventListener('click', function() { historyOverlay.classList.remove('active'); });
-        historyOverlay.addEventListener('click', function(e) { if (e.target === historyOverlay) historyOverlay.classList
-                .remove('active'); });
-        historyBtn.addEventListener('click', openHistory);
 
         // ============================================================
         //  REFRESH
