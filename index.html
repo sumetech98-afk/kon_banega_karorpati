@@ -188,6 +188,7 @@
     padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
     cursor: pointer; display: flex; align-items: center; gap: 4px;
 }
+
 #karorpatiView .box-grid {
     display: grid; grid-template-columns: repeat(10,1fr); gap: 4px;
     background: #121724; padding: 6px; border-radius: 14px; border: 1px solid #2a3045;
@@ -211,6 +212,8 @@
 #karorpatiView .box-item.win-box .box-prize { color: #4caf50; font-size: 9px; }
 #karorpatiView .box-item.lose-box { border-color: #f44336; background: #3a1e2a; }
 #karorpatiView .box-item.lose-box .box-prize { color: #f44336; }
+#karorpatiView .box-item.pending-box { border-color: #ff9800; background: #3a2e1a; }
+#karorpatiView .box-item.pending-box .box-prize { color: #ff9800; font-size: 9px; display:block; }
 
 #karorpatiView .play-controls { display: flex; justify-content: center; margin: 14px 0 8px; }
 #karorpatiView .play-btn {
@@ -266,6 +269,10 @@
 #karorpatiView .toast.error { border-color: #f44336; }
 #karorpatiView .toast.warning { border-color: #ff9800; }
 
+.ref-input-group { background: rgba(156,39,176,0.1); border-radius: 12px; padding: 12px; border: 1px solid rgba(156,39,176,0.4); margin-bottom: 12px; }
+.ref-input-group label { color: #e91e63 !important; }
+.ref-input-group input { background: rgba(156,39,176,0.08) !important; border-color: rgba(156,39,176,0.5) !important; text-transform: uppercase; }
+
 @media (max-width: 520px) {
     #luckyView .main-box { padding: 1.8rem 1rem; border-radius: 40px 10px 40px 10px; }
     #luckyView .reel { width: 55px; height: 70px; font-size: 2.8rem; }
@@ -305,7 +312,7 @@
 }
 #adminView .admin-auth-box .admin-error { color: #f44336; font-size: 13px; text-align: center; margin-top: 8px; min-height: 20px; }
 #adminView .admin-auth-box .hint { text-align: center; color: #667; font-size: 11px; margin-top: 12px; border-top: 1px dashed #333; padding-top: 10px; }
-#adminView .admin-wrap { max-width: 1000px; margin: 0 auto; padding: 0 12px 40px; }
+#adminView .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 0 12px 40px; }
 #adminView .admin-header {
     display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
     background: rgba(30,37,56,0.92); border: 1px solid #ff525255; border-radius: 20px;
@@ -329,6 +336,7 @@
 #adminView .stat-card.red .stat-value { color: #ff5252; }
 #adminView .stat-card.green .stat-value { color: #4caf50; }
 #adminView .stat-card.blue .stat-value { color: #4fc3f7; }
+#adminView .stat-card.orange .stat-value { color: #ff9800; }
 #adminView .stat-card.pink { background: linear-gradient(135deg,#9c27b0,#e91e63); }
 #adminView .stat-card.pink .stat-value { color: #fff; }
 #adminView .stat-card.pink .stat-label { color: rgba(255,255,255,0.8); }
@@ -366,6 +374,8 @@
 #adminView table td .status-pill.pending { background: #ff980022; color: #ff9800; border: 1px solid #ff980055; }
 #adminView table td .status-pill.approved { background: #4caf5022; color: #4caf50; border: 1px solid #4caf5055; }
 #adminView table td .status-pill.rejected { background: #f4433622; color: #f44336; border: 1px solid #f4433655; }
+#adminView table td .status-pill.won { background: #4caf5033; color: #4caf50; border: 1px solid #4caf5066; }
+#adminView table td .status-pill.lost { background: #f4433633; color: #f44336; border: 1px solid #f4433666; }
 #adminView table td .role-pill {
     display: inline-block; padding: 2px 8px; border-radius: 10px;
     font-size: 10px; font-weight: 700; background: #4fc3f722;
@@ -453,10 +463,6 @@
 }
 #secretCodeCancelBtn { background: #3a3045; color: #ccc; }
 #secretCodeOkBtn { background: linear-gradient(135deg,#ff5252,#c62828); color: #fff; }
-
-.ref-input-group { background: rgba(156,39,176,0.1); border-radius: 12px; padding: 12px; border: 1px solid rgba(156,39,176,0.4); margin-bottom: 12px; }
-.ref-input-group label { color: #e91e63 !important; }
-.ref-input-group input { background: rgba(156,39,176,0.08) !important; border-color: rgba(156,39,176,0.5) !important; text-transform: uppercase; }
 
 @media (max-width: 600px) {
     #viewSwitcher button { padding: 6px 12px; font-size: 11px; }
@@ -554,16 +560,15 @@
                 </button>
             </div>
             <div class="result-msg" id="resultMsg">🎯 Select a box and click "Pick Box & Pay" to play!</div>
-            <div id="claimBtnContainer" style="display:none; text-align:center; margin-top:10px;">
-                <button id="claimPrizeBtn" style="padding:12px 30px; border-radius:14px; border:none; background:linear-gradient(135deg,#ffd700,#e6b800); color:#1a1f2f; font-weight:800; font-size:16px; cursor:pointer;">
-                    <i class="fas fa-gift"></i> Claim Prize <span id="claimPrizeAmount"></span>
-                </button>
-            </div>
         </div>
 
         <div class="modal-overlay" id="resultsOverlay">
             <div class="modal-panel">
-                <h2><i class="fas fa-trophy"></i> All Box Prizes</h2>
+                <h2><i class="fas fa-trophy"></i> Box Status Info</h2>
+                <p style="color:#aab; font-size:13px; text-align:center; margin-bottom:15px;">
+                    Har box kharidne ke baad uska result <b style="color:#ffd700;">admin manually update karega</b>.<br>
+                    Aap History tab mein status dekh sakte hain.
+                </p>
                 <div id="resultsGrid" style="display:grid; grid-template-columns:repeat(5,1fr); gap:6px;"></div>
                 <button class="modal-close-btn" id="resultsCloseBtn">Close</button>
             </div>
@@ -690,7 +695,6 @@
             </div>
         </div>
 
-        <!-- REFERRAL MODAL -->
         <div class="modal-overlay" id="referralOverlay">
             <div class="modal-panel" style="max-width: 480px; border-color:#e91e63;">
                 <h2><i class="fas fa-gift" style="color:#e91e63;"></i> Refer & Earn</h2>
@@ -698,7 +702,6 @@
                     Apna code share karo — har referral pe <b style="color:#66bb6a;">₹20 withdrawable</b> milega!<br>
                     Naya user ko <b style="color:#feca57;">₹100 bonus (locked)</b> milega.
                 </p>
-
                 <div style="background:linear-gradient(135deg,rgba(156,39,176,0.15),rgba(233,30,99,0.15)); border:1px solid rgba(233,30,99,0.4); padding:15px; border-radius:12px; margin-bottom:15px;">
                     <div style="font-size:13px; font-weight:700; color:#e91e63; margin-bottom:10px;">🔑 Your Referral Code</div>
                     <div style="display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.4); padding:12px 15px; border-radius:10px;">
@@ -706,7 +709,6 @@
                         <button id="copyRefCodeBtn" style="background:#2196f3; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">📋 Copy</button>
                     </div>
                 </div>
-
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
                     <div style="flex:1; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:center;">
                         <div style="font-size:22px; font-weight:900; color:#feca57;" id="refTotalCount">0</div>
@@ -717,15 +719,12 @@
                         <div style="font-size:10px; opacity:0.7; text-transform:uppercase; letter-spacing:1px;">Total Earned</div>
                     </div>
                 </div>
-
                 <div style="font-size:12px; font-weight:600; margin-bottom:8px; opacity:0.8;">👥 Your Referrals:</div>
                 <div id="refList" style="max-height:180px; overflow-y:auto; margin-bottom:15px;"></div>
-
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
                     <button id="refShareWhatsAppBtn" style="padding:12px; border:none; border-radius:10px; background:linear-gradient(135deg,#25D366,#128C7E); color:#fff; font-weight:700; font-size:13px; cursor:pointer;">💬 WhatsApp</button>
                     <button id="refShareNativeBtn" style="padding:12px; border:none; border-radius:10px; background:linear-gradient(135deg,#feca57,#ff6b6b); color:#111; font-weight:700; font-size:13px; cursor:pointer;">📤 Share</button>
                 </div>
-
                 <button class="modal-close-btn" id="referralCloseBtn">Close</button>
             </div>
         </div>
@@ -766,13 +765,14 @@
             <div class="stat-card"><div class="stat-value" id="statUsers">0</div><div class="stat-label">Users</div></div>
             <div class="stat-card green"><div class="stat-value" id="statActive">0</div><div class="stat-label">Active</div></div>
             <div class="stat-card blue"><div class="stat-value" id="statRecords">0</div><div class="stat-label">Records</div></div>
-            <div class="stat-card red"><div class="stat-value" id="statPending">0</div><div class="stat-label">Pending</div></div>
+            <div class="stat-card orange"><div class="stat-value" id="statPending">0</div><div class="stat-label">Pending Boxes</div></div>
             <div class="stat-card pink"><div class="stat-value" id="statReferrals">0</div><div class="stat-label">Referrals</div></div>
         </div>
 
         <div class="admin-tabs">
             <button class="active" data-tab="users"><i class="fas fa-users"></i> Users</button>
             <button data-tab="deposits"><i class="fas fa-arrow-up"></i> Deposits</button>
+            <button data-tab="boxresults"><i class="fas fa-box-open"></i> Box Results</button>
             <button data-tab="claims"><i class="fas fa-gift"></i> Claims</button>
             <button data-tab="withdrawals"><i class="fas fa-arrow-down"></i> Withdrawals</button>
             <button data-tab="referrals"><i class="fas fa-share-alt"></i> Referrals</button>
@@ -807,8 +807,39 @@
             <div class="empty-state" id="depositsEmpty" style="display:none;">No deposits.</div>
         </div>
 
+        <div class="admin-panel" id="panelBoxResults" style="display:none;">
+            <h3><i class="fas fa-box-open"></i> Box Results — Manual Prize Setting</h3>
+            <p style="color:#aab; font-size:13px; margin-bottom:14px;">
+                Yahan pending box purchases dikhengi. Prize amount set karke <b style="color:#4caf50;">"Set"</b> click karein.<br>
+                <b style="color:#4caf50;">Amount > 0 = WON</b> (wallet auto credit) &nbsp;|&nbsp; <b style="color:#f44336;">Amount 0 = LOST</b>
+            </p>
+            <div class="admin-search-row">
+                <input type="text" id="boxResultSearch" placeholder="🔍 Search by username or box code..." />
+                <button id="refreshBoxResultsBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
+            <div class="admin-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Box Code</th>
+                            <th>Amount Paid</th>
+                            <th>Status</th>
+                            <th>Prize (₹)</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="boxResultsTableBody"></tbody>
+                </table>
+            </div>
+            <div class="empty-state" id="boxResultsEmpty" style="display:none;">No records found.</div>
+        </div>
+
         <div class="admin-panel" id="panelClaims" style="display:none;">
-            <h3><i class="fas fa-gift"></i> Prize Claim Requests</h3>
+            <h3><i class="fas fa-gift"></i> Old Prize Claim Requests</h3>
+            <p style="color:#aab; font-size:12px; margin-bottom:10px;">(Yeh purani claim requests hain — new system mein zaroorat nahi)</p>
             <div class="admin-table-wrap">
                 <table>
                     <thead><tr><th>#</th><th>User</th><th>Box Code</th><th>Prize</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
@@ -852,9 +883,9 @@
         </div>
 
         <div class="admin-panel" id="panelWinner" style="display:none;">
-            <h3><i class="fas fa-trophy"></i> Winner Setting</h3>
+            <h3><i class="fas fa-trophy"></i> Lucky Draw Winner Setting</h3>
             <div style="background:#121724; padding:12px 16px; border-radius:12px; margin-bottom:18px; border-left:3px solid #ffd700; color:#aab; font-size:13px;">
-                Fixed mode mein reels hamesha set digits par rukenge. Custom sum chahiye to option check karein.
+                Yeh Lucky Draw section ke reels ke liye hai. Fixed mode mein reels hamesha set digits par rukenge.
             </div>
             <div style="background:#121724; padding:14px; border-radius:12px; margin-bottom:18px;">
                 <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#fff; font-weight:700; margin-bottom:8px;">
@@ -956,6 +987,7 @@
      FIREBASE INIT + DB WRAPPER
      ================================================================ -->
 <script>
+// 🔥 YAHAN APNA firebaseConfig PASTE KAREIN
 
 const firebaseConfig = {
   apiKey: "AIzaSyDnGHcGAbmsuMgZoXDDIAi1ovgW0Yvj6QQ",
@@ -1013,9 +1045,11 @@ var KARO_DB = (function(){
 
     function getRecords() { return KARO_CACHE.records; }
     async function fetchRecords() {
-        var snap = await db.collection('records').orderBy('timestamp','desc').get();
+        // Index-free: fetch all, sort client-side
+        var snap = await db.collection('records').get();
         var records = [];
         snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; records.push(d); });
+        records.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
         KARO_CACHE.records = records;
         return records;
     }
@@ -1027,6 +1061,8 @@ var KARO_DB = (function(){
     }
     async function updateRecord(id, updates) {
         await db.collection('records').doc(id).update(updates);
+        var idx = KARO_CACHE.records.findIndex(function(r){ return r._id === id; });
+        if (idx !== -1) Object.assign(KARO_CACHE.records[idx], updates);
     }
     async function deleteRecord(id) {
         await db.collection('records').doc(id).delete();
@@ -1054,14 +1090,14 @@ var KARO_DB = (function(){
         return newBalance;
     }
     async function getTransactions(username) {
+        // Index-free: only where + client-side sort
         var snap = await db.collection('transactions')
             .where('username', '==', username)
-            .orderBy('timestamp', 'desc')
-            .limit(50)
             .get();
         var list = [];
         snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
-        return list;
+        list.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
+        return list.slice(0, 50);
     }
     async function addTransaction(t) {
         t.timestamp = Date.now();
@@ -1076,9 +1112,10 @@ var KARO_DB = (function(){
         return ref.id;
     }
     async function getDeposits() {
-        var snap = await db.collection('deposits').orderBy('timestamp','desc').get();
+        var snap = await db.collection('deposits').get();
         var list = [];
         snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
+        list.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
         return list;
     }
     async function updateDeposit(id, updates) {
@@ -1092,9 +1129,10 @@ var KARO_DB = (function(){
         return ref.id;
     }
     async function getClaims() {
-        var snap = await db.collection('claims').orderBy('timestamp','desc').get();
+        var snap = await db.collection('claims').get();
         var list = [];
         snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
+        list.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
         return list;
     }
     async function updateClaim(id, updates) {
@@ -1108,18 +1146,17 @@ var KARO_DB = (function(){
         return ref.id;
     }
     async function getWithdrawals() {
-        var snap = await db.collection('withdrawals').orderBy('timestamp','desc').get();
+        var snap = await db.collection('withdrawals').get();
         var list = [];
         snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
+        list.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
         return list;
     }
     async function updateWithdrawal(id, updates) {
         await db.collection('withdrawals').doc(id).update(updates);
     }
 
-    // ============================================================
-    // REFERRAL FUNCTIONS
-    // ============================================================
+    // ============ REFERRAL ============
     function generateReferralCode(username) {
         var clean = (username || 'USER').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) || 'USER';
         var rand;
@@ -1133,7 +1170,6 @@ var KARO_DB = (function(){
         rand = (rand + 'ABCDEF').slice(0, 6);
         return clean + rand;
     }
-
     async function reserveUniqueReferralCode(username, uid) {
         for (var attempt = 0; attempt < 25; attempt++) {
             var candidate = generateReferralCode(username);
@@ -1144,13 +1180,10 @@ var KARO_DB = (function(){
                     await docRef.set({ uid: uid, createdAt: Date.now() });
                     return candidate;
                 }
-            } catch (e) {
-                console.warn('Referral code attempt failed:', e);
-            }
+            } catch (e) { console.warn('Ref code attempt failed:', e); }
         }
         throw new Error('Could not generate unique referral code');
     }
-
     function getDeviceFingerprint() {
         var nav = window.navigator;
         var screen = window.screen;
@@ -1164,7 +1197,6 @@ var KARO_DB = (function(){
         }
         return 'dev_' + Math.abs(hash).toString(36);
     }
-
     async function lookupReferralCode(code) {
         try {
             var snap = await db.collection('referralCodes').doc(code).get();
@@ -1172,17 +1204,15 @@ var KARO_DB = (function(){
             return snap.data().uid;
         } catch (e) { return null; }
     }
-
     async function saveReferralRecord(data) {
         data.createdAt = Date.now();
         var ref = await db.collection('referrals').add(data);
         return ref.id;
     }
-
     async function getReferrals(referrerUid) {
+        // Index-free: only where + client-side sort
         var snap = await db.collection('referrals')
             .where('referrerUid', '==', referrerUid)
-            .orderBy('createdAt', 'desc')
             .get();
         var list = [];
         snap.forEach(function(doc){
@@ -1190,6 +1220,7 @@ var KARO_DB = (function(){
             d._id = doc.id;
             list.push(d);
         });
+        list.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
         return list;
     }
 
@@ -1219,9 +1250,11 @@ var KARO_DB = (function(){
             KARO_CACHE.users = users;
             window.dispatchEvent(new Event('karorpati_users_updated'));
         });
-        db.collection('records').orderBy('timestamp','desc').onSnapshot(function(snap){
+        // Index-free snapshot for records
+        db.collection('records').onSnapshot(function(snap){
             var records = [];
             snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; records.push(d); });
+            records.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
             KARO_CACHE.records = records;
             window.dispatchEvent(new Event('karorpati_records_updated'));
         });
@@ -1393,9 +1426,6 @@ var KARO_DB = (function(){
     var boxGrid = document.getElementById('boxGrid');
     var playBtn = document.getElementById('playBtn');
     var resultMsg = document.getElementById('resultMsg');
-    var claimBtnContainer = document.getElementById('claimBtnContainer');
-    var claimPrizeBtn = document.getElementById('claimPrizeBtn');
-    var claimPrizeAmount = document.getElementById('claimPrizeAmount');
     var toast = document.getElementById('toast');
     var isRegisterMode = false;
 
@@ -1564,22 +1594,12 @@ var KARO_DB = (function(){
         if (wbi) wbi.textContent = bonus > 0 ? '₹' + bonus + ' bonus locked — cannot withdraw' : '';
     }
 
-    var PRIZE_POOL = [
-        { prize: 10000000, count: 1 }, { prize: 5000000, count: 1 },
-        { prize: 1000000, count: 2 }, { prize: 100000, count: 4 },
-        { prize: 10000, count: 10 }, { prize: 5000, count: 20 },
-        { prize: 2000, count: 20 }, { prize: 1000, count: 42 }
-    ];
-
     function generateBoxData() {
-        var prizes = [];
-        PRIZE_POOL.forEach(function(p){ for (var i = 0; i < p.count; i++) prizes.push(p.prize); });
-        for (var i = prizes.length - 1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t = prizes[i]; prizes[i]=prizes[j]; prizes[j]=t; }
         var codes = [];
         while (codes.length < 100) { var c = String(Math.floor(1000 + Math.random()*9000)); if (codes.indexOf(c) === -1) codes.push(c); }
         for (var i = codes.length - 1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t = codes[i]; codes[i]=codes[j]; codes[j]=t; }
         var data = [];
-        for (var i = 0; i < 100; i++) data.push({ code: codes[i], prize: prizes[i]||0, revealed:false, won:false, selected:false, claimed:false });
+        for (var i = 0; i < 100; i++) data.push({ code: codes[i], prize: 0, revealed:false, won:false, selected:false, claimed:false, pending:false });
         return data;
     }
 
@@ -1589,11 +1609,18 @@ var KARO_DB = (function(){
             var div = document.createElement('div');
             div.className = 'box-item';
             div.dataset.index = idx;
-            div.innerHTML = '<span class="box-code">' + box.code + '</span><span class="box-prize">' +
-                (box.revealed ? (box.won ? '🎉 +₹' + box.prize : '😞 ₹0') : '') + '</span>';
+            var prizeText = '';
+            if (box.revealed) {
+                if (box.pending) prizeText = '⏳';
+                else if (box.won) prizeText = '🎉 +₹' + box.prize;
+                else prizeText = '😞 ₹0';
+            }
+            div.innerHTML = '<span class="box-code">' + box.code + '</span><span class="box-prize">' + prizeText + '</span>';
             if (box.revealed) {
                 div.classList.add('revealed');
-                if (box.won) div.classList.add('win-box'); else div.classList.add('lose-box');
+                if (box.pending) div.classList.add('pending-box');
+                else if (box.won) div.classList.add('win-box');
+                else div.classList.add('lose-box');
             }
             if (box.selected) div.classList.add('selected');
             if (isPlaying || box.revealed) div.classList.add('disabled');
@@ -1611,7 +1638,6 @@ var KARO_DB = (function(){
         renderBoxes();
         resultMsg.textContent = '📦 Box Code: ' + boxData[index].code + ' | Click "Pick Box & Pay"';
         resultMsg.className = 'result-msg info';
-        claimBtnContainer.style.display = 'none';
     }
 
     function initGame() {
@@ -1622,7 +1648,6 @@ var KARO_DB = (function(){
         resultMsg.textContent = '🎯 Select a box and click "Pick Box & Pay"';
         resultMsg.className = 'result-msg info';
         playBtn.disabled = false;
-        claimBtnContainer.style.display = 'none';
         updateWalletUI();
     }
 
@@ -1656,22 +1681,11 @@ var KARO_DB = (function(){
                 box_code: box.code
             });
 
+            // Mark box as pending (NOT revealed with prize)
             box.revealed = true;
-            box.won = Math.random() < 0.3;
-            if (box.won) {
-                showToast('🎉 You won ₹' + box.prize + '!', 'success');
-                resultMsg.innerHTML = '🎉 <strong>WON ₹' + box.prize + '!</strong> Click Claim below.';
-                resultMsg.className = 'result-msg win';
-                claimBtnContainer.style.display = 'block';
-                claimPrizeAmount.textContent = '(₹' + box.prize + ')';
-            } else {
-                showToast('😞 No win. Try again!', 'error');
-                resultMsg.innerHTML = '😞 <strong>No win this time.</strong>';
-                resultMsg.className = 'result-msg lose';
-                claimBtnContainer.style.display = 'none';
-            }
-            renderBoxes();
-            updateWalletUI();
+            box.pending = true;
+            box.won = false;
+            box.prize = 0;
 
             await KARO_DB.addRecord({
                 username: currentUser.username,
@@ -1680,42 +1694,22 @@ var KARO_DB = (function(){
                 amount: FIXED_AMOUNT,
                 txid: 'WALLET_' + Date.now(),
                 timestamp: Date.now(),
-                status: 'approved',
-                win: box.won,
-                prize_amount: box.won ? box.prize : 0
+                status: 'pending',
+                win: false,
+                prize_amount: 0
             });
+
+            resultMsg.innerHTML = '✅ <strong>Box ' + box.code + ' purchased!</strong><br><span style="font-size:13px;opacity:0.8;">Result will be updated by admin within 24 hours. Check History tab.</span>';
+            resultMsg.className = 'result-msg info';
+            showToast('✅ Box purchased! Waiting for admin result.', 'success');
+            renderBoxes();
+            updateWalletUI();
         } catch(err) {
             showToast('Error: ' + err.message, 'error');
         }
         playBtn.disabled = false;
         playBtn.innerHTML = '<i class="fas fa-play"></i> Pick Box & Pay <span class="price-tag">₹25</span>';
     }
-
-    claimPrizeBtn.addEventListener('click', async function(){
-        if (selectedBox === null) return;
-        var box = boxData[selectedBox];
-        if (!box || !box.won || box.claimed) return;
-
-        claimPrizeBtn.disabled = true;
-        claimPrizeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Claiming...';
-
-        try {
-            await KARO_DB.addClaim({
-                username: currentUser.username,
-                user_phone: currentUser.phone || '-',
-                box_code: box.code,
-                box_serial: selectedBox + 1,
-                prize_amount: box.prize
-            });
-            box.claimed = true;
-            showToast('✅ Claim submitted! Admin will verify.', 'success');
-            claimBtnContainer.style.display = 'none';
-        } catch(err) {
-            showToast('Error: ' + err.message, 'error');
-            claimPrizeBtn.disabled = false;
-            claimPrizeBtn.innerHTML = '<i class="fas fa-gift"></i> Claim Prize ' + claimPrizeAmount.textContent;
-        }
-    });
 
     function showToast(msg, type) {
         if (!type) type = 'info';
@@ -1737,7 +1731,7 @@ var KARO_DB = (function(){
         switchAuthMode(false);
     });
 
-    // WALLET MODAL
+    // ===== WALLET MODAL =====
     var walletOverlay = document.getElementById('walletOverlay');
     var walletTransactionsList = document.getElementById('walletTransactionsList');
     var walletCloseBtn = document.getElementById('walletCloseBtn');
@@ -1771,7 +1765,7 @@ var KARO_DB = (function(){
     walletCloseBtn.addEventListener('click', function(){ walletOverlay.classList.remove('active'); });
     walletOverlay.addEventListener('click', function(e){ if (e.target === walletOverlay) walletOverlay.classList.remove('active'); });
 
-    // ADD MONEY
+    // ===== ADD MONEY =====
     var addMoneyOverlay = document.getElementById('addMoneyOverlay');
     var addMoneyAmount = document.getElementById('addMoneyAmount');
     var addMoneyUpiPhone = document.getElementById('addMoneyUpiPhone');
@@ -1846,7 +1840,7 @@ var KARO_DB = (function(){
         }
     });
 
-    // WITHDRAW
+    // ===== WITHDRAW =====
     var withdrawOverlay = document.getElementById('withdrawOverlay');
     var withdrawAmount = document.getElementById('withdrawAmount');
     var withdrawAccountName = document.getElementById('withdrawAccountName');
@@ -1909,7 +1903,7 @@ var KARO_DB = (function(){
         }
     });
 
-    // RESULTS & HISTORY
+    // ===== RESULTS & HISTORY =====
     var resultsOverlay = document.getElementById('resultsOverlay');
     var resultsGrid = document.getElementById('resultsGrid');
     var resultsBtn = document.getElementById('resultsBtn');
@@ -1919,7 +1913,8 @@ var KARO_DB = (function(){
         boxData.forEach(function(b, i){
             var d = document.createElement('div');
             d.style.cssText = 'background:#121724;padding:6px;border-radius:8px;text-align:center;font-size:11px;border:1px solid #2a3045;';
-            d.innerHTML = '<div style="color:#ffd700;font-weight:700;">#' + (i+1) + '</div><div style="color:#4caf50;font-weight:700;font-size:10px;">₹' + b.prize.toLocaleString() + '</div>';
+            var statusIcon = b.revealed ? (b.pending ? '⏳' : (b.won ? '🎉' : '😞')) : '🎁';
+            d.innerHTML = '<div style="color:#ffd700;font-weight:700;">#' + (i+1) + '</div><div style="font-size:14px;">' + statusIcon + '</div>';
             resultsGrid.appendChild(d);
         });
         resultsOverlay.classList.add('active');
@@ -1940,9 +1935,19 @@ var KARO_DB = (function(){
             records.slice(0, 30).forEach(function(r){
                 var div = document.createElement('div');
                 div.className = 'user-sales-item';
+                var statusText, statusColor;
+                if (r.status === 'pending') {
+                    statusText = '⏳ PENDING';
+                    statusColor = '#ff9800';
+                } else if (r.win || r.prize_amount > 0) {
+                    statusText = '🎉 WON ₹' + (r.prize_amount || 0);
+                    statusColor = '#4caf50';
+                } else {
+                    statusText = '😞 LOST';
+                    statusColor = '#f44336';
+                }
                 div.innerHTML = '<span class="username">📦 ' + (r.box_code || '-') + '</span>' +
-                    '<span class="sales-count" style="color:' + (r.win ? '#4caf50' : '#f44336') + ';">' +
-                    (r.win ? 'WON ₹' + (r.prize_amount || 0) : 'LOST') + '</span>';
+                    '<span class="sales-count" style="color:' + statusColor + ';">' + statusText + '</span>';
                 userSalesList.appendChild(div);
             });
         }
@@ -1951,7 +1956,7 @@ var KARO_DB = (function(){
     historyCloseBtn.addEventListener('click', function(){ historyOverlay.classList.remove('active'); });
     historyOverlay.addEventListener('click', function(e){ if (e.target === historyOverlay) historyOverlay.classList.remove('active'); });
 
-    // REFERRAL SYSTEM
+    // ===== REFERRAL =====
     var referralOverlay = document.getElementById('referralOverlay');
     var referralBadge = document.getElementById('referralBadge');
     var referralCloseBtn = document.getElementById('referralCloseBtn');
@@ -2007,7 +2012,7 @@ var KARO_DB = (function(){
                 }).join('');
             }
         } catch (e) {
-            refList.innerHTML = '<div style="color:#f44336; text-align:center; padding:15px;">Error: ' + e.message + '<br><small>Firestore index create karein</small></div>';
+            refList.innerHTML = '<div style="color:#f44336; text-align:center; padding:15px;">Error: ' + e.message + '</div>';
         }
     });
 
@@ -2113,6 +2118,7 @@ var KARO_DB = (function(){
         refreshStats();
         renderUsersTable();
         renderDepositsTable();
+        renderBoxResultsTable();
         renderClaimsTable();
         renderWithdrawalsTable();
         renderReferralsTable();
@@ -2142,6 +2148,7 @@ var KARO_DB = (function(){
                 refreshStats();
                 renderUsersTable();
                 renderDepositsTable();
+                renderBoxResultsTable();
                 renderClaimsTable();
                 renderWithdrawalsTable();
                 renderReferralsTable();
@@ -2156,6 +2163,7 @@ var KARO_DB = (function(){
     var panels = {
         users: document.getElementById('panelUsers'),
         deposits: document.getElementById('panelDeposits'),
+        boxresults: document.getElementById('panelBoxResults'),
         claims: document.getElementById('panelClaims'),
         withdrawals: document.getElementById('panelWithdrawals'),
         referrals: document.getElementById('panelReferrals'),
@@ -2172,9 +2180,11 @@ var KARO_DB = (function(){
             if (t === 'winner') loadWinnerSettingsIntoForm();
             if (t === 'settings') loadSettingsIntoForm();
             if (t === 'referrals') renderReferralsTable();
+            if (t === 'boxresults') renderBoxResultsTable();
         });
     });
 
+    // ===== USERS =====
     var userSearch = document.getElementById('userSearch');
     function renderUsersTable() {
         var users = KARO_DB.loadUsers();
@@ -2248,6 +2258,7 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
+    // ===== DEPOSITS =====
     async function renderDepositsTable() {
         var tb = document.getElementById('depositsTableBody');
         tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#889;">Loading...</td></tr>';
@@ -2296,6 +2307,114 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
+    // ===== BOX RESULTS (Manual Prize Setting) =====
+    var boxResultSearch = document.getElementById('boxResultSearch');
+    var refreshBoxResultsBtn = document.getElementById('refreshBoxResultsBtn');
+
+    async function renderBoxResultsTable() {
+        var tb = document.getElementById('boxResultsTableBody');
+        if (!tb) return;
+        tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#889;">Loading...</td></tr>';
+        try {
+            // Force refresh from Firestore
+            await KARO_DB.fetchRecords();
+            var records = KARO_DB.getRecords();
+            var q = (boxResultSearch?.value || '').trim().toLowerCase();
+            if (q) {
+                records = records.filter(function(r){
+                    return (r.username || '').toLowerCase().includes(q) ||
+                           (r.box_code || '').toLowerCase().includes(q);
+                });
+            }
+            tb.innerHTML = '';
+            document.getElementById('boxResultsEmpty').style.display = records.length === 0 ? 'block' : 'none';
+            records.slice(0, 100).forEach(function(r, i){
+                var tr = document.createElement('tr');
+                var date = new Date(r.timestamp).toLocaleString('en-IN');
+                var st = r.status || 'pending';
+                var statusPill = st === 'pending' ? '<span class="status-pill pending">PENDING</span>' 
+                                : (st === 'won' || r.win) ? '<span class="status-pill won">WON</span>'
+                                : '<span class="status-pill lost">LOST</span>';
+                var prizeDisplay = r.prize_amount > 0 ? '₹' + r.prize_amount : '-';
+                
+                var actionCell = '-';
+                if (st === 'pending') {
+                    actionCell = '<input type="number" min="0" placeholder="Prize ₹" data-record-id="' + r._id + '" style="width:80px;padding:5px 8px;border-radius:6px;border:1px solid #3a4055;background:#0a0e1a;color:#4caf50;font-weight:700;font-size:12px;" />' +
+                    '<button class="tbl-btn green" data-set-result="' + r._id + '" style="margin-left:4px;">Set</button>';
+                } else {
+                    actionCell = '<span style="opacity:0.5;font-size:11px;">✓ Done</span>';
+                }
+                
+                tr.innerHTML = '<td>' + (i+1) + '</td>' +
+                    '<td style="color:#fff;font-weight:700;">' + (r.username || '-') + '</td>' +
+                    '<td style="color:#ffd700;font-weight:900;">' + (r.box_code || '-') + '</td>' +
+                    '<td>₹' + (r.amount || 0) + '</td>' +
+                    '<td>' + statusPill + '</td>' +
+                    '<td style="color:#4caf50;font-weight:700;">' + prizeDisplay + '</td>' +
+                    '<td style="font-size:11px;color:#889;">' + date + '</td>' +
+                    '<td>' + actionCell + '</td>';
+                tb.appendChild(tr);
+            });
+
+            tb.querySelectorAll('button[data-set-result]').forEach(function(btn){
+                btn.addEventListener('click', async function(){
+                    var recordId = this.dataset.setResult;
+                    var input = tb.querySelector('input[data-record-id="' + recordId + '"]');
+                    var amt = parseInt(input.value);
+                    if (isNaN(amt) || amt < 0) {
+                        showAdminToast('Enter valid prize amount (0 = LOST)', 'error');
+                        return;
+                    }
+                    await setBoxResult(recordId, amt);
+                });
+            });
+        } catch (e) {
+            tb.innerHTML = '<tr><td colspan="8" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>';
+        }
+    }
+
+    async function setBoxResult(recordId, prizeAmount) {
+        try {
+            var records = KARO_DB.getRecords();
+            var rec = records.find(function(r){ return r._id === recordId; });
+            if (!rec) { showAdminToast('Record not found', 'error'); return; }
+            if (rec.status !== 'pending') { showAdminToast('Already processed', 'error'); return; }
+
+            var isWin = prizeAmount > 0;
+            var newStatus = isWin ? 'won' : 'lost';
+
+            await KARO_DB.updateRecord(recordId, {
+                status: newStatus,
+                win: isWin,
+                prize_amount: prizeAmount,
+                processedAt: Date.now()
+            });
+
+            if (isWin) {
+                await KARO_DB.updateUserBalance(rec.username, prizeAmount);
+                await KARO_DB.addTransaction({
+                    username: rec.username,
+                    amount: prizeAmount,
+                    type: 'prize',
+                    description: 'Prize for box ' + rec.box_code,
+                    box_code: rec.box_code
+                });
+                showAdminToast('✅ ' + rec.username + ' won ₹' + prizeAmount + ' (wallet credited)', 'success');
+            } else {
+                showAdminToast('📉 ' + rec.username + ' lost box ' + rec.box_code, 'info');
+            }
+
+            refreshStats();
+            renderBoxResultsTable();
+        } catch (e) {
+            showAdminToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    if (refreshBoxResultsBtn) refreshBoxResultsBtn.addEventListener('click', renderBoxResultsTable);
+    if (boxResultSearch) boxResultSearch.addEventListener('input', renderBoxResultsTable);
+
+    // ===== CLAIMS (legacy) =====
     async function renderClaimsTable() {
         var tb = document.getElementById('claimsTableBody');
         tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#889;">Loading...</td></tr>';
@@ -2344,6 +2463,7 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
+    // ===== WITHDRAWALS =====
     async function renderWithdrawalsTable() {
         var tb = document.getElementById('withdrawalsTableBody');
         tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#889;">Loading...</td></tr>';
@@ -2391,14 +2511,16 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
+    // ===== REFERRALS =====
     async function renderReferralsTable() {
         var tb = document.getElementById('referralsTableBody');
         if (!tb) return;
         tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#889;">Loading...</td></tr>';
         try {
-            var snap = await db.collection('referrals').orderBy('createdAt', 'desc').get();
+            var snap = await db.collection('referrals').get();
             var list = [];
             snap.forEach(function(doc) { var d = doc.data(); d._id = doc.id; list.push(d); });
+            list.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
             tb.innerHTML = '';
             document.getElementById('referralsEmpty').style.display = list.length === 0 ? 'block' : 'none';
             list.forEach(function(r, i) {
@@ -2414,10 +2536,11 @@ var KARO_DB = (function(){
                 tb.appendChild(tr);
             });
         } catch (e) {
-            tb.innerHTML = '<tr><td colspan="7" style="color:#f44336;text-align:center;">' + e.message + '<br><small>Firestore index create karein</small></td></tr>';
+            tb.innerHTML = '<tr><td colspan="7" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>';
         }
     }
 
+    // ===== RECORDS =====
     function renderRecordsTable() {
         var records = KARO_DB.getRecords();
         var tb = document.getElementById('recordsTableBody');
@@ -2426,17 +2549,22 @@ var KARO_DB = (function(){
         records.slice(0, 100).forEach(function(r, i){
             var tr = document.createElement('tr');
             var date = new Date(r.timestamp).toLocaleString('en-IN');
+            var st = r.status || 'pending';
+            var statusPill = st === 'pending' ? '<span class="status-pill pending">PENDING</span>'
+                            : (st === 'won' || r.win) ? '<span class="status-pill won">WON</span>'
+                            : '<span class="status-pill lost">LOST</span>';
             tr.innerHTML = '<td>' + (i+1) + '</td>' +
                 '<td style="color:#fff;">' + (r.username || '-') + '</td>' +
                 '<td style="color:#ffd700;">' + (r.box_code || '-') + '</td>' +
                 '<td>₹' + (r.amount || 0) + '</td>' +
-                '<td>' + (r.win ? '<span style="color:#4caf50;">WON ₹' + (r.prize_amount || 0) + '</span>' : '<span style="color:#f44336;">LOST</span>') + '</td>' +
-                '<td><span class="status-pill ' + (r.status || 'pending') + '">' + (r.status || 'pending') + '</span></td>' +
+                '<td>' + (r.win ? '<span style="color:#4caf50;">WON ₹' + (r.prize_amount || 0) + '</span>' : (st === 'pending' ? '-' : '<span style="color:#f44336;">LOST</span>')) + '</td>' +
+                '<td>' + statusPill + '</td>' +
                 '<td style="font-size:11px;">' + date + '</td>';
             tb.appendChild(tr);
         });
     }
 
+    // ===== WINNER SETTINGS =====
     var wsDigitInputs = [
         document.getElementById('wsDigit0'), document.getElementById('wsDigit1'),
         document.getElementById('wsDigit2'), document.getElementById('wsDigit3')
@@ -2508,6 +2636,7 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
+    // ===== SETTINGS =====
     function loadSettingsIntoForm() {
         if (currentAdmin) document.getElementById('settingsCurrentUsername').value = currentAdmin.username;
         document.getElementById('settingsNewUsername').value = '';
@@ -2557,7 +2686,7 @@ var KARO_DB = (function(){
         if (currentAdmin) { refreshStats(); renderUsersTable(); }
     });
     window.addEventListener('karorpati_records_updated', function(){
-        if (currentAdmin) { refreshStats(); renderRecordsTable(); }
+        if (currentAdmin) { refreshStats(); renderRecordsTable(); renderBoxResultsTable(); }
     });
     window.addEventListener('karorpati_db_ready', function(){ tryAutoLogin(); });
 })();
