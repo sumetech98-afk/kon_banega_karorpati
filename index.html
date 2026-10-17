@@ -312,7 +312,7 @@
 }
 #adminView .admin-auth-box .admin-error { color: #f44336; font-size: 13px; text-align: center; margin-top: 8px; min-height: 20px; }
 #adminView .admin-auth-box .hint { text-align: center; color: #667; font-size: 11px; margin-top: 12px; border-top: 1px dashed #333; padding-top: 10px; }
-#adminView .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 0 12px 40px; }
+#adminView .admin-wrap { max-width: 1200px; margin: 0 auto; padding: 0 12px 40px; }
 #adminView .admin-header {
     display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
     background: rgba(30,37,56,0.92); border: 1px solid #ff525255; border-radius: 20px;
@@ -464,8 +464,34 @@
 #secretCodeCancelBtn { background: #3a3045; color: #ccc; }
 #secretCodeOkBtn { background: linear-gradient(135deg,#ff5252,#c62828); color: #fff; }
 
+.ns-summary-card {
+    background:#121724; border:1px solid #2a3045; border-radius:12px;
+    padding:12px; text-align:center;
+}
+.ns-summary-card .ns-value { font-size:22px; font-weight:900; color:#ffd700; }
+.ns-summary-card .ns-label { color:#889; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+.ns-summary-card.green .ns-value { color:#4caf50; }
+.ns-summary-card.red .ns-value { color:#f44336; }
+.ns-summary-card.orange .ns-value { color:#ff9800; }
+
+.code-badge {
+    background:#0a0e1a; padding:4px 10px; border-radius:6px;
+    color:#ffd700; font-family:monospace; font-weight:900; font-size:13px;
+    border:1px solid #ffd70044; display:inline-block;
+}
+
+.rank-badge {
+    display:inline-block; min-width:28px; padding:2px 8px;
+    border-radius:20px; font-size:11px; font-weight:800;
+    background:#2a3045; color:#aab;
+}
+.rank-badge.top1 { background:linear-gradient(135deg,#ffd700,#e6b800); color:#1a1f2f; }
+.rank-badge.top2 { background:linear-gradient(135deg,#c0c0c0,#9a9a9a); color:#1a1f2f; }
+.rank-badge.top3 { background:linear-gradient(135deg,#cd7f32,#a05a1f); color:#fff; }
+
 @media (max-width: 600px) {
     #viewSwitcher button { padding: 6px 12px; font-size: 11px; }
+    .ns-summary-card .ns-value { font-size:18px; }
 }
 </style>
 </head>
@@ -538,7 +564,6 @@
                 <div class="title-area">
                     <h1><i class="fas fa-trophy"></i> Karorpati</h1>
                     <div class="btn-group">
-                        <button id="resultsBtn"><i class="fas fa-list"></i> Prizes</button>
                         <button id="historyBtn"><i class="fas fa-history"></i> History</button>
                     </div>
                 </div>
@@ -560,18 +585,6 @@
                 </button>
             </div>
             <div class="result-msg" id="resultMsg">🎯 Select a box and click "Pick Box & Pay" to play!</div>
-        </div>
-
-        <div class="modal-overlay" id="resultsOverlay">
-            <div class="modal-panel">
-                <h2><i class="fas fa-trophy"></i> Box Status Info</h2>
-                <p style="color:#aab; font-size:13px; text-align:center; margin-bottom:15px;">
-                    Har box kharidne ke baad uska result <b style="color:#ffd700;">admin manually update karega</b>.<br>
-                    Aap History tab mein status dekh sakte hain.
-                </p>
-                <div id="resultsGrid" style="display:grid; grid-template-columns:repeat(5,1fr); gap:6px;"></div>
-                <button class="modal-close-btn" id="resultsCloseBtn">Close</button>
-            </div>
         </div>
 
         <div class="modal-overlay" id="historyOverlay">
@@ -773,6 +786,7 @@
             <button class="active" data-tab="users"><i class="fas fa-users"></i> Users</button>
             <button data-tab="deposits"><i class="fas fa-arrow-up"></i> Deposits</button>
             <button data-tab="boxresults"><i class="fas fa-box-open"></i> Box Results</button>
+            <button data-tab="numberstats"><i class="fas fa-chart-bar"></i> Number Stats</button>
             <button data-tab="claims"><i class="fas fa-gift"></i> Claims</button>
             <button data-tab="withdrawals"><i class="fas fa-arrow-down"></i> Withdrawals</button>
             <button data-tab="referrals"><i class="fas fa-share-alt"></i> Referrals</button>
@@ -835,6 +849,57 @@
                 </table>
             </div>
             <div class="empty-state" id="boxResultsEmpty" style="display:none;">No records found.</div>
+        </div>
+
+        <div class="admin-panel" id="panelNumberStats" style="display:none;">
+            <h3><i class="fas fa-chart-bar"></i> Complete Box Number Records</h3>
+            <p style="color:#aab; font-size:13px; margin-bottom:14px;">
+                Har box code ki sale count, revenue, aur last sold time. <b style="color:#f44336;">Red</b> = sabse kam bika, <b style="color:#4caf50;">Green</b> = sabse zyada bika.
+            </p>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:16px;">
+                <div class="ns-summary-card">
+                    <div class="ns-value" id="nsTotalSales">0</div>
+                    <div class="ns-label">Total Boxes Sold</div>
+                </div>
+                <div class="ns-summary-card green">
+                    <div class="ns-value" id="nsUniqueCodes">0</div>
+                    <div class="ns-label">Unique Codes Sold</div>
+                </div>
+                <div class="ns-summary-card">
+                    <div class="ns-value" id="nsMostSold">-</div>
+                    <div class="ns-label">Most Sold</div>
+                </div>
+                <div class="ns-summary-card red">
+                    <div class="ns-value" id="nsLeastSold">-</div>
+                    <div class="ns-label">Least Sold</div>
+                </div>
+                <div class="ns-summary-card orange">
+                    <div class="ns-value" id="nsTotalRevenue">₹0</div>
+                    <div class="ns-label">Total Revenue</div>
+                </div>
+            </div>
+
+            <div class="admin-search-row">
+                <input type="text" id="nsSearchInput" placeholder="🔍 Search box code..." />
+                <button id="nsRefreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
+
+            <div class="admin-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Box Code</th>
+                            <th>Times Sold</th>
+                            <th>Revenue</th>
+                            <th>Last Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody id="numberStatsTableBody"></tbody>
+                </table>
+            </div>
+            <div class="empty-state" id="numberStatsEmpty" style="display:none;">No sales yet.</div>
         </div>
 
         <div class="admin-panel" id="panelClaims" style="display:none;">
@@ -988,16 +1053,13 @@
      ================================================================ -->
 <script>
 // 🔥 YAHAN APNA firebaseConfig PASTE KAREIN
-
 const firebaseConfig = {
-  apiKey: "AIzaSyDnGHcGAbmsuMgZoXDDIAi1ovgW0Yvj6QQ",
-  authDomain: "numbergame-66ec7.firebaseapp.com",
-  databaseURL: "https://numbergame-66ec7-default-rtdb.firebaseio.com",
-  projectId: "numbergame-66ec7",
-  storageBucket: "numbergame-66ec7.firebasestorage.app",
-  messagingSenderId: "329880427086",
-  appId: "1:329880427086:web:00166eaee49891c308411f",
-  measurementId: "G-5F1Q5DK6H8"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
@@ -1045,7 +1107,6 @@ var KARO_DB = (function(){
 
     function getRecords() { return KARO_CACHE.records; }
     async function fetchRecords() {
-        // Index-free: fetch all, sort client-side
         var snap = await db.collection('records').get();
         var records = [];
         snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; records.push(d); });
@@ -1090,7 +1151,6 @@ var KARO_DB = (function(){
         return newBalance;
     }
     async function getTransactions(username) {
-        // Index-free: only where + client-side sort
         var snap = await db.collection('transactions')
             .where('username', '==', username)
             .get();
@@ -1210,7 +1270,6 @@ var KARO_DB = (function(){
         return ref.id;
     }
     async function getReferrals(referrerUid) {
-        // Index-free: only where + client-side sort
         var snap = await db.collection('referrals')
             .where('referrerUid', '==', referrerUid)
             .get();
@@ -1250,7 +1309,6 @@ var KARO_DB = (function(){
             KARO_CACHE.users = users;
             window.dispatchEvent(new Event('karorpati_users_updated'));
         });
-        // Index-free snapshot for records
         db.collection('records').onSnapshot(function(snap){
             var records = [];
             snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; records.push(d); });
@@ -1406,6 +1464,7 @@ var KARO_DB = (function(){
 (function(){
     var FIXED_AMOUNT = 25;
     var UPI_FOR_DEPOSIT = 's6154632725482301@slc';
+    var APP_DOWNLOAD_URL = 'https://drive.google.com/file/d/13dIZ0WOD5hK009dDtQIWKgLCFF7S02US/view?usp=drivesdk';
     var currentUser = null, selectedBox = null, boxData = [], isPlaying = false;
 
     var authOverlay = document.getElementById('authOverlay');
@@ -1681,7 +1740,6 @@ var KARO_DB = (function(){
                 box_code: box.code
             });
 
-            // Mark box as pending (NOT revealed with prize)
             box.revealed = true;
             box.pending = true;
             box.won = false;
@@ -1903,25 +1961,7 @@ var KARO_DB = (function(){
         }
     });
 
-    // ===== RESULTS & HISTORY =====
-    var resultsOverlay = document.getElementById('resultsOverlay');
-    var resultsGrid = document.getElementById('resultsGrid');
-    var resultsBtn = document.getElementById('resultsBtn');
-    var resultsCloseBtn = document.getElementById('resultsCloseBtn');
-    resultsBtn.addEventListener('click', function(){
-        resultsGrid.innerHTML = '';
-        boxData.forEach(function(b, i){
-            var d = document.createElement('div');
-            d.style.cssText = 'background:#121724;padding:6px;border-radius:8px;text-align:center;font-size:11px;border:1px solid #2a3045;';
-            var statusIcon = b.revealed ? (b.pending ? '⏳' : (b.won ? '🎉' : '😞')) : '🎁';
-            d.innerHTML = '<div style="color:#ffd700;font-weight:700;">#' + (i+1) + '</div><div style="font-size:14px;">' + statusIcon + '</div>';
-            resultsGrid.appendChild(d);
-        });
-        resultsOverlay.classList.add('active');
-    });
-    resultsCloseBtn.addEventListener('click', function(){ resultsOverlay.classList.remove('active'); });
-    resultsOverlay.addEventListener('click', function(e){ if (e.target === resultsOverlay) resultsOverlay.classList.remove('active'); });
-
+    // ===== HISTORY =====
     var historyOverlay = document.getElementById('historyOverlay');
     var userSalesList = document.getElementById('userSalesList');
     var historyBtn = document.getElementById('historyBtn');
@@ -1986,6 +2026,17 @@ var KARO_DB = (function(){
         }
     }
 
+    function buildReferralMessage(code) {
+        return '🎮 Karorpati Game — Khelo Aur Jeeto! 🎮\n\n' +
+               '💰 ₹100 Welcome Bonus FREE\n' +
+               '🎁 Referral code use karo: *' + code + '*\n' +
+               '✅ Extra ₹100 bonus milega!\n' +
+               '💸 Real cash withdrawal to bank\n\n' +
+               '📲 *App Download Link:*\n' +
+               APP_DOWNLOAD_URL + '\n\n' +
+               'Download karo aur khelo! 🚀';
+    }
+
     referralBadge.addEventListener('click', async function() {
         if (!currentUser) return;
         referralOverlay.classList.add('active');
@@ -2019,7 +2070,12 @@ var KARO_DB = (function(){
     copyRefCodeBtn.addEventListener('click', function() {
         var code = myReferralCode.textContent;
         if (!code || code === 'Loading...' || code === 'Error') return;
-        if (navigator.clipboard) navigator.clipboard.writeText(code).then(function(){ showToast('✅ Referral code copied!', 'success'); });
+        var msg = buildReferralMessage(code);
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(msg).then(function(){
+                showToast('✅ Message with download link copied!', 'success');
+            });
+        }
     });
 
     referralCloseBtn.addEventListener('click', function() { referralOverlay.classList.remove('active'); });
@@ -2027,18 +2083,28 @@ var KARO_DB = (function(){
 
     refShareWhatsAppBtn.addEventListener('click', function() {
         var code = myReferralCode.textContent;
-        var msg = '🎮 Karorpati Game khelo!\n\n🎁 Mera referral code use karo: *' + code + '*\n\nExtra ₹100 bonus milega!\n\n' + window.location.href;
+        if (!code || code === 'Loading...' || code === 'Error') return;
+        var msg = buildReferralMessage(code);
         window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
     });
 
     refShareNativeBtn.addEventListener('click', async function() {
         var code = myReferralCode.textContent;
-        var msg = '🎮 Karorpati Game khelo! Mera referral code: ' + code + ' — Extra ₹100 bonus milega!\n' + window.location.href;
+        if (!code || code === 'Loading...' || code === 'Error') return;
+        var msg = buildReferralMessage(code);
         if (navigator.share) {
-            try { await navigator.share({ title: 'Karorpati', text: msg }); } catch(e) {}
+            try {
+                await navigator.share({
+                    title: 'Karorpati Game — Khelo Aur Jeeto!',
+                    text: msg,
+                    url: APP_DOWNLOAD_URL
+                });
+            } catch(e) {}
         } else {
-            if (navigator.clipboard) navigator.clipboard.writeText(msg);
-            showToast('📋 Message copied!', 'success');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(msg);
+                showToast('📋 Message copied with download link!', 'success');
+            }
         }
     });
 
@@ -2115,16 +2181,19 @@ var KARO_DB = (function(){
         adminAuthOverlay.classList.add('hidden');
         adminMain.style.display = 'block';
         adminBadge.textContent = u;
-        refreshStats();
-        renderUsersTable();
-        renderDepositsTable();
-        renderBoxResultsTable();
-        renderClaimsTable();
-        renderWithdrawalsTable();
-        renderReferralsTable();
-        renderRecordsTable();
-        loadWinnerSettingsIntoForm();
-        loadSettingsIntoForm();
+        await Promise.all([
+            refreshStats(),
+            renderUsersTable(),
+            renderDepositsTable(),
+            renderBoxResultsTable(),
+            renderNumberStats(),
+            renderClaimsTable(),
+            renderWithdrawalsTable(),
+            renderReferralsTable(),
+            renderRecordsTable(),
+            loadWinnerSettingsIntoForm(),
+            loadSettingsIntoForm()
+        ]);
     }
     adminLoginBtn.addEventListener('click', tryAdminLogin);
     adminPassIn.addEventListener('keypress', function(e){ if (e.key === 'Enter') tryAdminLogin(); });
@@ -2145,16 +2214,19 @@ var KARO_DB = (function(){
                 adminAuthOverlay.classList.add('hidden');
                 adminMain.style.display = 'block';
                 adminBadge.textContent = u.username;
-                refreshStats();
-                renderUsersTable();
-                renderDepositsTable();
-                renderBoxResultsTable();
-                renderClaimsTable();
-                renderWithdrawalsTable();
-                renderReferralsTable();
-                renderRecordsTable();
-                loadWinnerSettingsIntoForm();
-                loadSettingsIntoForm();
+                Promise.all([
+                    refreshStats(),
+                    renderUsersTable(),
+                    renderDepositsTable(),
+                    renderBoxResultsTable(),
+                    renderNumberStats(),
+                    renderClaimsTable(),
+                    renderWithdrawalsTable(),
+                    renderReferralsTable(),
+                    renderRecordsTable(),
+                    loadWinnerSettingsIntoForm(),
+                    loadSettingsIntoForm()
+                ]);
             }
         }
     }
@@ -2164,6 +2236,7 @@ var KARO_DB = (function(){
         users: document.getElementById('panelUsers'),
         deposits: document.getElementById('panelDeposits'),
         boxresults: document.getElementById('panelBoxResults'),
+        numberstats: document.getElementById('panelNumberStats'),
         claims: document.getElementById('panelClaims'),
         withdrawals: document.getElementById('panelWithdrawals'),
         referrals: document.getElementById('panelReferrals'),
@@ -2181,6 +2254,7 @@ var KARO_DB = (function(){
             if (t === 'settings') loadSettingsIntoForm();
             if (t === 'referrals') renderReferralsTable();
             if (t === 'boxresults') renderBoxResultsTable();
+            if (t === 'numberstats') renderNumberStats();
         });
     });
 
@@ -2316,7 +2390,6 @@ var KARO_DB = (function(){
         if (!tb) return;
         tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#889;">Loading...</td></tr>';
         try {
-            // Force refresh from Firestore
             await KARO_DB.fetchRecords();
             var records = KARO_DB.getRecords();
             var q = (boxResultSearch?.value || '').trim().toLowerCase();
@@ -2414,7 +2487,92 @@ var KARO_DB = (function(){
     if (refreshBoxResultsBtn) refreshBoxResultsBtn.addEventListener('click', renderBoxResultsTable);
     if (boxResultSearch) boxResultSearch.addEventListener('input', renderBoxResultsTable);
 
-    // ===== CLAIMS (legacy) =====
+    // ===== NUMBER STATS =====
+    var nsSearchInput = document.getElementById('nsSearchInput');
+    var nsRefreshBtn = document.getElementById('nsRefreshBtn');
+
+    async function renderNumberStats() {
+        var tb = document.getElementById('numberStatsTableBody');
+        if (!tb) return;
+        tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#889;">Loading...</td></tr>';
+        try {
+            await KARO_DB.fetchRecords();
+            var records = KARO_DB.getRecords();
+
+            var codeMap = {};
+            records.forEach(function(r) {
+                var code = r.box_code || '';
+                if (!code) return;
+                if (!codeMap[code]) {
+                    codeMap[code] = { count: 0, revenue: 0, lastTime: 0 };
+                }
+                codeMap[code].count++;
+                codeMap[code].revenue += (parseFloat(r.amount) || 0);
+                if ((r.timestamp || 0) > codeMap[code].lastTime) {
+                    codeMap[code].lastTime = r.timestamp || 0;
+                }
+            });
+
+            var codes = Object.keys(codeMap);
+            codes.sort(function(a, b) { return codeMap[a].count - codeMap[b].count; });
+
+            var totalSales = 0;
+            var totalRevenue = 0;
+            codes.forEach(function(c){ totalSales += codeMap[c].count; totalRevenue += codeMap[c].revenue; });
+            document.getElementById('nsTotalSales').textContent = totalSales;
+            document.getElementById('nsUniqueCodes').textContent = codes.length;
+            document.getElementById('nsTotalRevenue').textContent = '₹' + totalRevenue;
+
+            if (codes.length > 0) {
+                var leastCode = codes[0];
+                var mostCode = codes[codes.length - 1];
+                document.getElementById('nsLeastSold').textContent = leastCode;
+                document.getElementById('nsMostSold').textContent = mostCode;
+            } else {
+                document.getElementById('nsLeastSold').textContent = '-';
+                document.getElementById('nsMostSold').textContent = '-';
+            }
+
+            var q = (nsSearchInput?.value || '').trim().toLowerCase();
+            if (q) {
+                codes = codes.filter(function(c){ return c.toLowerCase().includes(q); });
+            }
+
+            tb.innerHTML = '';
+            document.getElementById('numberStatsEmpty').style.display = codes.length === 0 ? 'block' : 'none';
+            codes.forEach(function(code, i) {
+                var info = codeMap[code];
+                var tr = document.createElement('tr');
+                var lastStr = info.lastTime ? new Date(info.lastTime).toLocaleString('en-IN') : '-';
+
+                var isLeast = (i === 0 && !q);
+                var isMost = (i === codes.length - 1 && !q);
+                var codeColor = '#ffd700';
+                var countColor = '#4caf50';
+                if (isLeast) { countColor = '#f44336'; codeColor = '#f44336'; }
+                else if (isMost) { countColor = '#4caf50'; codeColor = '#4caf50'; }
+
+                var rankClass = '';
+                if (i === 0) rankClass = 'top1';
+                else if (i === 1) rankClass = 'top2';
+                else if (i === 2) rankClass = 'top3';
+
+                tr.innerHTML = '<td><span class="rank-badge ' + rankClass + '">' + (i+1) + '</span></td>' +
+                    '<td><span class="code-badge" style="border-color:' + codeColor + '66;color:' + codeColor + ';">' + code + '</span></td>' +
+                    '<td style="color:' + countColor + ';font-weight:700;font-size:14px;">' + info.count + '</td>' +
+                    '<td style="color:#4caf50;font-weight:700;">₹' + info.revenue + '</td>' +
+                    '<td style="font-size:11px;color:#889;">' + lastStr + '</td>';
+                tb.appendChild(tr);
+            });
+        } catch (e) {
+            tb.innerHTML = '<tr><td colspan="5" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>';
+        }
+    }
+
+    if (nsRefreshBtn) nsRefreshBtn.addEventListener('click', renderNumberStats);
+    if (nsSearchInput) nsSearchInput.addEventListener('input', renderNumberStats);
+
+    // ===== CLAIMS =====
     async function renderClaimsTable() {
         var tb = document.getElementById('claimsTableBody');
         tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#889;">Loading...</td></tr>';
@@ -2686,7 +2844,7 @@ var KARO_DB = (function(){
         if (currentAdmin) { refreshStats(); renderUsersTable(); }
     });
     window.addEventListener('karorpati_records_updated', function(){
-        if (currentAdmin) { refreshStats(); renderRecordsTable(); renderBoxResultsTable(); }
+        if (currentAdmin) { refreshStats(); renderRecordsTable(); renderBoxResultsTable(); renderNumberStats(); }
     });
     window.addEventListener('karorpati_db_ready', function(){ tryAutoLogin(); });
 })();
