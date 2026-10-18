@@ -99,6 +99,12 @@
     margin-top: 25px; color: #b8aa94; font-size: 0.85rem;
     letter-spacing: 1px; border-top: 1px dashed rgba(212,160,23,0.2); padding-top: 18px;
 }
+#luckyView .draw-date-display {
+    display:inline-block; background: rgba(247,212,74,0.12);
+    border:1px solid rgba(247,212,74,0.4); color:#f7d44a;
+    padding:6px 18px; border-radius:30px; font-size:0.9rem;
+    font-weight:700; letter-spacing:1px; margin-top:4px;
+}
 
 #karorpatiView { display: none; position: fixed; inset: 0; overflow-y: auto; padding-top: 60px; background: linear-gradient(145deg,#0b0e1a 0%,#1a1f2f 100%); z-index: 50; }
 #karorpatiView.active { display: block; }
@@ -273,6 +279,10 @@
 .ref-input-group label { color: #e91e63 !important; }
 .ref-input-group input { background: rgba(156,39,176,0.08) !important; border-color: rgba(156,39,176,0.5) !important; text-transform: uppercase; }
 
+/* Buyer info modal styles */
+.buyer-info-row { display:flex; gap:10px; margin-bottom:10px; }
+.buyer-info-row .input-group { flex:1; margin-bottom:0; }
+
 @media (max-width: 520px) {
     #luckyView .main-box { padding: 1.8rem 1rem; border-radius: 40px 10px 40px 10px; }
     #luckyView .reel { width: 55px; height: 70px; font-size: 2.8rem; }
@@ -382,6 +392,7 @@
     color: #4fc3f7; border: 1px solid #4fc3f755;
 }
 #adminView table td .role-pill.admin { background: #ff525222; color: #ff5252; border-color: #ff525255; }
+#adminView table td .role-pill.agent { background: #ffb30022; color: #ffb300; border-color: #ffb30055; }
 #adminView .ref-code-pill { color:#e91e63; font-family:monospace; font-weight:900; font-size:12px; background:rgba(233,30,99,0.15); padding:3px 8px; border-radius:6px; border:1px solid rgba(233,30,99,0.4); display:inline-block; }
 #adminView .tbl-btn {
     padding: 5px 10px; border-radius: 8px; border: 1px solid #3a4055;
@@ -394,6 +405,8 @@
 #adminView .tbl-btn.red:hover { background: #f4433622; }
 #adminView .tbl-btn.blue { border-color: #4fc3f766; color: #4fc3f7; }
 #adminView .tbl-btn.blue:hover { background: #4fc3f722; }
+#adminView .tbl-btn.orange { border-color: #ff980066; color: #ff9800; }
+#adminView .tbl-btn.orange:hover { background: #ff980022; }
 #adminView .tbl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 #adminView .empty-state { text-align: center; padding: 40px 20px; color: #667; }
 #adminView .admin-toast {
@@ -489,9 +502,61 @@
 .rank-badge.top2 { background:linear-gradient(135deg,#c0c0c0,#9a9a9a); color:#1a1f2f; }
 .rank-badge.top3 { background:linear-gradient(135deg,#cd7f32,#a05a1f); color:#fff; }
 
+/* ============ AGENT PANEL ============ */
+#agentPanelView { display:none; position:fixed; inset:0; overflow-y:auto; padding-top:60px; background:linear-gradient(145deg,#0b0e1a 0%,#1a2a1f 100%); z-index:50; }
+#agentPanelView.active { display:block; }
+#agentPanelView .agent-wrap { max-width:1100px; margin:0 auto; padding:0 12px 40px; }
+#agentPanelView .agent-header {
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    background:rgba(30,40,56,0.92); border:1px solid #ffb30055; border-radius:20px;
+    padding:14px 18px; margin:12px 0 16px;
+}
+#agentPanelView .agent-header h1 { color:#ffb300; font-size:20px; font-weight:900; display:flex; align-items:center; gap:8px; }
+#agentPanelView .agent-header .agent-user { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+#agentPanelView .agent-header .agent-user .badge { background:#ffb300; color:#1a1f2f; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; }
+#agentPanelView .agent-header .agent-user button {
+    background:#3a2a2a; border:1px solid #7d3a3a; color:#fff;
+    padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600;
+    cursor:pointer; display:flex; align-items:center; gap:5px;
+}
+#agentPanelView .agent-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:16px; }
+#agentPanelView .agent-stat-card {
+    background:rgba(30,40,56,0.92); border:1px solid #2a3045;
+    border-radius:16px; padding:14px; text-align:center;
+}
+#agentPanelView .agent-stat-card .stat-value { color:#ffb300; font-size:26px; font-weight:900; }
+#agentPanelView .agent-stat-card .stat-label { color:#aab; font-size:12px; margin-top:4px; text-transform:uppercase; letter-spacing:1px; }
+#agentPanelView .agent-stat-card.green .stat-value { color:#4caf50; }
+#agentPanelView .agent-stat-card.blue .stat-value { color:#4fc3f7; }
+#agentPanelView .agent-panel { background:rgba(30,40,56,0.92); border:1px solid #2a3045; border-radius:20px; padding:18px; }
+#agentPanelView .agent-panel h3 { color:#ffb300; font-size:16px; margin-bottom:14px; border-bottom:1px dashed #333; padding-bottom:10px; display:flex; align-items:center; gap:8px; }
+#agentPanelView .agent-search-row { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+#agentPanelView .agent-search-row input, #agentPanelView .agent-search-row select {
+    flex:1; min-width:160px; padding:10px 14px; border-radius:12px;
+    border:1px solid #3a4055; background:#121724; color:#fff; font-size:14px; outline:none;
+}
+#agentPanelView .agent-table-wrap { overflow-x:auto; border-radius:12px; border:1px solid #2a3045; }
+#agentPanelView table { width:100%; border-collapse:collapse; font-size:13px; min-width:700px; }
+#agentPanelView table thead { background:#121724; }
+#agentPanelView table th { color:#ffb300; padding:10px 12px; text-align:left; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; }
+#agentPanelView table td { padding:10px 12px; color:#ccc; border-top:1px solid #1a2030; }
+#agentPanelView table tbody tr:hover { background:#1a2232; }
+#agentPanelView .empty-state { text-align:center; padding:40px 20px; color:#667; }
+#agentPanelView .agent-toast {
+    position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
+    background:#1e2538; color:#fff; padding:14px 28px; border-radius:60px;
+    border:1px solid #ffb30055; font-weight:500; display:none;
+    z-index:6000; max-width:90%; text-align:center;
+}
+#agentPanelView .agent-toast.show { display:block; }
+#agentPanelView .agent-toast.success { border-color:#4caf50; }
+#agentPanelView .agent-toast.error { border-color:#f44336; }
+#agentPanelView .month-group-title { color:#ffb300; font-size:14px; font-weight:800; margin:16px 0 8px; padding-left:4px; border-left:3px solid #ffb300; padding-left:10px; }
+
 @media (max-width: 600px) {
     #viewSwitcher button { padding: 6px 12px; font-size: 11px; }
     .ns-summary-card .ns-value { font-size:18px; }
+    #agentPanelView .agent-stat-card .stat-value { font-size:20px; }
 }
 </style>
 </head>
@@ -505,6 +570,7 @@
 <div id="viewSwitcher">
     <button id="switchLucky" class="active"><i class="fas fa-star"></i> Lucky Draw</button>
     <button id="switchKarorpati"><i class="fas fa-crown"></i> Karorpati</button>
+    <button id="switchAgent" style="display:none;"><i class="fas fa-user-tie"></i> Agent</button>
     <button id="switchAdmin" class="admin-tab"><i class="fas fa-shield-alt"></i> Admin</button>
 </div>
 
@@ -513,7 +579,7 @@
     <canvas id="starCanvas"></canvas>
     <div class="main-box">
         <h1 id="appLogo">✨ Kon Banega KarorPati ✨</h1>
-        <div class="sub-text">🎰 Today's Winner</div>
+        <div class="sub-text" id="luckyDrawDate">🎰 Today's Winner</div>
         <div class="reel-container" id="reelContainer">
             <div class="reel" id="reel1">0</div>
             <div class="reel" id="reel2">0</div>
@@ -745,6 +811,71 @@
     <div class="toast" id="toast"></div>
 </div>
 
+<!-- ============ AGENT PANEL VIEW ============ -->
+<div id="agentPanelView">
+    <div class="agent-wrap">
+        <div class="agent-auth-overlay" id="agentAuthOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(11,14,26,0.96); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; z-index:5000; padding:20px;">
+            <div style="max-width:380px; width:100%; background:#1e2538; border-radius:40px; padding:32px 24px; border:1px solid #ffb30055; box-shadow:0 30px 60px rgba(0,0,0,0.9);">
+                <h2 style="color:#ffb300; text-align:center; font-size:26px; margin-bottom:8px;"><i class="fas fa-user-tie"></i> Agent Login</h2>
+                <div style="color:#aab; text-align:center; font-size:13px; margin-bottom:22px;">Login to sell numbers &amp; view records</div>
+                <div style="margin-bottom:14px;">
+                    <label style="color:#aab; font-size:13px; display:block; margin-bottom:4px;"><i class="fas fa-user"></i> Agent Username</label>
+                    <input type="text" id="agentUserIn" placeholder="Enter username" style="width:100%; padding:13px 16px; border-radius:14px; border:1px solid #3a4055; background:#121724; color:#fff; font-size:15px; outline:none;" />
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="color:#aab; font-size:13px; display:block; margin-bottom:4px;"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="agentPassIn" placeholder="Enter password" style="width:100%; padding:13px 16px; border-radius:14px; border:1px solid #3a4055; background:#121724; color:#fff; font-size:15px; outline:none;" />
+                </div>
+                <button id="agentLoginBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f; font-weight:700; font-size:17px; cursor:pointer; margin-top:8px;">Login as Agent</button>
+                <div id="agentError" style="color:#f44336; font-size:13px; text-align:center; margin-top:8px; min-height:20px;"></div>
+            </div>
+        </div>
+
+        <div id="agentMain" style="display:none;">
+            <div class="agent-header">
+                <h1><i class="fas fa-user-tie"></i> Agent Panel</h1>
+                <div class="agent-user">
+                    <span class="badge" id="agentBadge">agent</span>
+                    <button id="agentLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </div>
+            </div>
+
+            <div class="agent-stats">
+                <div class="agent-stat-card">
+                    <div class="stat-value" id="agentStatTotal">0</div>
+                    <div class="stat-label">Total Sales</div>
+                </div>
+                <div class="agent-stat-card green">
+                    <div class="stat-value" id="agentStatMonth">0</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+                <div class="agent-stat-card blue">
+                    <div class="stat-value" id="agentStatRevenue">₹0</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="agent-stat-card">
+                    <div class="stat-value" id="agentStatUnique">0</div>
+                    <div class="stat-label">Unique Buyers</div>
+                </div>
+            </div>
+
+            <div class="agent-panel">
+                <h3><i class="fas fa-chart-line"></i> Sales Records <span style="font-size:12px; color:#889; font-weight:400; margin-left:auto;">(Month-wise)</span></h3>
+                <div class="agent-search-row">
+                    <input type="text" id="agentSearchInput" placeholder="🔍 Search by buyer name, mobile or box code..." />
+                    <select id="agentMonthFilter">
+                        <option value="all">All Months</option>
+                    </select>
+                    <button id="agentRefreshBtn" style="padding:10px 20px; border-radius:12px; border:none; background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f; font-weight:700; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:6px;"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div id="agentSalesContainer"></div>
+                <div class="empty-state" id="agentSalesEmpty" style="display:none;">No sales records yet.</div>
+            </div>
+        </div>
+    </div>
+    <div class="agent-toast" id="agentToast"></div>
+</div>
+
 <!-- ADMIN PANEL -->
 <div id="adminView">
     <div class="admin-auth-overlay" id="adminAuthOverlay">
@@ -784,6 +915,7 @@
 
         <div class="admin-tabs">
             <button class="active" data-tab="users"><i class="fas fa-users"></i> Users</button>
+            <button data-tab="agents"><i class="fas fa-user-tie"></i> Agents</button>
             <button data-tab="deposits"><i class="fas fa-arrow-up"></i> Deposits</button>
             <button data-tab="boxresults"><i class="fas fa-box-open"></i> Box Results</button>
             <button data-tab="numberstats"><i class="fas fa-chart-bar"></i> Number Stats</button>
@@ -792,6 +924,7 @@
             <button data-tab="referrals"><i class="fas fa-share-alt"></i> Referrals</button>
             <button data-tab="records"><i class="fas fa-receipt"></i> Records</button>
             <button data-tab="winner"><i class="fas fa-trophy"></i> Winner</button>
+            <button data-tab="luckydate"><i class="fas fa-calendar-alt"></i> Lucky Date</button>
             <button data-tab="settings"><i class="fas fa-cog"></i> Settings</button>
         </div>
 
@@ -808,6 +941,25 @@
                 </table>
             </div>
             <div class="empty-state" id="usersEmpty" style="display:none;">No users.</div>
+        </div>
+
+        <!-- AGENTS TAB -->
+        <div class="admin-panel" id="panelAgents" style="display:none;">
+            <h3><i class="fas fa-user-tie"></i> Manage Agents</h3>
+            <div class="admin-search-row">
+                <input type="text" id="agentSearch" placeholder="🔍 Search agent..." />
+                <button id="addAgentBtn"><i class="fas fa-user-plus"></i> Create Agent</button>
+            </div>
+            <p style="color:#aab; font-size:13px; margin-bottom:14px;">
+                Agents can sell numbers. They must enter buyer name &amp; mobile before each sale.
+            </p>
+            <div class="admin-table-wrap">
+                <table>
+                    <thead><tr><th>#</th><th>Agent</th><th>Phone</th><th>Total Sales</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="agentsTableBody"></tbody>
+                </table>
+            </div>
+            <div class="empty-state" id="agentsEmpty" style="display:none;">No agents yet.</div>
         </div>
 
         <div class="admin-panel" id="panelDeposits" style="display:none;">
@@ -835,14 +987,8 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>User</th>
-                            <th>Box Code</th>
-                            <th>Amount Paid</th>
-                            <th>Status</th>
-                            <th>Prize (₹)</th>
-                            <th>Date</th>
-                            <th>Action</th>
+                            <th>#</th><th>User</th><th>Box Code</th><th>Amount Paid</th>
+                            <th>Status</th><th>Prize (₹)</th><th>Date</th><th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="boxResultsTableBody"></tbody>
@@ -856,46 +1002,20 @@
             <p style="color:#aab; font-size:13px; margin-bottom:14px;">
                 Har box code ki sale count, revenue, aur last sold time. <b style="color:#f44336;">Red</b> = sabse kam bika, <b style="color:#4caf50;">Green</b> = sabse zyada bika.
             </p>
-
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:16px;">
-                <div class="ns-summary-card">
-                    <div class="ns-value" id="nsTotalSales">0</div>
-                    <div class="ns-label">Total Boxes Sold</div>
-                </div>
-                <div class="ns-summary-card green">
-                    <div class="ns-value" id="nsUniqueCodes">0</div>
-                    <div class="ns-label">Unique Codes Sold</div>
-                </div>
-                <div class="ns-summary-card">
-                    <div class="ns-value" id="nsMostSold">-</div>
-                    <div class="ns-label">Most Sold</div>
-                </div>
-                <div class="ns-summary-card red">
-                    <div class="ns-value" id="nsLeastSold">-</div>
-                    <div class="ns-label">Least Sold</div>
-                </div>
-                <div class="ns-summary-card orange">
-                    <div class="ns-value" id="nsTotalRevenue">₹0</div>
-                    <div class="ns-label">Total Revenue</div>
-                </div>
+                <div class="ns-summary-card"><div class="ns-value" id="nsTotalSales">0</div><div class="ns-label">Total Boxes Sold</div></div>
+                <div class="ns-summary-card green"><div class="ns-value" id="nsUniqueCodes">0</div><div class="ns-label">Unique Codes Sold</div></div>
+                <div class="ns-summary-card"><div class="ns-value" id="nsMostSold">-</div><div class="ns-label">Most Sold</div></div>
+                <div class="ns-summary-card red"><div class="ns-value" id="nsLeastSold">-</div><div class="ns-label">Least Sold</div></div>
+                <div class="ns-summary-card orange"><div class="ns-value" id="nsTotalRevenue">₹0</div><div class="ns-label">Total Revenue</div></div>
             </div>
-
             <div class="admin-search-row">
                 <input type="text" id="nsSearchInput" placeholder="🔍 Search box code..." />
                 <button id="nsRefreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
             </div>
-
             <div class="admin-table-wrap">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Box Code</th>
-                            <th>Times Sold</th>
-                            <th>Revenue</th>
-                            <th>Last Sold</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>#</th><th>Box Code</th><th>Times Sold</th><th>Revenue</th><th>Last Sold</th></tr></thead>
                     <tbody id="numberStatsTableBody"></tbody>
                 </table>
             </div>
@@ -985,6 +1105,27 @@
             </div>
         </div>
 
+        <!-- LUCKY DATE TAB -->
+        <div class="admin-panel" id="panelLuckyDate" style="display:none;">
+            <h3><i class="fas fa-calendar-alt"></i> Lucky Draw Date Setting</h3>
+            <p style="color:#aab; font-size:13px; margin-bottom:16px;">
+                Set the date that appears on the Lucky Draw screen below "Kon Banega KarorPati".
+            </p>
+            <div style="background:#121724; border-radius:14px; padding:16px; border-left:3px solid #ffd700;">
+                <label style="color:#aab; font-size:13px; display:block; margin-bottom:8px;">
+                    <i class="fas fa-calendar"></i> Lucky Draw Date
+                </label>
+                <input type="date" id="luckyDateInput" style="width:100%; padding:12px 14px; border-radius:12px; border:1px solid #3a4055; background:#0a0e1a; color:#ffd700; font-size:16px; font-weight:700; outline:none;" />
+                <div style="color:#889; font-size:11px; margin-top:6px;">This date will be displayed on the Lucky Draw screen. Leave empty for default "Today's Winner".</div>
+                <button id="luckyDateSaveBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#ffd700,#e6b800); color:#1a1f2f; font-weight:800; font-size:16px; cursor:pointer; margin-top:14px;">
+                    <i class="fas fa-save"></i> Save Date
+                </button>
+                <button id="luckyDateClearBtn" style="width:100%; padding:12px; border-radius:14px; border:none; background:#3a3045; color:#ccc; font-weight:700; font-size:14px; cursor:pointer; margin-top:8px;">
+                    <i class="fas fa-times"></i> Clear (Use Default)
+                </button>
+            </div>
+        </div>
+
         <div class="admin-panel" id="panelSettings" style="display:none;">
             <h3><i class="fas fa-cog"></i> Admin Settings</h3>
             <div style="background:#121724; border-radius:14px; padding:16px; margin-bottom:14px; border-left:3px solid #4fc3f7;">
@@ -1032,6 +1173,20 @@
         </div>
     </div>
 
+    <!-- Create Agent Modal -->
+    <div class="admin-modal-overlay" id="addAgentModal">
+        <div class="admin-modal" style="border-color:#ffb300;">
+            <h2 style="color:#ffb300;"><i class="fas fa-user-tie"></i> Create Agent</h2>
+            <div class="input-group"><label>Agent Username</label><input type="text" id="newAgentUsername" /></div>
+            <div class="input-group"><label>Phone</label><input type="text" id="newAgentPhone" /></div>
+            <div class="input-group"><label>Password</label><input type="text" id="newAgentPassword" /></div>
+            <div class="modal-actions">
+                <button class="cancel-btn" id="cancelAddAgent">Cancel</button>
+                <button class="save-btn" id="saveAddAgent" style="background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f;">Create</button>
+            </div>
+        </div>
+    </div>
+
     <div class="admin-toast" id="adminToast"></div>
 </div>
 
@@ -1048,12 +1203,8 @@
     </div>
 </div>
 
-<!-- ================================================================
-     FIREBASE INIT + DB WRAPPER
-     ================================================================ -->
+<!-- FIREBASE INIT + DB WRAPPER -->
 <script>
-// 🔥 YAHAN APNA firebaseConfig PASTE KAREIN
-
 const firebaseConfig = {
   apiKey: "AIzaSyDnGHcGAbmsuMgZoXDDIAi1ovgW0Yvj6QQ",
   authDomain: "numbergame-66ec7.firebaseapp.com",
@@ -1064,8 +1215,6 @@ const firebaseConfig = {
   appId: "1:329880427086:web:00166eaee49891c308411f",
   measurementId: "G-5F1Q5DK6H8"
 };
-
-
 
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
@@ -1078,11 +1227,11 @@ var KARO_CACHE = {
     users: {},
     records: [],
     winnerSettings: { mode: 'random', digits: [0,0,0,0], sum: 0 },
+    luckyDrawDate: '',
     loaded: false
 };
 
 var KARO_DB = (function(){
-
     async function fetchUsers() {
         var snap = await db.collection('users').get();
         var users = {};
@@ -1146,6 +1295,20 @@ var KARO_DB = (function(){
         KARO_CACHE.winnerSettings = s;
     }
 
+    // Lucky draw date
+    async function fetchLuckyDrawDate() {
+        try {
+            var doc = await db.collection('settings').doc('luckyDate').get();
+            if (doc.exists) KARO_CACHE.luckyDrawDate = doc.data().date || '';
+        } catch(e) {}
+        return KARO_CACHE.luckyDrawDate;
+    }
+    async function saveLuckyDrawDate(date) {
+        await db.collection('settings').doc('luckyDate').set({ date: date, updatedAt: Date.now() });
+        KARO_CACHE.luckyDrawDate = date;
+    }
+    function getLuckyDrawDate() { return KARO_CACHE.luckyDrawDate; }
+
     async function updateUserBalance(username, delta) {
         var user = KARO_CACHE.users[username];
         if (!user) throw new Error('User not found');
@@ -1156,9 +1319,7 @@ var KARO_DB = (function(){
         return newBalance;
     }
     async function getTransactions(username) {
-        var snap = await db.collection('transactions')
-            .where('username', '==', username)
-            .get();
+        var snap = await db.collection('transactions').where('username', '==', username).get();
         var list = [];
         snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
         list.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
@@ -1183,13 +1344,10 @@ var KARO_DB = (function(){
         list.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
         return list;
     }
-    async function updateDeposit(id, updates) {
-        await db.collection('deposits').doc(id).update(updates);
-    }
+    async function updateDeposit(id, updates) { await db.collection('deposits').doc(id).update(updates); }
 
     async function addClaim(c) {
-        c.timestamp = Date.now();
-        c.status = 'pending';
+        c.timestamp = Date.now(); c.status = 'pending';
         var ref = await db.collection('claims').add(c);
         return ref.id;
     }
@@ -1200,13 +1358,10 @@ var KARO_DB = (function(){
         list.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
         return list;
     }
-    async function updateClaim(id, updates) {
-        await db.collection('claims').doc(id).update(updates);
-    }
+    async function updateClaim(id, updates) { await db.collection('claims').doc(id).update(updates); }
 
     async function addWithdrawal(w) {
-        w.timestamp = Date.now();
-        w.status = 'pending';
+        w.timestamp = Date.now(); w.status = 'pending';
         var ref = await db.collection('withdrawals').add(w);
         return ref.id;
     }
@@ -1217,11 +1372,9 @@ var KARO_DB = (function(){
         list.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
         return list;
     }
-    async function updateWithdrawal(id, updates) {
-        await db.collection('withdrawals').doc(id).update(updates);
-    }
+    async function updateWithdrawal(id, updates) { await db.collection('withdrawals').doc(id).update(updates); }
 
-    // ============ REFERRAL ============
+    // REFERRAL
     function generateReferralCode(username) {
         var clean = (username || 'USER').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) || 'USER';
         var rand;
@@ -1275,16 +1428,29 @@ var KARO_DB = (function(){
         return ref.id;
     }
     async function getReferrals(referrerUid) {
-        var snap = await db.collection('referrals')
-            .where('referrerUid', '==', referrerUid)
-            .get();
+        var snap = await db.collection('referrals').where('referrerUid', '==', referrerUid).get();
         var list = [];
-        snap.forEach(function(doc){
-            var d = doc.data();
-            d._id = doc.id;
-            list.push(d);
-        });
+        snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
         list.sort(function(a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+        return list;
+    }
+
+    // AGENTS
+    async function getAgents() {
+        var snap = await db.collection('users').where('role', '==', 'agent').get();
+        var list = [];
+        snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
+        return list;
+    }
+    async function addAgentRecord(record) {
+        var ref = await db.collection('agentSales').add(record);
+        return ref.id;
+    }
+    async function getAgentSales(agentUsername) {
+        var snap = await db.collection('agentSales').where('agentUsername', '==', agentUsername).get();
+        var list = [];
+        snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
+        list.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
         return list;
     }
 
@@ -1302,10 +1468,10 @@ var KARO_DB = (function(){
                 bonusBalance: 100, referralCode: null
             });
         }
-
         await fetchUsers();
         await fetchRecords();
         await fetchWinnerSettings();
+        await fetchLuckyDrawDate();
         KARO_CACHE.loaded = true;
 
         db.collection('users').onSnapshot(function(snap){
@@ -1324,6 +1490,12 @@ var KARO_DB = (function(){
         db.collection('settings').doc('winner').onSnapshot(function(doc){
             if (doc.exists) KARO_CACHE.winnerSettings = doc.data();
         });
+        db.collection('settings').doc('luckyDate').onSnapshot(function(doc){
+            if (doc.exists) {
+                KARO_CACHE.luckyDrawDate = doc.data().date || '';
+                window.dispatchEvent(new Event('karorpati_luckydate_updated'));
+            }
+        });
     }
 
     return {
@@ -1331,13 +1503,15 @@ var KARO_DB = (function(){
         getCurrentUser, setCurrentUser,
         getRecords, fetchRecords, addRecord, updateRecord, deleteRecord,
         getWinnerSettings, fetchWinnerSettings, saveWinnerSettings,
+        fetchLuckyDrawDate, saveLuckyDrawDate, getLuckyDrawDate,
         updateUserBalance, getTransactions, addTransaction,
         addDeposit, getDeposits, updateDeposit,
         addClaim, getClaims, updateClaim,
         addWithdrawal, getWithdrawals, updateWithdrawal,
         generateReferralCode, reserveUniqueReferralCode,
         getDeviceFingerprint, lookupReferralCode,
-        saveReferralRecord, getReferrals
+        saveReferralRecord, getReferrals,
+        getAgents, addAgentRecord, getAgentSales
     };
 })();
 </script>
@@ -1392,6 +1566,23 @@ var KARO_DB = (function(){
     var sumBox = document.getElementById('sumBox');
     var drawBtn = document.getElementById('drawBtn');
     var isSpinning = false, timers = [];
+
+    // Update lucky draw date display
+    function updateLuckyDateDisplay() {
+        var dateStr = KARO_DB.getLuckyDrawDate();
+        var el = document.getElementById('luckyDrawDate');
+        if (el) {
+            if (dateStr) {
+                var d = new Date(dateStr + 'T00:00:00');
+                var opts = { day: 'numeric', month: 'long', year: 'numeric' };
+                el.textContent = '📅 ' + d.toLocaleDateString('en-IN', opts);
+            } else {
+                el.textContent = "🎰 Today's Winner";
+            }
+        }
+    }
+    window.addEventListener('karorpati_luckydate_updated', updateLuckyDateDisplay);
+    window.addEventListener('karorpati_db_ready', updateLuckyDateDisplay);
 
     function getConfig() {
         var s = KARO_DB.getWinnerSettings();
@@ -1547,12 +1738,9 @@ var KARO_DB = (function(){
                 await KARO_DB.saveUser(u, {
                     username: u, password: pw, phone: p, status: 'active',
                     role: 'user', registeredAt: Date.now(),
-                    balance: welcomeTotal,
-                    bonusBalance: welcomeTotal,
+                    balance: welcomeTotal, bonusBalance: welcomeTotal,
                     totalDeposit: 0, totalWithdraw: 0, isBanned: false,
-                    referralCode: null,
-                    referredBy: refCode || null,
-                    referredByUid: referrerUid || null
+                    referralCode: null, referredBy: refCode || null, referredByUid: referrerUid || null
                 });
 
                 var newRefCode;
@@ -1574,14 +1762,9 @@ var KARO_DB = (function(){
                         });
 
                         await KARO_DB.saveReferralRecord({
-                            referrerUid: referrerUid,
-                            referrerName: referrerData.username,
-                            referrerCode: refCode,
-                            referredUid: u,
-                            referredName: u,
-                            referredMobile: p,
-                            referrerReward: REFERRER_REWARD,
-                            referredReward: REFEREE_REWARD
+                            referrerUid: referrerUid, referrerName: referrerData.username,
+                            referrerCode: refCode, referredUid: u, referredName: u,
+                            referredMobile: p, referrerReward: REFERRER_REWARD, referredReward: REFEREE_REWARD
                         });
 
                         await KARO_DB.addTransaction({
@@ -1600,8 +1783,7 @@ var KARO_DB = (function(){
                     }
                 } else {
                     await KARO_DB.addTransaction({
-                        username: u, amount: welcomeTotal, type: 'bonus',
-                        description: 'Welcome Bonus'
+                        username: u, amount: welcomeTotal, type: 'bonus', description: 'Welcome Bonus'
                     });
                     showToast('✅ Registered! ₹' + welcomeTotal + ' bonus (locked)', 'success');
                 }
@@ -1619,6 +1801,7 @@ var KARO_DB = (function(){
             if (user.password !== pw) { authError.textContent = 'Wrong password.'; return; }
             if (user.status !== 'active') { authError.textContent = 'Account disabled.'; return; }
             if (user.role === 'admin') { authError.textContent = 'Use Admin tab.'; return; }
+            if (user.role === 'agent') { authError.textContent = 'Use Agent tab.'; return; }
             KARO_DB.setCurrentUser(u);
             currentUser = user;
             authOverlay.classList.add('hidden');
@@ -1715,6 +1898,30 @@ var KARO_DB = (function(){
         updateWalletUI();
     }
 
+    // Buyer info modal logic
+    var buyerInfoOverlay = null;
+    function createBuyerInfoModal() {
+        var overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.id = 'buyerInfoOverlay';
+        overlay.innerHTML = '<div class="modal-panel" style="max-width:420px; border-color:#4caf50;">' +
+            '<h2><i class="fas fa-user-check"></i> Buyer Details</h2>' +
+            '<p style="color:#aab; font-size:13px; text-align:center; margin-bottom:14px;">Number kharidne se pehle buyer ki details bharein</p>' +
+            '<div class="input-group"><label><i class="fas fa-user"></i> Buyer Name *</label><input type="text" id="buyerName" placeholder="Enter buyer full name" /></div>' +
+            '<div class="input-group"><label><i class="fas fa-mobile-alt"></i> Buyer Mobile *</label><input type="text" id="buyerMobile" placeholder="Enter 10-digit mobile" maxlength="10" inputmode="numeric" /></div>' +
+            '<div style="background:#121724; border-radius:12px; padding:12px; margin-bottom:12px; text-align:center;">' +
+            '<div style="color:#aab; font-size:12px;">Selected Box</div>' +
+            '<div id="buyerSelectedBoxCode" style="color:#ffd700; font-weight:900; font-size:24px; letter-spacing:2px;"></div>' +
+            '<div style="color:#4caf50; font-weight:700; margin-top:4px;">Amount: ₹25</div>' +
+            '</div>' +
+            '<button id="buyerConfirmBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; font-size:16px; cursor:pointer;">' +
+            '<i class="fas fa-check"></i> Confirm & Pay ₹25</button>' +
+            '<button class="modal-close-btn" id="buyerCancelBtn">Cancel</button>' +
+            '</div>';
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
     async function playGame() {
         if (isPlaying) return;
         if (selectedBox === null) { showToast('Select a box first!', 'error'); return; }
@@ -1730,48 +1937,68 @@ var KARO_DB = (function(){
             return;
         }
 
-        if (!confirm('Deduct ₹' + FIXED_AMOUNT + ' from wallet to open box ' + box.code + '?')) return;
+        // Show buyer info modal
+        if (!buyerInfoOverlay) buyerInfoOverlay = createBuyerInfoModal();
+        document.getElementById('buyerSelectedBoxCode').textContent = box.code;
+        document.getElementById('buyerName').value = '';
+        document.getElementById('buyerMobile').value = '';
+        buyerInfoOverlay.classList.add('active');
 
-        playBtn.disabled = true;
-        playBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        // Remove old listeners by replacing button
+        var oldBtn = document.getElementById('buyerConfirmBtn');
+        var newBtn = oldBtn.cloneNode(true);
+        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+        newBtn.addEventListener('click', async function() {
+            var bName = document.getElementById('buyerName').value.trim();
+            var bMobile = document.getElementById('buyerMobile').value.trim();
+            if (!bName || bName.length < 2) { showToast('Enter buyer name', 'error'); return; }
+            if (!bMobile || bMobile.length < 10) { showToast('Enter valid 10-digit mobile', 'error'); return; }
 
-        try {
-            await KARO_DB.updateUserBalance(currentUser.username, -FIXED_AMOUNT);
-            await KARO_DB.addTransaction({
-                username: currentUser.username,
-                amount: -FIXED_AMOUNT,
-                type: 'box_purchase',
-                description: 'Opened box ' + box.code,
-                box_code: box.code
-            });
+            buyerInfoOverlay.classList.remove('active');
 
-            box.revealed = true;
-            box.pending = true;
-            box.won = false;
-            box.prize = 0;
+            isPlaying = true;
+            playBtn.disabled = true;
+            playBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-            await KARO_DB.addRecord({
-                username: currentUser.username,
-                box_code: box.code,
-                box_serial: selectedBox + 1,
-                amount: FIXED_AMOUNT,
-                txid: 'WALLET_' + Date.now(),
-                timestamp: Date.now(),
-                status: 'pending',
-                win: false,
-                prize_amount: 0
-            });
+            try {
+                await KARO_DB.updateUserBalance(currentUser.username, -FIXED_AMOUNT);
+                await KARO_DB.addTransaction({
+                    username: currentUser.username, amount: -FIXED_AMOUNT, type: 'box_purchase',
+                    description: 'Opened box ' + box.code + ' for ' + bName,
+                    box_code: box.code
+                });
 
-            resultMsg.innerHTML = '✅ <strong>Box ' + box.code + ' purchased!</strong><br><span style="font-size:13px;opacity:0.8;">Result will be updated by admin within 24 hours. Check History tab.</span>';
-            resultMsg.className = 'result-msg info';
-            showToast('✅ Box purchased! Waiting for admin result.', 'success');
-            renderBoxes();
-            updateWalletUI();
-        } catch(err) {
-            showToast('Error: ' + err.message, 'error');
-        }
-        playBtn.disabled = false;
-        playBtn.innerHTML = '<i class="fas fa-play"></i> Pick Box & Pay <span class="price-tag">₹25</span>';
+                box.revealed = true;
+                box.pending = true;
+                box.won = false;
+                box.prize = 0;
+
+                await KARO_DB.addRecord({
+                    username: currentUser.username, box_code: box.code,
+                    box_serial: selectedBox + 1, amount: FIXED_AMOUNT,
+                    txid: 'WALLET_' + Date.now(), timestamp: Date.now(),
+                    status: 'pending', win: false, prize_amount: 0,
+                    buyer_name: bName, buyer_mobile: bMobile
+                });
+
+                resultMsg.innerHTML = '✅ <strong>Box ' + box.code + ' purchased!</strong><br><span style="font-size:13px;opacity:0.8;">Buyer: ' + bName + ' (' + bMobile + ')<br>Result will be updated by admin within 24 hours.</span>';
+                resultMsg.className = 'result-msg info';
+                showToast('✅ Box purchased! Waiting for admin result.', 'success');
+                renderBoxes();
+                updateWalletUI();
+            } catch(err) {
+                showToast('Error: ' + err.message, 'error');
+            }
+            isPlaying = false;
+            playBtn.disabled = false;
+            playBtn.innerHTML = '<i class="fas fa-play"></i> Pick Box & Pay <span class="price-tag">₹25</span>';
+        });
+
+        // Cancel button
+        var oldCancel = document.getElementById('buyerCancelBtn');
+        var newCancel = oldCancel.cloneNode(true);
+        oldCancel.parentNode.replaceChild(newCancel, oldCancel);
+        newCancel.addEventListener('click', function() { buyerInfoOverlay.classList.remove('active'); });
     }
 
     function showToast(msg, type) {
@@ -1794,7 +2021,7 @@ var KARO_DB = (function(){
         switchAuthMode(false);
     });
 
-    // ===== WALLET MODAL =====
+    // WALLET MODAL
     var walletOverlay = document.getElementById('walletOverlay');
     var walletTransactionsList = document.getElementById('walletTransactionsList');
     var walletCloseBtn = document.getElementById('walletCloseBtn');
@@ -1828,7 +2055,7 @@ var KARO_DB = (function(){
     walletCloseBtn.addEventListener('click', function(){ walletOverlay.classList.remove('active'); });
     walletOverlay.addEventListener('click', function(e){ if (e.target === walletOverlay) walletOverlay.classList.remove('active'); });
 
-    // ===== ADD MONEY =====
+    // ADD MONEY
     var addMoneyOverlay = document.getElementById('addMoneyOverlay');
     var addMoneyAmount = document.getElementById('addMoneyAmount');
     var addMoneyUpiPhone = document.getElementById('addMoneyUpiPhone');
@@ -1844,8 +2071,7 @@ var KARO_DB = (function(){
         qrContainer.innerHTML = '';
         var upiString = 'upi://pay?pa=' + encodeURIComponent(UPI_FOR_DEPOSIT) +
                         '&pn=' + encodeURIComponent('Karorpati Game') +
-                        (amount > 0 ? '&am=' + amount : '') +
-                        '&cu=INR';
+                        (amount > 0 ? '&am=' + amount : '') + '&cu=INR';
         new QRCode(qrContainer, {
             text: upiString, width: 180, height: 180,
             colorDark: '#000000', colorLight: '#ffffff',
@@ -1854,9 +2080,7 @@ var KARO_DB = (function(){
     }
 
     walletAddMoneyBtn.addEventListener('click', function(){
-        addMoneyAmount.value = '';
-        addMoneyUpiPhone.value = '';
-        addMoneyTxId.value = '';
+        addMoneyAmount.value = ''; addMoneyUpiPhone.value = ''; addMoneyTxId.value = '';
         addMoneySuccessMsg.style.display = 'none';
         addMoneySubmitBtn.style.display = 'flex';
         addMoneySubmitBtn.disabled = false;
@@ -1888,8 +2112,7 @@ var KARO_DB = (function(){
         addMoneySubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
         try {
             await KARO_DB.addDeposit({
-                username: currentUser.username,
-                user_phone: currentUser.phone || '-',
+                username: currentUser.username, user_phone: currentUser.phone || '-',
                 amount: amt, upi_phone: up, txid: tx
             });
             addMoneySubmitBtn.style.display = 'none';
@@ -1903,7 +2126,7 @@ var KARO_DB = (function(){
         }
     });
 
-    // ===== WITHDRAW =====
+    // WITHDRAW
     var withdrawOverlay = document.getElementById('withdrawOverlay');
     var withdrawAmount = document.getElementById('withdrawAmount');
     var withdrawAccountName = document.getElementById('withdrawAccountName');
@@ -1915,11 +2138,8 @@ var KARO_DB = (function(){
     var withdrawCloseBtn = document.getElementById('withdrawCloseBtn');
 
     walletWithdrawBtn.addEventListener('click', function(){
-        withdrawAmount.value = '';
-        withdrawAccountName.value = '';
-        withdrawAccountNumber.value = '';
-        withdrawIfsc.value = '';
-        withdrawBankName.value = '';
+        withdrawAmount.value = ''; withdrawAccountName.value = ''; withdrawAccountNumber.value = '';
+        withdrawIfsc.value = ''; withdrawBankName.value = '';
         withdrawSuccessMsg.style.display = 'none';
         withdrawSubmitBtn.style.display = 'flex';
         withdrawSubmitBtn.disabled = false;
@@ -1966,7 +2186,7 @@ var KARO_DB = (function(){
         }
     });
 
-    // ===== HISTORY =====
+    // HISTORY
     var historyOverlay = document.getElementById('historyOverlay');
     var userSalesList = document.getElementById('userSalesList');
     var historyBtn = document.getElementById('historyBtn');
@@ -1981,17 +2201,11 @@ var KARO_DB = (function(){
                 var div = document.createElement('div');
                 div.className = 'user-sales-item';
                 var statusText, statusColor;
-                if (r.status === 'pending') {
-                    statusText = '⏳ PENDING';
-                    statusColor = '#ff9800';
-                } else if (r.win || r.prize_amount > 0) {
-                    statusText = '🎉 WON ₹' + (r.prize_amount || 0);
-                    statusColor = '#4caf50';
-                } else {
-                    statusText = '😞 LOST';
-                    statusColor = '#f44336';
-                }
-                div.innerHTML = '<span class="username">📦 ' + (r.box_code || '-') + '</span>' +
+                if (r.status === 'pending') { statusText = '⏳ PENDING'; statusColor = '#ff9800'; }
+                else if (r.win || r.prize_amount > 0) { statusText = '🎉 WON ₹' + (r.prize_amount || 0); statusColor = '#4caf50'; }
+                else { statusText = '😞 LOST'; statusColor = '#f44336'; }
+                var buyerInfo = r.buyer_name ? ' | ' + r.buyer_name : '';
+                div.innerHTML = '<span class="username">📦 ' + (r.box_code || '-') + buyerInfo + '</span>' +
                     '<span class="sales-count" style="color:' + statusColor + ';">' + statusText + '</span>';
                 userSalesList.appendChild(div);
             });
@@ -2001,7 +2215,7 @@ var KARO_DB = (function(){
     historyCloseBtn.addEventListener('click', function(){ historyOverlay.classList.remove('active'); });
     historyOverlay.addEventListener('click', function(e){ if (e.target === historyOverlay) historyOverlay.classList.remove('active'); });
 
-    // ===== REFERRAL =====
+    // REFERRAL
     var referralOverlay = document.getElementById('referralOverlay');
     var referralBadge = document.getElementById('referralBadge');
     var referralCloseBtn = document.getElementById('referralCloseBtn');
@@ -2025,10 +2239,7 @@ var KARO_DB = (function(){
             var newCode = await KARO_DB.reserveUniqueReferralCode(u.username, currentUser.username);
             await KARO_DB.saveUser(currentUser.username, { referralCode: newCode });
             return newCode;
-        } catch (e) {
-            console.error('Code gen failed:', e);
-            return null;
-        }
+        } catch (e) { console.error('Code gen failed:', e); return null; }
     }
 
     function buildReferralMessage(code) {
@@ -2037,8 +2248,7 @@ var KARO_DB = (function(){
                '🎁 Referral code use karo: *' + code + '*\n' +
                '✅ Extra ₹100 bonus milega!\n' +
                '💸 Real cash withdrawal to bank\n\n' +
-               '📲 *App Download Link:*\n' +
-               APP_DOWNLOAD_URL + '\n\n' +
+               '📲 *App Download Link:*\n' + APP_DOWNLOAD_URL + '\n\n' +
                'Download karo aur khelo! 🚀';
     }
 
@@ -2047,11 +2257,9 @@ var KARO_DB = (function(){
         referralOverlay.classList.add('active');
         myReferralCode.textContent = 'Loading...';
         refList.innerHTML = '<div style="text-align:center; color:#889; padding:15px;">Loading...</div>';
-
         var code = await ensureMyReferralCode();
         if (!code) { myReferralCode.textContent = 'Error'; return; }
         myReferralCode.textContent = code;
-
         try {
             var refs = await KARO_DB.getReferrals(currentUser.username);
             refTotalCount.textContent = refs.length;
@@ -2076,11 +2284,7 @@ var KARO_DB = (function(){
         var code = myReferralCode.textContent;
         if (!code || code === 'Loading...' || code === 'Error') return;
         var msg = buildReferralMessage(code);
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(msg).then(function(){
-                showToast('✅ Message with download link copied!', 'success');
-            });
-        }
+        if (navigator.clipboard) navigator.clipboard.writeText(msg).then(function(){ showToast('✅ Message with download link copied!', 'success'); });
     });
 
     referralCloseBtn.addEventListener('click', function() { referralOverlay.classList.remove('active'); });
@@ -2089,8 +2293,7 @@ var KARO_DB = (function(){
     refShareWhatsAppBtn.addEventListener('click', function() {
         var code = myReferralCode.textContent;
         if (!code || code === 'Loading...' || code === 'Error') return;
-        var msg = buildReferralMessage(code);
-        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+        window.open('https://wa.me/?text=' + encodeURIComponent(buildReferralMessage(code)), '_blank');
     });
 
     refShareNativeBtn.addEventListener('click', async function() {
@@ -2098,28 +2301,17 @@ var KARO_DB = (function(){
         if (!code || code === 'Loading...' || code === 'Error') return;
         var msg = buildReferralMessage(code);
         if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'Karorpati Game — Khelo Aur Jeeto!',
-                    text: msg,
-                    url: APP_DOWNLOAD_URL
-                });
-            } catch(e) {}
+            try { await navigator.share({ title: 'Karorpati Game', text: msg, url: APP_DOWNLOAD_URL }); } catch(e) {}
         } else {
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(msg);
-                showToast('📋 Message copied with download link!', 'success');
-            }
+            if (navigator.clipboard) { navigator.clipboard.writeText(msg); showToast('📋 Message copied!', 'success'); }
         }
     });
 
-    window.addEventListener('karorpati_users_updated', function(){
-        if (currentUser) updateWalletUI();
-    });
+    window.addEventListener('karorpati_users_updated', function(){ if (currentUser) updateWalletUI(); });
 
     window.addEventListener('karorpati_db_ready', function(){
         var saved = KARO_DB.getCurrentUser();
-        if (saved && saved.role !== 'admin') {
+        if (saved && saved.role !== 'admin' && saved.role !== 'agent') {
             currentUser = saved;
             authOverlay.classList.add('hidden');
             appContainer.classList.add('active');
@@ -2130,6 +2322,193 @@ var KARO_DB = (function(){
             switchAuthMode(false);
         }
     });
+})();
+</script>
+
+<!-- AGENT PANEL -->
+<script>
+(function(){
+    var AGENT_SESSION_KEY = 'karorpati_agent_session';
+    var currentAgent = null;
+
+    var agentAuthOverlay = document.getElementById('agentAuthOverlay');
+    var agentMain = document.getElementById('agentMain');
+    var agentUserIn = document.getElementById('agentUserIn');
+    var agentPassIn = document.getElementById('agentPassIn');
+    var agentLoginBtn = document.getElementById('agentLoginBtn');
+    var agentError = document.getElementById('agentError');
+    var agentBadge = document.getElementById('agentBadge');
+    var agentLogoutBtn = document.getElementById('agentLogoutBtn');
+    var agentToast = document.getElementById('agentToast');
+    var agentSalesContainer = document.getElementById('agentSalesContainer');
+    var agentSalesEmpty = document.getElementById('agentSalesEmpty');
+    var agentSearchInput = document.getElementById('agentSearchInput');
+    var agentMonthFilter = document.getElementById('agentMonthFilter');
+    var agentRefreshBtn = document.getElementById('agentRefreshBtn');
+
+    function showAgentToast(msg, type) {
+        agentToast.textContent = msg;
+        agentToast.className = 'agent-toast show ' + (type || 'info');
+        clearTimeout(agentToast._timer);
+        agentToast._timer = setTimeout(function(){ agentToast.classList.remove('show'); }, 3500);
+    }
+
+    async function tryAgentLogin() {
+        var u = agentUserIn.value.trim();
+        var p = agentPassIn.value.trim();
+        if (!u || !p) { agentError.textContent = 'Fill both.'; return; }
+        var user = KARO_DB.getUser(u);
+        if (!user) { agentError.textContent = 'Not found.'; return; }
+        if (user.password !== p) { agentError.textContent = 'Wrong password.'; return; }
+        if (user.role !== 'agent') { agentError.textContent = 'Not an agent.'; return; }
+        if (user.status !== 'active') { agentError.textContent = 'Disabled.'; return; }
+        sessionStorage.setItem(AGENT_SESSION_KEY, u);
+        currentAgent = user;
+        agentAuthOverlay.style.display = 'none';
+        agentMain.style.display = 'block';
+        agentBadge.textContent = u;
+        await loadAgentData();
+    }
+    agentLoginBtn.addEventListener('click', tryAgentLogin);
+    agentPassIn.addEventListener('keypress', function(e){ if (e.key === 'Enter') tryAgentLogin(); });
+
+    agentLogoutBtn.addEventListener('click', function(){
+        sessionStorage.removeItem(AGENT_SESSION_KEY);
+        currentAgent = null;
+        agentMain.style.display = 'none';
+        agentAuthOverlay.style.display = 'flex';
+    });
+
+    function tryAutoLogin() {
+        var s = sessionStorage.getItem(AGENT_SESSION_KEY);
+        if (s) {
+            var u = KARO_DB.getUser(s);
+            if (u && u.role === 'agent' && u.status === 'active') {
+                currentAgent = u;
+                agentAuthOverlay.style.display = 'none';
+                agentMain.style.display = 'block';
+                agentBadge.textContent = u.username;
+                loadAgentData();
+            }
+        }
+    }
+
+    async function loadAgentData() {
+        if (!currentAgent) return;
+        try {
+            var sales = await KARO_DB.getAgentSales(currentAgent.username);
+            // Stats
+            var total = sales.length;
+            var now = new Date();
+            var thisMonth = now.getMonth();
+            var thisYear = now.getFullYear();
+            var monthCount = 0;
+            var revenue = 0;
+            var buyers = {};
+            sales.forEach(function(s) {
+                var d = new Date(s.timestamp);
+                if (d.getMonth() === thisMonth && d.getFullYear() === thisYear) monthCount++;
+                revenue += (parseFloat(s.amount) || 0);
+                if (s.buyer_mobile) buyers[s.buyer_mobile] = true;
+            });
+            document.getElementById('agentStatTotal').textContent = total;
+            document.getElementById('agentStatMonth').textContent = monthCount;
+            document.getElementById('agentStatRevenue').textContent = '₹' + revenue;
+            document.getElementById('agentStatUnique').textContent = Object.keys(buyers).length;
+
+            // Month filter options
+            var monthKeys = {};
+            sales.forEach(function(s) {
+                var d = new Date(s.timestamp);
+                var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+                var label = d.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+                monthKeys[key] = label;
+            });
+            var currentFilter = agentMonthFilter.value;
+            agentMonthFilter.innerHTML = '<option value="all">All Months</option>';
+            Object.keys(monthKeys).sort().reverse().forEach(function(k) {
+                var opt = document.createElement('option');
+                opt.value = k; opt.textContent = monthKeys[k];
+                agentMonthFilter.appendChild(opt);
+            });
+            agentMonthFilter.value = currentFilter || 'all';
+
+            renderSales(sales);
+        } catch(e) {
+            showAgentToast('Error: ' + e.message, 'error');
+        }
+    }
+
+    function renderSales(allSales) {
+        var q = (agentSearchInput.value || '').trim().toLowerCase();
+        var mf = agentMonthFilter.value;
+        var sales = allSales.filter(function(s) {
+            if (q) {
+                var match = (s.buyer_name || '').toLowerCase().includes(q) ||
+                            (s.buyer_mobile || '').includes(q) ||
+                            (s.box_code || '').toLowerCase().includes(q);
+                if (!match) return false;
+            }
+            if (mf !== 'all') {
+                var d = new Date(s.timestamp);
+                var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+                if (key !== mf) return false;
+            }
+            return true;
+        });
+
+        if (sales.length === 0) {
+            agentSalesContainer.innerHTML = '';
+            agentSalesEmpty.style.display = 'block';
+            return;
+        }
+        agentSalesEmpty.style.display = 'none';
+
+        // Group by month
+        var groups = {};
+        sales.forEach(function(s) {
+            var d = new Date(s.timestamp);
+            var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+            var label = d.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+            if (!groups[key]) groups[key] = { label: label, items: [] };
+            groups[key].items.push(s);
+        });
+
+        var html = '';
+        Object.keys(groups).sort().reverse().forEach(function(k) {
+            var g = groups[k];
+            var monthTotal = g.items.reduce(function(a, s){ return a + (parseFloat(s.amount)||0); }, 0);
+            html += '<div class="month-group-title">📅 ' + g.label + ' — ' + g.items.length + ' sales — ₹' + monthTotal + '</div>';
+            html += '<div class="agent-table-wrap" style="margin-bottom:14px;"><table><thead><tr><th>#</th><th>Date</th><th>Box Code</th><th>Buyer Name</th><th>Buyer Mobile</th><th>Amount</th><th>Status</th></tr></thead><tbody>';
+            g.items.forEach(function(s, i) {
+                var date = new Date(s.timestamp).toLocaleString('en-IN');
+                var st = s.status || 'sold';
+                var statusLabel = st === 'sold' ? '✅ Sold' : st;
+                html += '<tr><td>' + (i+1) + '</td><td style="font-size:11px;">' + date + '</td>' +
+                        '<td style="color:#ffd700;font-weight:900;">' + (s.box_code || '-') + '</td>' +
+                        '<td style="color:#fff;">' + (s.buyer_name || '-') + '</td>' +
+                        '<td style="font-family:monospace;">' + (s.buyer_mobile || '-') + '</td>' +
+                        '<td style="color:#4caf50;font-weight:700;">₹' + (s.amount || 0) + '</td>' +
+                        '<td style="color:#ffb300;">' + statusLabel + '</td></tr>';
+            });
+            html += '</tbody></table></div>';
+        });
+        agentSalesContainer.innerHTML = html;
+    }
+
+    agentSearchInput.addEventListener('input', async function(){
+        if (!currentAgent) return;
+        var sales = await KARO_DB.getAgentSales(currentAgent.username);
+        renderSales(sales);
+    });
+    agentMonthFilter.addEventListener('change', async function(){
+        if (!currentAgent) return;
+        var sales = await KARO_DB.getAgentSales(currentAgent.username);
+        renderSales(sales);
+    });
+    agentRefreshBtn.addEventListener('click', loadAgentData);
+
+    window.addEventListener('karorpati_db_ready', tryAutoLogin);
 })();
 </script>
 
@@ -2187,17 +2566,10 @@ var KARO_DB = (function(){
         adminMain.style.display = 'block';
         adminBadge.textContent = u;
         await Promise.all([
-            refreshStats(),
-            renderUsersTable(),
-            renderDepositsTable(),
-            renderBoxResultsTable(),
-            renderNumberStats(),
-            renderClaimsTable(),
-            renderWithdrawalsTable(),
-            renderReferralsTable(),
-            renderRecordsTable(),
-            loadWinnerSettingsIntoForm(),
-            loadSettingsIntoForm()
+            refreshStats(), renderUsersTable(), renderAgentsTable(), renderDepositsTable(),
+            renderBoxResultsTable(), renderNumberStats(), renderClaimsTable(),
+            renderWithdrawalsTable(), renderReferralsTable(), renderRecordsTable(),
+            loadWinnerSettingsIntoForm(), loadSettingsIntoForm(), loadLuckyDateIntoForm()
         ]);
     }
     adminLoginBtn.addEventListener('click', tryAdminLogin);
@@ -2220,17 +2592,10 @@ var KARO_DB = (function(){
                 adminMain.style.display = 'block';
                 adminBadge.textContent = u.username;
                 Promise.all([
-                    refreshStats(),
-                    renderUsersTable(),
-                    renderDepositsTable(),
-                    renderBoxResultsTable(),
-                    renderNumberStats(),
-                    renderClaimsTable(),
-                    renderWithdrawalsTable(),
-                    renderReferralsTable(),
-                    renderRecordsTable(),
-                    loadWinnerSettingsIntoForm(),
-                    loadSettingsIntoForm()
+                    refreshStats(), renderUsersTable(), renderAgentsTable(), renderDepositsTable(),
+                    renderBoxResultsTable(), renderNumberStats(), renderClaimsTable(),
+                    renderWithdrawalsTable(), renderReferralsTable(), renderRecordsTable(),
+                    loadWinnerSettingsIntoForm(), loadSettingsIntoForm(), loadLuckyDateIntoForm()
                 ]);
             }
         }
@@ -2239,6 +2604,7 @@ var KARO_DB = (function(){
     var adminTabs = document.querySelectorAll('#adminView .admin-tabs button');
     var panels = {
         users: document.getElementById('panelUsers'),
+        agents: document.getElementById('panelAgents'),
         deposits: document.getElementById('panelDeposits'),
         boxresults: document.getElementById('panelBoxResults'),
         numberstats: document.getElementById('panelNumberStats'),
@@ -2247,6 +2613,7 @@ var KARO_DB = (function(){
         referrals: document.getElementById('panelReferrals'),
         records: document.getElementById('panelRecords'),
         winner: document.getElementById('panelWinner'),
+        luckydate: document.getElementById('panelLuckyDate'),
         settings: document.getElementById('panelSettings')
     };
     adminTabs.forEach(function(btn){
@@ -2260,10 +2627,12 @@ var KARO_DB = (function(){
             if (t === 'referrals') renderReferralsTable();
             if (t === 'boxresults') renderBoxResultsTable();
             if (t === 'numberstats') renderNumberStats();
+            if (t === 'agents') renderAgentsTable();
+            if (t === 'luckydate') loadLuckyDateIntoForm();
         });
     });
 
-    // ===== USERS =====
+    // USERS
     var userSearch = document.getElementById('userSearch');
     function renderUsersTable() {
         var users = KARO_DB.loadUsers();
@@ -2285,7 +2654,7 @@ var KARO_DB = (function(){
                 '<td>' + (u.phone || '-') + '</td>' +
                 '<td style="color:#4caf50;font-weight:700;">₹' + bal + '<br><span style="font-size:10px;color:#889;">W: ₹' + withdrawable + ' B: ₹' + bonus + '</span></td>' +
                 '<td>' + (u.referralCode ? '<span class="ref-code-pill">' + u.referralCode + '</span>' : '-') + '</td>' +
-                '<td><span class="role-pill ' + (u.role === 'admin' ? 'admin' : '') + '">' + u.role + '</span></td>' +
+                '<td><span class="role-pill ' + (u.role === 'admin' ? 'admin' : u.role === 'agent' ? 'agent' : '') + '">' + u.role + '</span></td>' +
                 '<td><span class="status-pill ' + (u.status === 'active' ? 'active' : 'disabled') + '">' + u.status + '</span></td>' +
                 '<td><button class="tbl-btn ' + (u.status === 'active' ? 'red' : 'green') + '" data-act="toggle" data-u="' + u.username + '"' + (isSelf ? ' disabled' : '') + '>' + (u.status === 'active' ? 'Disable' : 'Enable') + '</button>' +
                 '<button class="tbl-btn blue" data-act="reset" data-u="' + u.username + '">Reset</button>' +
@@ -2337,7 +2706,70 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
-    // ===== DEPOSITS =====
+    // AGENTS
+    var agentSearch = document.getElementById('agentSearch');
+    async function renderAgentsTable() {
+        var agents = await KARO_DB.getAgents();
+        var q = agentSearch.value.trim().toLowerCase();
+        if (q) agents = agents.filter(function(a){ return a.username.toLowerCase().includes(q) || (a.phone||'').includes(q); });
+        var tb = document.getElementById('agentsTableBody');
+        tb.innerHTML = '';
+        document.getElementById('agentsEmpty').style.display = agents.length === 0 ? 'block' : 'none';
+        for (var i = 0; i < agents.length; i++) {
+            var a = agents[i];
+            var sales = await KARO_DB.getAgentSales(a.username);
+            var revenue = sales.reduce(function(sum, s){ return sum + (parseFloat(s.amount)||0); }, 0);
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + (i+1) + '</td>' +
+                '<td><strong style="color:#ffb300;">' + a.username + '</strong></td>' +
+                '<td>' + (a.phone || '-') + '</td>' +
+                '<td style="color:#4fc3f7;font-weight:700;">' + sales.length + '</td>' +
+                '<td style="color:#4caf50;font-weight:700;">₹' + revenue + '</td>' +
+                '<td><span class="status-pill ' + (a.status === 'active' ? 'active' : 'disabled') + '">' + a.status + '</span></td>' +
+                '<td><button class="tbl-btn ' + (a.status === 'active' ? 'red' : 'green') + '" data-aact="toggle" data-u="' + a.username + '">' + (a.status === 'active' ? 'Disable' : 'Enable') + '</button>' +
+                '<button class="tbl-btn red" data-aact="delete" data-u="' + a.username + '">Del</button></td>';
+            tb.appendChild(tr);
+        }
+        tb.querySelectorAll('button[data-aact]').forEach(function(b){
+            b.addEventListener('click', async function(){
+                var uname = this.dataset.u;
+                var a = KARO_DB.getUser(uname);
+                if (!a) return;
+                if (this.dataset.aact === 'toggle') {
+                    await KARO_DB.saveUser(uname, { status: a.status === 'active' ? 'disabled' : 'active' });
+                } else if (this.dataset.aact === 'delete') {
+                    if (!confirm('Delete agent ' + uname + '?')) return;
+                    await KARO_DB.deleteUser(uname);
+                }
+                refreshStats(); renderAgentsTable();
+                showAdminToast('Done', 'success');
+            });
+        });
+    }
+    agentSearch.addEventListener('input', renderAgentsTable);
+
+    var addAgentModal = document.getElementById('addAgentModal');
+    document.getElementById('addAgentBtn').addEventListener('click', function(){ addAgentModal.classList.add('active'); });
+    document.getElementById('cancelAddAgent').addEventListener('click', function(){ addAgentModal.classList.remove('active'); });
+    document.getElementById('saveAddAgent').addEventListener('click', async function(){
+        var u = document.getElementById('newAgentUsername').value.trim();
+        var p = document.getElementById('newAgentPhone').value.trim();
+        var pw = document.getElementById('newAgentPassword').value.trim();
+        if (!u || !p || !pw) { showAdminToast('Fill all', 'error'); return; }
+        if (KARO_DB.getUser(u)) { showAdminToast('Username exists', 'error'); return; }
+        try {
+            await KARO_DB.saveUser(u, {
+                username: u, password: pw, phone: p,
+                status: 'active', role: 'agent', registeredAt: Date.now(),
+                balance: 0, bonusBalance: 0, referralCode: null
+            });
+            addAgentModal.classList.remove('active');
+            refreshStats(); renderAgentsTable();
+            showAdminToast('✅ Agent created', 'success');
+        } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
+    });
+
+    // DEPOSITS
     async function renderDepositsTable() {
         var tb = document.getElementById('depositsTableBody');
         tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#889;">Loading...</td></tr>';
@@ -2372,10 +2804,7 @@ var KARO_DB = (function(){
             if (!dep) return;
             if (act === 'approve') {
                 await KARO_DB.updateUserBalance(dep.username, dep.amount);
-                await KARO_DB.addTransaction({
-                    username: dep.username, amount: dep.amount,
-                    type: 'deposit', description: 'Wallet deposit approved'
-                });
+                await KARO_DB.addTransaction({ username: dep.username, amount: dep.amount, type: 'deposit', description: 'Wallet deposit approved' });
                 await KARO_DB.updateDeposit(id, { status: 'approved' });
                 showAdminToast('✅ Approved & credited', 'success');
             } else {
@@ -2386,7 +2815,7 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
-    // ===== BOX RESULTS (Manual Prize Setting) =====
+    // BOX RESULTS
     var boxResultSearch = document.getElementById('boxResultSearch');
     var refreshBoxResultsBtn = document.getElementById('refreshBoxResultsBtn');
 
@@ -2400,8 +2829,7 @@ var KARO_DB = (function(){
             var q = (boxResultSearch?.value || '').trim().toLowerCase();
             if (q) {
                 records = records.filter(function(r){
-                    return (r.username || '').toLowerCase().includes(q) ||
-                           (r.box_code || '').toLowerCase().includes(q);
+                    return (r.username || '').toLowerCase().includes(q) || (r.box_code || '').toLowerCase().includes(q);
                 });
             }
             tb.innerHTML = '';
@@ -2410,11 +2838,11 @@ var KARO_DB = (function(){
                 var tr = document.createElement('tr');
                 var date = new Date(r.timestamp).toLocaleString('en-IN');
                 var st = r.status || 'pending';
-                var statusPill = st === 'pending' ? '<span class="status-pill pending">PENDING</span>' 
+                var statusPill = st === 'pending' ? '<span class="status-pill pending">PENDING</span>'
                                 : (st === 'won' || r.win) ? '<span class="status-pill won">WON</span>'
                                 : '<span class="status-pill lost">LOST</span>';
                 var prizeDisplay = r.prize_amount > 0 ? '₹' + r.prize_amount : '-';
-                
+                var buyerDisplay = r.buyer_name ? '<br><span style="font-size:10px;color:#889;">' + r.buyer_name + '</span>' : '';
                 var actionCell = '-';
                 if (st === 'pending') {
                     actionCell = '<input type="number" min="0" placeholder="Prize ₹" data-record-id="' + r._id + '" style="width:80px;padding:5px 8px;border-radius:6px;border:1px solid #3a4055;background:#0a0e1a;color:#4caf50;font-weight:700;font-size:12px;" />' +
@@ -2422,9 +2850,8 @@ var KARO_DB = (function(){
                 } else {
                     actionCell = '<span style="opacity:0.5;font-size:11px;">✓ Done</span>';
                 }
-                
                 tr.innerHTML = '<td>' + (i+1) + '</td>' +
-                    '<td style="color:#fff;font-weight:700;">' + (r.username || '-') + '</td>' +
+                    '<td style="color:#fff;font-weight:700;">' + (r.username || '-') + buyerDisplay + '</td>' +
                     '<td style="color:#ffd700;font-weight:900;">' + (r.box_code || '-') + '</td>' +
                     '<td>₹' + (r.amount || 0) + '</td>' +
                     '<td>' + statusPill + '</td>' +
@@ -2433,16 +2860,12 @@ var KARO_DB = (function(){
                     '<td>' + actionCell + '</td>';
                 tb.appendChild(tr);
             });
-
             tb.querySelectorAll('button[data-set-result]').forEach(function(btn){
                 btn.addEventListener('click', async function(){
                     var recordId = this.dataset.setResult;
                     var input = tb.querySelector('input[data-record-id="' + recordId + '"]');
                     var amt = parseInt(input.value);
-                    if (isNaN(amt) || amt < 0) {
-                        showAdminToast('Enter valid prize amount (0 = LOST)', 'error');
-                        return;
-                    }
+                    if (isNaN(amt) || amt < 0) { showAdminToast('Enter valid prize (0 = LOST)', 'error'); return; }
                     await setBoxResult(recordId, amt);
                 });
             });
@@ -2457,42 +2880,29 @@ var KARO_DB = (function(){
             var rec = records.find(function(r){ return r._id === recordId; });
             if (!rec) { showAdminToast('Record not found', 'error'); return; }
             if (rec.status !== 'pending') { showAdminToast('Already processed', 'error'); return; }
-
             var isWin = prizeAmount > 0;
-            var newStatus = isWin ? 'won' : 'lost';
-
             await KARO_DB.updateRecord(recordId, {
-                status: newStatus,
-                win: isWin,
-                prize_amount: prizeAmount,
-                processedAt: Date.now()
+                status: isWin ? 'won' : 'lost', win: isWin,
+                prize_amount: prizeAmount, processedAt: Date.now()
             });
-
             if (isWin) {
                 await KARO_DB.updateUserBalance(rec.username, prizeAmount);
                 await KARO_DB.addTransaction({
-                    username: rec.username,
-                    amount: prizeAmount,
-                    type: 'prize',
-                    description: 'Prize for box ' + rec.box_code,
-                    box_code: rec.box_code
+                    username: rec.username, amount: prizeAmount, type: 'prize',
+                    description: 'Prize for box ' + rec.box_code, box_code: rec.box_code
                 });
-                showAdminToast('✅ ' + rec.username + ' won ₹' + prizeAmount + ' (wallet credited)', 'success');
+                showAdminToast('✅ ' + rec.username + ' won ₹' + prizeAmount, 'success');
             } else {
                 showAdminToast('📉 ' + rec.username + ' lost box ' + rec.box_code, 'info');
             }
-
-            refreshStats();
-            renderBoxResultsTable();
-        } catch (e) {
-            showAdminToast('Error: ' + e.message, 'error');
-        }
+            refreshStats(); renderBoxResultsTable();
+        } catch (e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
     if (refreshBoxResultsBtn) refreshBoxResultsBtn.addEventListener('click', renderBoxResultsTable);
     if (boxResultSearch) boxResultSearch.addEventListener('input', renderBoxResultsTable);
 
-    // ===== NUMBER STATS =====
+    // NUMBER STATS
     var nsSearchInput = document.getElementById('nsSearchInput');
     var nsRefreshBtn = document.getElementById('nsRefreshBtn');
 
@@ -2503,65 +2913,46 @@ var KARO_DB = (function(){
         try {
             await KARO_DB.fetchRecords();
             var records = KARO_DB.getRecords();
-
             var codeMap = {};
             records.forEach(function(r) {
                 var code = r.box_code || '';
                 if (!code) return;
-                if (!codeMap[code]) {
-                    codeMap[code] = { count: 0, revenue: 0, lastTime: 0 };
-                }
+                if (!codeMap[code]) codeMap[code] = { count: 0, revenue: 0, lastTime: 0 };
                 codeMap[code].count++;
                 codeMap[code].revenue += (parseFloat(r.amount) || 0);
-                if ((r.timestamp || 0) > codeMap[code].lastTime) {
-                    codeMap[code].lastTime = r.timestamp || 0;
-                }
+                if ((r.timestamp || 0) > codeMap[code].lastTime) codeMap[code].lastTime = r.timestamp || 0;
             });
-
             var codes = Object.keys(codeMap);
             codes.sort(function(a, b) { return codeMap[a].count - codeMap[b].count; });
-
-            var totalSales = 0;
-            var totalRevenue = 0;
+            var totalSales = 0, totalRevenue = 0;
             codes.forEach(function(c){ totalSales += codeMap[c].count; totalRevenue += codeMap[c].revenue; });
             document.getElementById('nsTotalSales').textContent = totalSales;
             document.getElementById('nsUniqueCodes').textContent = codes.length;
             document.getElementById('nsTotalRevenue').textContent = '₹' + totalRevenue;
-
             if (codes.length > 0) {
-                var leastCode = codes[0];
-                var mostCode = codes[codes.length - 1];
-                document.getElementById('nsLeastSold').textContent = leastCode;
-                document.getElementById('nsMostSold').textContent = mostCode;
+                document.getElementById('nsLeastSold').textContent = codes[0];
+                document.getElementById('nsMostSold').textContent = codes[codes.length - 1];
             } else {
                 document.getElementById('nsLeastSold').textContent = '-';
                 document.getElementById('nsMostSold').textContent = '-';
             }
-
             var q = (nsSearchInput?.value || '').trim().toLowerCase();
-            if (q) {
-                codes = codes.filter(function(c){ return c.toLowerCase().includes(q); });
-            }
-
+            if (q) codes = codes.filter(function(c){ return c.toLowerCase().includes(q); });
             tb.innerHTML = '';
             document.getElementById('numberStatsEmpty').style.display = codes.length === 0 ? 'block' : 'none';
             codes.forEach(function(code, i) {
                 var info = codeMap[code];
                 var tr = document.createElement('tr');
                 var lastStr = info.lastTime ? new Date(info.lastTime).toLocaleString('en-IN') : '-';
-
                 var isLeast = (i === 0 && !q);
                 var isMost = (i === codes.length - 1 && !q);
-                var codeColor = '#ffd700';
-                var countColor = '#4caf50';
+                var codeColor = '#ffd700', countColor = '#4caf50';
                 if (isLeast) { countColor = '#f44336'; codeColor = '#f44336'; }
                 else if (isMost) { countColor = '#4caf50'; codeColor = '#4caf50'; }
-
                 var rankClass = '';
                 if (i === 0) rankClass = 'top1';
                 else if (i === 1) rankClass = 'top2';
                 else if (i === 2) rankClass = 'top3';
-
                 tr.innerHTML = '<td><span class="rank-badge ' + rankClass + '">' + (i+1) + '</span></td>' +
                     '<td><span class="code-badge" style="border-color:' + codeColor + '66;color:' + codeColor + ';">' + code + '</span></td>' +
                     '<td style="color:' + countColor + ';font-weight:700;font-size:14px;">' + info.count + '</td>' +
@@ -2573,11 +2964,10 @@ var KARO_DB = (function(){
             tb.innerHTML = '<tr><td colspan="5" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>';
         }
     }
-
     if (nsRefreshBtn) nsRefreshBtn.addEventListener('click', renderNumberStats);
     if (nsSearchInput) nsSearchInput.addEventListener('input', renderNumberStats);
 
-    // ===== CLAIMS =====
+    // CLAIMS
     async function renderClaimsTable() {
         var tb = document.getElementById('claimsTableBody');
         tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#889;">Loading...</td></tr>';
@@ -2612,10 +3002,7 @@ var KARO_DB = (function(){
             if (act === 'approve') {
                 if (!confirm('Approve ₹' + c.prize_amount + ' for ' + c.username + '?')) return;
                 await KARO_DB.updateUserBalance(c.username, c.prize_amount);
-                await KARO_DB.addTransaction({
-                    username: c.username, amount: c.prize_amount,
-                    type: 'prize', description: 'Prize claimed: ' + c.box_code
-                });
+                await KARO_DB.addTransaction({ username: c.username, amount: c.prize_amount, type: 'prize', description: 'Prize claimed: ' + c.box_code });
                 await KARO_DB.updateClaim(id, { status: 'approved' });
                 showAdminToast('✅ Prize credited', 'success');
             } else {
@@ -2626,7 +3013,7 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
-    // ===== WITHDRAWALS =====
+    // WITHDRAWALS
     async function renderWithdrawalsTable() {
         var tb = document.getElementById('withdrawalsTableBody');
         tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#889;">Loading...</td></tr>';
@@ -2660,10 +3047,7 @@ var KARO_DB = (function(){
             if (!w) return;
             if (act === 'approve') {
                 await KARO_DB.updateUserBalance(w.username, -w.amount);
-                await KARO_DB.addTransaction({
-                    username: w.username, amount: -w.amount,
-                    type: 'withdrawal', description: 'Withdrawal to bank'
-                });
+                await KARO_DB.addTransaction({ username: w.username, amount: -w.amount, type: 'withdrawal', description: 'Withdrawal to bank' });
                 await KARO_DB.updateWithdrawal(id, { status: 'approved' });
                 showAdminToast('✅ Marked as paid', 'success');
             } else {
@@ -2674,7 +3058,7 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
-    // ===== REFERRALS =====
+    // REFERRALS
     async function renderReferralsTable() {
         var tb = document.getElementById('referralsTableBody');
         if (!tb) return;
@@ -2703,7 +3087,7 @@ var KARO_DB = (function(){
         }
     }
 
-    // ===== RECORDS =====
+    // RECORDS
     function renderRecordsTable() {
         var records = KARO_DB.getRecords();
         var tb = document.getElementById('recordsTableBody');
@@ -2727,7 +3111,7 @@ var KARO_DB = (function(){
         });
     }
 
-    // ===== WINNER SETTINGS =====
+    // WINNER SETTINGS
     var wsDigitInputs = [
         document.getElementById('wsDigit0'), document.getElementById('wsDigit1'),
         document.getElementById('wsDigit2'), document.getElementById('wsDigit3')
@@ -2739,10 +3123,7 @@ var KARO_DB = (function(){
 
     function updatePreview() {
         var digits = wsDigitInputs.map(function(inp){
-            var v = parseInt(inp.value);
-            if (isNaN(v) || v < 0) v = 0;
-            if (v > 9) v = 9;
-            return v;
+            var v = parseInt(inp.value); if (isNaN(v) || v < 0) v = 0; if (v > 9) v = 9; return v;
         });
         var auto = digits.reduce(function(a,b){ return a+b; }, 0);
         var final = auto;
@@ -2799,7 +3180,32 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
-    // ===== SETTINGS =====
+    // LUCKY DATE SETTINGS
+    var luckyDateInput = document.getElementById('luckyDateInput');
+    function loadLuckyDateIntoForm() {
+        var d = KARO_DB.getLuckyDrawDate();
+        if (d) {
+            luckyDateInput.value = d;
+        } else {
+            luckyDateInput.value = '';
+        }
+    }
+    document.getElementById('luckyDateSaveBtn').addEventListener('click', async function(){
+        var val = luckyDateInput.value;
+        try {
+            await KARO_DB.saveLuckyDrawDate(val);
+            showAdminToast('✅ Lucky Draw date saved!', 'success');
+        } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
+    });
+    document.getElementById('luckyDateClearBtn').addEventListener('click', async function(){
+        try {
+            await KARO_DB.saveLuckyDrawDate('');
+            luckyDateInput.value = '';
+            showAdminToast('Cleared — using default', 'info');
+        } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
+    });
+
+    // SETTINGS
     function loadSettingsIntoForm() {
         if (currentAdmin) document.getElementById('settingsCurrentUsername').value = currentAdmin.username;
         document.getElementById('settingsNewUsername').value = '';
@@ -2862,8 +3268,10 @@ var KARO_DB = (function(){
     var luckyView = document.getElementById('luckyView');
     var karorpatiView = document.getElementById('karorpatiView');
     var adminView = document.getElementById('adminView');
+    var agentPanelView = document.getElementById('agentPanelView');
     var switchLucky = document.getElementById('switchLucky');
     var switchKarorpati = document.getElementById('switchKarorpati');
+    var switchAgent = document.getElementById('switchAgent');
     var switchAdmin = document.getElementById('switchAdmin');
     var appLogo = document.getElementById('appLogo');
     var secretOverlay = document.getElementById('secretCodeOverlay');
@@ -2899,9 +3307,11 @@ var KARO_DB = (function(){
             secretOverlay.classList.remove('active');
             luckyView.classList.remove('active');
             karorpatiView.classList.remove('active');
+            agentPanelView.classList.remove('active');
             adminView.classList.add('active');
             switchLucky.classList.remove('active');
             switchKarorpati.classList.remove('active');
+            switchAgent.classList.remove('active');
             newAdminBtn.classList.add('active');
         } else {
             secretError.textContent = '❌ Wrong code!';
@@ -2916,13 +3326,19 @@ var KARO_DB = (function(){
     function clearAll() {
         luckyView.classList.remove('active');
         karorpatiView.classList.remove('active');
+        agentPanelView.classList.remove('active');
         adminView.classList.remove('active');
         switchLucky.classList.remove('active');
         switchKarorpati.classList.remove('active');
+        switchAgent.classList.remove('active');
         newAdminBtn.classList.remove('active');
     }
     switchLucky.addEventListener('click', function(){ clearAll(); luckyView.classList.add('active'); switchLucky.classList.add('active'); });
     switchKarorpati.addEventListener('click', function(){ clearAll(); karorpatiView.classList.add('active'); switchKarorpati.classList.add('active'); });
+    switchAgent.addEventListener('click', function(){ clearAll(); agentPanelView.classList.add('active'); switchAgent.classList.add('active'); });
+
+    // Show agent tab always (agents need to access it)
+    switchAgent.style.display = 'flex';
 })();
 </script>
 
