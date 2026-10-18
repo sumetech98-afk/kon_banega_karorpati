@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Karorpati + Wallet + Referral</title>
+<title>Karorpati + Wallet + Referral + Agent</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -99,12 +99,6 @@
     margin-top: 25px; color: #b8aa94; font-size: 0.85rem;
     letter-spacing: 1px; border-top: 1px dashed rgba(212,160,23,0.2); padding-top: 18px;
 }
-#luckyView .draw-date-display {
-    display:inline-block; background: rgba(247,212,74,0.12);
-    border:1px solid rgba(247,212,74,0.4); color:#f7d44a;
-    padding:6px 18px; border-radius:30px; font-size:0.9rem;
-    font-weight:700; letter-spacing:1px; margin-top:4px;
-}
 
 #karorpatiView { display: none; position: fixed; inset: 0; overflow-y: auto; padding-top: 60px; background: linear-gradient(145deg,#0b0e1a 0%,#1a1f2f 100%); z-index: 50; }
 #karorpatiView.active { display: block; }
@@ -126,7 +120,6 @@
     max-width: 380px; width: 100%; background: #1e2538; border-radius: 40px;
     padding: 32px 24px; border: 1px solid #ffd70055; box-shadow: 0 30px 60px rgba(0,0,0,0.9);
 }
-@keyframes modalPop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 #karorpatiView .auth-box h2 { color: #ffd700; text-align: center; font-size: 28px; margin-bottom: 8px; }
 #karorpatiView .auth-box .sub { color: #aab; text-align: center; font-size: 14px; margin-bottom: 24px; }
 #karorpatiView .auth-box .input-group { margin-bottom: 16px; }
@@ -278,10 +271,6 @@
 .ref-input-group { background: rgba(156,39,176,0.1); border-radius: 12px; padding: 12px; border: 1px solid rgba(156,39,176,0.4); margin-bottom: 12px; }
 .ref-input-group label { color: #e91e63 !important; }
 .ref-input-group input { background: rgba(156,39,176,0.08) !important; border-color: rgba(156,39,176,0.5) !important; text-transform: uppercase; }
-
-/* Buyer info modal styles */
-.buyer-info-row { display:flex; gap:10px; margin-bottom:10px; }
-.buyer-info-row .input-group { flex:1; margin-bottom:0; }
 
 @media (max-width: 520px) {
     #luckyView .main-box { padding: 1.8rem 1rem; border-radius: 40px 10px 40px 10px; }
@@ -492,7 +481,6 @@
     color:#ffd700; font-family:monospace; font-weight:900; font-size:13px;
     border:1px solid #ffd70044; display:inline-block;
 }
-
 .rank-badge {
     display:inline-block; min-width:28px; padding:2px 8px;
     border-radius:20px; font-size:11px; font-weight:800;
@@ -551,7 +539,108 @@
 #agentPanelView .agent-toast.show { display:block; }
 #agentPanelView .agent-toast.success { border-color:#4caf50; }
 #agentPanelView .agent-toast.error { border-color:#f44336; }
-#agentPanelView .month-group-title { color:#ffb300; font-size:14px; font-weight:800; margin:16px 0 8px; padding-left:4px; border-left:3px solid #ffb300; padding-left:10px; }
+#agentPanelView .month-group-title { color:#ffb300; font-size:14px; font-weight:800; margin:16px 0 8px; padding-left:10px; border-left:3px solid #ffb300; }
+
+#agentPanelView .agent-tabs { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+#agentPanelView .agent-tabs button {
+    padding:10px 18px; border-radius:30px; border:1px solid #3a4055;
+    background:#1e2538; color:#aab; font-weight:700; font-size:13px;
+    cursor:pointer; display:flex; align-items:center; gap:6px;
+}
+#agentPanelView .agent-tabs button.active { background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f; border-color:#ffb300; }
+
+#agentPanelView .agent-wallet-card {
+    background:linear-gradient(135deg,#4caf50,#388e3c); border-radius:20px;
+    padding:20px; text-align:center; margin-bottom:16px;
+}
+#agentPanelView .agent-wallet-card .lbl { color:#fff; font-size:12px; text-transform:uppercase; letter-spacing:2px; opacity:0.9; }
+#agentPanelView .agent-wallet-card .val { color:#fff; font-size:40px; font-weight:900; margin-top:4px; }
+#agentPanelView .agent-wallet-card .sub { color:#fff; font-size:11px; margin-top:6px; opacity:0.85; }
+#agentPanelView .agent-wallet-actions { display:flex; gap:10px; margin-bottom:16px; }
+#agentPanelView .agent-wallet-actions button {
+    flex:1; padding:14px; border-radius:14px; border:none;
+    font-weight:800; font-size:15px; cursor:pointer;
+}
+#agentPanelView .agent-wallet-actions .add-btn { background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; }
+#agentPanelView .agent-wallet-actions .wd-btn { background:linear-gradient(135deg,#ff9800,#f57c00); color:#fff; }
+
+#agentPanelView .agent-box-grid {
+    display:grid; grid-template-columns:repeat(10,1fr); gap:4px;
+    background:#121724; padding:6px; border-radius:14px; border:1px solid #2a3045;
+}
+#agentPanelView .agent-box-item {
+    aspect-ratio:1/1; background:linear-gradient(145deg,#1e2538,#161c2e);
+    border-radius:6px; border:1px solid #2a3045; display:flex;
+    flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer; font-size:9px; color:#aab; min-height:38px;
+    padding:2px; user-select:none;
+}
+#agentPanelView .agent-box-item .ab-code { font-size:13px; font-weight:900; color:#fff; line-height:1.2; }
+#agentPanelView .agent-box-item.selected { border-color:#ffb300; box-shadow:0 0 25px rgba(255,179,0,0.3); transform:scale(1.05); }
+#agentPanelView .agent-box-item.disabled { cursor:not-allowed; opacity:0.4; }
+
+#agentPanelView .agent-play-row { display:flex; justify-content:center; margin:14px 0 8px; }
+#agentPanelView .agent-play-btn {
+    padding:14px 30px; border-radius:16px; border:none;
+    background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f;
+    font-weight:800; font-size:17px; cursor:pointer;
+    display:flex; align-items:center; gap:10px;
+}
+#agentPanelView .agent-play-btn:disabled { opacity:0.5; cursor:not-allowed; }
+#agentPanelView .agent-play-btn .price-tag { background:#1a1f2f44; padding:2px 12px; border-radius:30px; font-size:13px; }
+
+#agentPanelView .agent-result-msg {
+    text-align:center; font-size:14px; font-weight:700; color:#fff;
+    min-height:28px; margin-top:6px; padding:6px; border-radius:12px;
+}
+#agentPanelView .agent-result-msg.info { color:#ffb300; background:#ffb30011; }
+#agentPanelView .agent-result-msg.error { color:#f44336; background:#f4433611; }
+#agentPanelView .agent-result-msg.success { color:#4caf50; background:#4caf5011; }
+
+#agentPanelView .agent-modal-overlay {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.85); backdrop-filter:blur(8px);
+    display:none; align-items:center; justify-content:center; z-index:8000; padding:20px;
+}
+#agentPanelView .agent-modal-overlay.active { display:flex; }
+#agentPanelView .agent-modal-panel {
+    background:#1e2538; border-radius:28px; max-width:460px; width:100%;
+    max-height:90vh; overflow-y:auto; padding:26px 22px;
+    border:2px solid #ffb300; box-shadow:0 30px 60px rgba(0,0,0,0.9);
+}
+#agentPanelView .agent-modal-panel h2 { color:#ffb300; text-align:center; margin-bottom:16px; font-size:20px; }
+#agentPanelView .agent-modal-panel .inp-group { margin-bottom:12px; }
+#agentPanelView .agent-modal-panel .inp-group label { color:#aab; font-size:13px; display:block; margin-bottom:4px; }
+#agentPanelView .agent-modal-panel .inp-group input {
+    width:100%; padding:12px 14px; border-radius:12px;
+    border:1px solid #3a4055; background:#121724; color:#fff; font-size:15px; outline:none;
+}
+#agentPanelView .agent-modal-panel .inp-group input:focus { border-color:#ffb300; }
+#agentPanelView .agent-modal-panel .modal-close-btn {
+    display:block; width:100%; padding:12px; margin-top:12px;
+    border-radius:14px; border:none; background:#3a3045; color:#ccc;
+    font-weight:700; font-size:15px; cursor:pointer;
+}
+#agentPanelView .agent-modal-panel .submit-btn {
+    width:100%; padding:14px; border-radius:14px; border:none;
+    background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f;
+    font-weight:800; font-size:16px; cursor:pointer;
+}
+#agentPanelView .agent-amount-box {
+    text-align:center; background:#0a0e1a; padding:10px;
+    border-radius:10px; border:1px solid #4caf50; margin-bottom:12px;
+}
+#agentPanelView .agent-amount-box .lbl { color:#aab; font-size:12px; }
+#agentPanelView .agent-amount-box .val { color:#4caf50; font-size:26px; font-weight:900; }
+#agentPanelView .agent-txn-item {
+    background:#121724; border-radius:10px; padding:10px 14px;
+    display:flex; justify-content:space-between; align-items:center;
+    border-left:3px solid #4caf50; margin-bottom:6px;
+}
+#agentPanelView .agent-txn-item.neg { border-left-color:#f44336; }
+#agentPanelView .agent-txn-item .t-desc { color:#fff; font-size:13px; }
+#agentPanelView .agent-txn-item .t-date { color:#889; font-size:11px; margin-top:2px; }
+#agentPanelView .agent-txn-item .t-amt { font-weight:900; font-size:16px; }
 
 @media (max-width: 600px) {
     #viewSwitcher button { padding: 6px 12px; font-size: 11px; }
@@ -570,7 +659,7 @@
 <div id="viewSwitcher">
     <button id="switchLucky" class="active"><i class="fas fa-star"></i> Lucky Draw</button>
     <button id="switchKarorpati"><i class="fas fa-crown"></i> Karorpati</button>
-    <button id="switchAgent" style="display:none;"><i class="fas fa-user-tie"></i> Agent</button>
+    <button id="switchAgent"><i class="fas fa-user-tie"></i> Agent</button>
     <button id="switchAdmin" class="admin-tab"><i class="fas fa-shield-alt"></i> Admin</button>
 </div>
 
@@ -600,18 +689,9 @@
             <div class="auth-box">
                 <h2><i class="fas fa-crown"></i> Karorpati</h2>
                 <div class="sub" id="authSub">Login to play and win big!</div>
-                <div class="input-group">
-                    <label><i class="fas fa-user"></i> Username</label>
-                    <input type="text" id="authUsername" placeholder="Enter username" />
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-phone"></i> Phone Number</label>
-                    <input type="text" id="authPhone" placeholder="Enter 10-digit phone" maxlength="10" inputmode="numeric" />
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-lock"></i> Password</label>
-                    <input type="password" id="authPassword" placeholder="Enter password" />
-                </div>
+                <div class="input-group"><label><i class="fas fa-user"></i> Username</label><input type="text" id="authUsername" placeholder="Enter username" /></div>
+                <div class="input-group"><label><i class="fas fa-phone"></i> Phone Number</label><input type="text" id="authPhone" placeholder="Enter 10-digit phone" maxlength="10" inputmode="numeric" /></div>
+                <div class="input-group"><label><i class="fas fa-lock"></i> Password</label><input type="password" id="authPassword" placeholder="Enter password" /></div>
                 <div class="input-group ref-input-group" id="referralInputGroup" style="display:none;">
                     <label><i class="fas fa-gift"></i> Referral Code (Optional)</label>
                     <input type="text" id="authReferralCode" placeholder="e.g. RAHUL4K9X2" maxlength="20" />
@@ -619,9 +699,7 @@
                 </div>
                 <button class="auth-btn" id="authBtn">Login</button>
                 <div class="auth-error" id="authError"></div>
-                <div class="switch-link" id="authSwitch">
-                    Don't have an account? <a id="toggleAuthLink">Register</a>
-                </div>
+                <div class="switch-link" id="authSwitch">Don't have an account? <a id="toggleAuthLink">Register</a></div>
             </div>
         </div>
 
@@ -629,26 +707,18 @@
             <div class="header">
                 <div class="title-area">
                     <h1><i class="fas fa-trophy"></i> Karorpati</h1>
-                    <div class="btn-group">
-                        <button id="historyBtn"><i class="fas fa-history"></i> History</button>
-                    </div>
+                    <div class="btn-group"><button id="historyBtn"><i class="fas fa-history"></i> History</button></div>
                 </div>
                 <div class="user-info">
-                    <div class="wallet-badge" id="walletBadge">
-                        <i class="fas fa-wallet"></i> <span id="walletBalance">₹0</span>
-                    </div>
-                    <div class="refer-badge" id="referralBadge">
-                        <i class="fas fa-gift"></i> Refer
-                    </div>
+                    <div class="wallet-badge" id="walletBadge"><i class="fas fa-wallet"></i> <span id="walletBalance">₹0</span></div>
+                    <div class="refer-badge" id="referralBadge"><i class="fas fa-gift"></i> Refer</div>
                     <span class="username-badge" id="usernameDisplay">user</span>
                     <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
             </div>
             <div class="box-grid" id="boxGrid"></div>
             <div class="play-controls">
-                <button class="play-btn" id="playBtn">
-                    <i class="fas fa-play"></i> Pick Box & Pay <span class="price-tag">₹25</span>
-                </button>
+                <button class="play-btn" id="playBtn"><i class="fas fa-play"></i> Pick Box & Pay <span class="price-tag">₹25</span></button>
             </div>
             <div class="result-msg" id="resultMsg">🎯 Select a box and click "Pick Box & Pay" to play!</div>
         </div>
@@ -670,17 +740,11 @@
                     <div style="color:#fff; font-size:11px; margin-top:6px; opacity:0.85;" id="walletBonusInfo"></div>
                 </div>
                 <div style="display:flex; gap:10px; margin-bottom:16px;">
-                    <button id="walletAddMoneyBtn" style="flex:1; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; font-size:15px; cursor:pointer;">
-                        <i class="fas fa-plus-circle"></i> Add Money
-                    </button>
-                    <button id="walletWithdrawBtn" style="flex:1; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#ff9800,#f57c00); color:#fff; font-weight:800; font-size:15px; cursor:pointer;">
-                        <i class="fas fa-arrow-down"></i> Withdraw
-                    </button>
+                    <button id="walletAddMoneyBtn" style="flex:1; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; font-size:15px; cursor:pointer;"><i class="fas fa-plus-circle"></i> Add Money</button>
+                    <button id="walletWithdrawBtn" style="flex:1; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#ff9800,#f57c00); color:#fff; font-weight:800; font-size:15px; cursor:pointer;"><i class="fas fa-arrow-down"></i> Withdraw</button>
                 </div>
                 <div>
-                    <h4 style="color:#ffd700; font-size:14px; margin-bottom:10px; border-bottom:1px dashed #333; padding-bottom:6px;">
-                        <i class="fas fa-history"></i> Recent Transactions
-                    </h4>
+                    <h4 style="color:#ffd700; font-size:14px; margin-bottom:10px; border-bottom:1px dashed #333; padding-bottom:6px;"><i class="fas fa-history"></i> Recent Transactions</h4>
                     <div id="walletTransactionsList" style="max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
                 </div>
                 <button class="modal-close-btn" id="walletCloseBtn">Close</button>
@@ -698,28 +762,15 @@
                     <div style="color:#333; font-size:12px; margin-bottom:8px; font-weight:700;">📱 Scan QR to Pay</div>
                     <div id="addMoneyQrCode" style="display:inline-block;"></div>
                 </div>
-                <div class="input-group">
-                    <label><i class="fas fa-rupee-sign"></i> Amount to Add (min ₹10)</label>
-                    <input type="number" id="addMoneyAmount" placeholder="Enter amount" min="10" step="1" />
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-mobile-alt"></i> UPI Payment Number *</label>
-                    <input type="text" id="addMoneyUpiPhone" placeholder="Enter UPI registered phone" />
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-receipt"></i> UPI Transaction ID *</label>
-                    <input type="text" id="addMoneyTxId" placeholder="e.g. 1234567890" />
-                </div>
+                <div class="input-group"><label><i class="fas fa-rupee-sign"></i> Amount to Add (min ₹10)</label><input type="number" id="addMoneyAmount" placeholder="Enter amount" min="10" step="1" /></div>
+                <div class="input-group"><label><i class="fas fa-mobile-alt"></i> UPI Payment Number *</label><input type="text" id="addMoneyUpiPhone" placeholder="Enter UPI registered phone" /></div>
+                <div class="input-group"><label><i class="fas fa-receipt"></i> UPI Transaction ID *</label><input type="text" id="addMoneyTxId" placeholder="e.g. 1234567890" /></div>
                 <div style="background:#121724; border-radius:12px; padding:12px; margin-bottom:12px;">
                     <div style="color:#aab; font-size:12px; text-align:center; margin-bottom:6px;">Or pay to this UPI:</div>
                     <div style="text-align:center; color:#ffd700; font-weight:900; font-size:16px; word-break:break-all;">s6154632725482301@slc</div>
-                    <button id="addMoneyCopyUpiBtn" style="width:100%; padding:8px; margin-top:8px; border-radius:8px; border:1px solid #ffd700; background:#2a3045; color:#ffd700; font-weight:700; font-size:13px; cursor:pointer;">
-                        <i class="fas fa-copy"></i> Copy UPI ID
-                    </button>
+                    <button id="addMoneyCopyUpiBtn" style="width:100%; padding:8px; margin-top:8px; border-radius:8px; border:1px solid #ffd700; background:#2a3045; color:#ffd700; font-weight:700; font-size:13px; cursor:pointer;"><i class="fas fa-copy"></i> Copy UPI ID</button>
                 </div>
-                <button id="addMoneySubmitBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; font-size:16px; cursor:pointer;">
-                    <i class="fas fa-paper-plane"></i> Submit Deposit Request
-                </button>
+                <button id="addMoneySubmitBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; font-size:16px; cursor:pointer;"><i class="fas fa-paper-plane"></i> Submit Deposit Request</button>
                 <div id="addMoneySuccessMsg" style="display:none; text-align:center; padding:12px; margin-top:10px;">
                     <i class="fas fa-check-circle" style="font-size:36px; color:#4caf50;"></i>
                     <h4 style="color:#fff; margin:4px 0;">✅ Request Submitted!</h4>
@@ -737,34 +788,15 @@
                     <div class="amount-value" style="color:#ff9800;" id="withdrawCurrentBalance">₹0</div>
                     <div style="color:#ff9800; font-size:11px; margin-top:4px;" id="withdrawBonusInfo"></div>
                 </div>
-                <div class="input-group">
-                    <label><i class="fas fa-rupee-sign"></i> Amount (min ₹100)</label>
-                    <input type="number" id="withdrawAmount" placeholder="Enter amount" min="100" />
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-user"></i> Account Holder Name *</label>
-                    <input type="text" id="withdrawAccountName" placeholder="Full name as per bank" />
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-university"></i> Bank Account Number *</label>
-                    <input type="text" id="withdrawAccountNumber" placeholder="Bank account number" />
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-code"></i> IFSC Code *</label>
-                    <input type="text" id="withdrawIfsc" placeholder="e.g. SBIN0001234" maxlength="11" style="text-transform:uppercase;" />
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-building"></i> Bank Name *</label>
-                    <input type="text" id="withdrawBankName" placeholder="e.g. State Bank of India" />
-                </div>
+                <div class="input-group"><label><i class="fas fa-rupee-sign"></i> Amount (min ₹100)</label><input type="number" id="withdrawAmount" placeholder="Enter amount" min="100" /></div>
+                <div class="input-group"><label><i class="fas fa-user"></i> Account Holder Name *</label><input type="text" id="withdrawAccountName" placeholder="Full name as per bank" /></div>
+                <div class="input-group"><label><i class="fas fa-university"></i> Bank Account Number *</label><input type="text" id="withdrawAccountNumber" placeholder="Bank account number" /></div>
+                <div class="input-group"><label><i class="fas fa-code"></i> IFSC Code *</label><input type="text" id="withdrawIfsc" placeholder="e.g. SBIN0001234" maxlength="11" style="text-transform:uppercase;" /></div>
+                <div class="input-group"><label><i class="fas fa-building"></i> Bank Name *</label><input type="text" id="withdrawBankName" placeholder="e.g. State Bank of India" /></div>
                 <div style="background:#3a2a1a; border-radius:12px; padding:12px; margin-bottom:12px; border-left:3px solid #ff9800;">
-                    <div style="color:#ff9800; font-size:12px; line-height:1.5;">
-                        <i class="fas fa-info-circle"></i> Processed within 24-48 hours after admin approval.
-                    </div>
+                    <div style="color:#ff9800; font-size:12px; line-height:1.5;"><i class="fas fa-info-circle"></i> Processed within 24-48 hours after admin approval.</div>
                 </div>
-                <button id="withdrawSubmitBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#ff9800,#f57c00); color:#fff; font-weight:800; font-size:16px; cursor:pointer;">
-                    <i class="fas fa-paper-plane"></i> Submit Withdrawal Request
-                </button>
+                <button id="withdrawSubmitBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#ff9800,#f57c00); color:#fff; font-weight:800; font-size:16px; cursor:pointer;"><i class="fas fa-paper-plane"></i> Submit Withdrawal Request</button>
                 <div id="withdrawSuccessMsg" style="display:none; text-align:center; padding:12px; margin-top:10px;">
                     <i class="fas fa-check-circle" style="font-size:36px; color:#4caf50;"></i>
                     <h4 style="color:#fff; margin:4px 0;">✅ Request Submitted!</h4>
@@ -777,10 +809,7 @@
         <div class="modal-overlay" id="referralOverlay">
             <div class="modal-panel" style="max-width: 480px; border-color:#e91e63;">
                 <h2><i class="fas fa-gift" style="color:#e91e63;"></i> Refer & Earn</h2>
-                <p style="font-size:12px; opacity:0.7; text-align:center; margin-bottom:15px;">
-                    Apna code share karo — har referral pe <b style="color:#66bb6a;">₹20 withdrawable</b> milega!<br>
-                    Naya user ko <b style="color:#feca57;">₹100 bonus (locked)</b> milega.
-                </p>
+                <p style="font-size:12px; opacity:0.7; text-align:center; margin-bottom:15px;">Apna code share karo — har referral pe <b style="color:#66bb6a;">₹20 withdrawable</b> milega!<br>Naya user ko <b style="color:#feca57;">₹100 bonus (locked)</b> milega.</p>
                 <div style="background:linear-gradient(135deg,rgba(156,39,176,0.15),rgba(233,30,99,0.15)); border:1px solid rgba(233,30,99,0.4); padding:15px; border-radius:12px; margin-bottom:15px;">
                     <div style="font-size:13px; font-weight:700; color:#e91e63; margin-bottom:10px;">🔑 Your Referral Code</div>
                     <div style="display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.4); padding:12px 15px; border-radius:10px;">
@@ -817,7 +846,7 @@
         <div class="agent-auth-overlay" id="agentAuthOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(11,14,26,0.96); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; z-index:5000; padding:20px;">
             <div style="max-width:380px; width:100%; background:#1e2538; border-radius:40px; padding:32px 24px; border:1px solid #ffb30055; box-shadow:0 30px 60px rgba(0,0,0,0.9);">
                 <h2 style="color:#ffb300; text-align:center; font-size:26px; margin-bottom:8px;"><i class="fas fa-user-tie"></i> Agent Login</h2>
-                <div style="color:#aab; text-align:center; font-size:13px; margin-bottom:22px;">Login to sell numbers &amp; view records</div>
+                <div style="color:#aab; text-align:center; font-size:13px; margin-bottom:22px;">Login to sell numbers &amp; manage wallet</div>
                 <div style="margin-bottom:14px;">
                     <label style="color:#aab; font-size:13px; display:block; margin-bottom:4px;"><i class="fas fa-user"></i> Agent Username</label>
                     <input type="text" id="agentUserIn" placeholder="Enter username" style="width:100%; padding:13px 16px; border-radius:14px; border:1px solid #3a4055; background:#121724; color:#fff; font-size:15px; outline:none;" />
@@ -836,36 +865,57 @@
                 <h1><i class="fas fa-user-tie"></i> Agent Panel</h1>
                 <div class="agent-user">
                     <span class="badge" id="agentBadge">agent</span>
+                    <span style="background:#4caf50; color:#fff; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;"><i class="fas fa-wallet"></i> ₹<span id="agentWalletBalHeader">0</span></span>
                     <button id="agentLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
             </div>
 
             <div class="agent-stats">
-                <div class="agent-stat-card">
-                    <div class="stat-value" id="agentStatTotal">0</div>
-                    <div class="stat-label">Total Sales</div>
-                </div>
-                <div class="agent-stat-card green">
-                    <div class="stat-value" id="agentStatMonth">0</div>
-                    <div class="stat-label">This Month</div>
-                </div>
-                <div class="agent-stat-card blue">
-                    <div class="stat-value" id="agentStatRevenue">₹0</div>
-                    <div class="stat-label">Total Revenue</div>
-                </div>
-                <div class="agent-stat-card">
-                    <div class="stat-value" id="agentStatUnique">0</div>
-                    <div class="stat-label">Unique Buyers</div>
-                </div>
+                <div class="agent-stat-card"><div class="stat-value" id="agentStatTotal">0</div><div class="stat-label">Total Sales</div></div>
+                <div class="agent-stat-card green"><div class="stat-value" id="agentStatMonth">0</div><div class="stat-label">This Month</div></div>
+                <div class="agent-stat-card blue"><div class="stat-value" id="agentStatRevenue">₹0</div><div class="stat-label">Total Revenue</div></div>
+                <div class="agent-stat-card"><div class="stat-value" id="agentStatUnique">0</div><div class="stat-label">Unique Buyers</div></div>
             </div>
 
-            <div class="agent-panel">
+            <div class="agent-tabs">
+                <button class="active" data-atab="sell"><i class="fas fa-box-open"></i> Sell Number</button>
+                <button data-atab="wallet"><i class="fas fa-wallet"></i> Wallet</button>
+                <button data-atab="records"><i class="fas fa-receipt"></i> Sales Record</button>
+            </div>
+
+            <!-- SELL NUMBER PANEL -->
+            <div class="agent-panel" id="agentPanelSell">
+                <h3><i class="fas fa-box-open"></i> Sell a Number</h3>
+                <p style="color:#aab; font-size:13px; margin-bottom:10px;">Select a box, enter buyer name &amp; mobile, then confirm. ₹25 will be deducted from your wallet per sale.</p>
+                <div class="agent-box-grid" id="agentBoxGrid"></div>
+                <div class="agent-play-row">
+                    <button class="agent-play-btn" id="agentPlayBtn"><i class="fas fa-play"></i> Sell Box <span class="price-tag">₹25</span></button>
+                </div>
+                <div class="agent-result-msg info" id="agentResultMsg">🎯 Select a box and click "Sell Box" to start</div>
+            </div>
+
+            <!-- WALLET PANEL -->
+            <div class="agent-panel" id="agentPanelWallet" style="display:none;">
+                <h3><i class="fas fa-wallet"></i> My Wallet</h3>
+                <div class="agent-wallet-card">
+                    <div class="lbl">Available Balance</div>
+                    <div class="val" id="agentWalletBalModal">₹0</div>
+                    <div class="sub" id="agentWalletBonusInfo"></div>
+                </div>
+                <div class="agent-wallet-actions">
+                    <button class="add-btn" id="agentAddMoneyBtn"><i class="fas fa-plus-circle"></i> Add Money</button>
+                    <button class="wd-btn" id="agentWithdrawBtn"><i class="fas fa-arrow-down"></i> Withdraw</button>
+                </div>
+                <h4 style="color:#ffb300; font-size:14px; margin-bottom:10px; border-bottom:1px dashed #333; padding-bottom:6px;"><i class="fas fa-history"></i> Recent Transactions</h4>
+                <div id="agentTxnList" style="max-height:300px; overflow-y:auto;"></div>
+            </div>
+
+            <!-- SALES RECORD PANEL -->
+            <div class="agent-panel" id="agentPanelRecords" style="display:none;">
                 <h3><i class="fas fa-chart-line"></i> Sales Records <span style="font-size:12px; color:#889; font-weight:400; margin-left:auto;">(Month-wise)</span></h3>
                 <div class="agent-search-row">
                     <input type="text" id="agentSearchInput" placeholder="🔍 Search by buyer name, mobile or box code..." />
-                    <select id="agentMonthFilter">
-                        <option value="all">All Months</option>
-                    </select>
+                    <select id="agentMonthFilter"><option value="all">All Months</option></select>
                     <button id="agentRefreshBtn" style="padding:10px 20px; border-radius:12px; border:none; background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f; font-weight:700; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:6px;"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
                 <div id="agentSalesContainer"></div>
@@ -874,6 +924,40 @@
         </div>
     </div>
     <div class="agent-toast" id="agentToast"></div>
+
+    <div class="agent-modal-overlay" id="agentAddMoneyOverlay">
+        <div class="agent-modal-panel">
+            <h2><i class="fas fa-plus-circle"></i> Add Money</h2>
+            <div class="agent-amount-box"><div class="lbl">Current Balance</div><div class="val" id="agentAddCurrentBal">₹0</div></div>
+            <div style="background:#fff; border-radius:12px; padding:14px; text-align:center; margin-bottom:12px;">
+                <div style="color:#333; font-size:12px; margin-bottom:8px; font-weight:700;">📱 Scan QR to Pay</div>
+                <div id="agentAddQrCode" style="display:inline-block;"></div>
+            </div>
+            <div class="inp-group"><label><i class="fas fa-rupee-sign"></i> Amount (min ₹10)</label><input type="number" id="agentAddAmount" min="10" placeholder="Enter amount" /></div>
+            <div class="inp-group"><label><i class="fas fa-mobile-alt"></i> UPI Phone *</label><input type="text" id="agentAddUpiPhone" placeholder="UPI registered phone" /></div>
+            <div class="inp-group"><label><i class="fas fa-receipt"></i> UPI TX ID *</label><input type="text" id="agentAddTxId" placeholder="Transaction ID" /></div>
+            <div style="background:#121724; border-radius:12px; padding:12px; margin-bottom:12px;">
+                <div style="color:#aab; font-size:12px; text-align:center; margin-bottom:6px;">Or pay to UPI:</div>
+                <div style="text-align:center; color:#ffb300; font-weight:900; font-size:15px; word-break:break-all;">s6154632725482301@slc</div>
+            </div>
+            <button class="submit-btn" id="agentAddSubmitBtn"><i class="fas fa-paper-plane"></i> Submit Deposit Request</button>
+            <button class="modal-close-btn" id="agentAddCloseBtn">Close</button>
+        </div>
+    </div>
+
+    <div class="agent-modal-overlay" id="agentWithdrawOverlay">
+        <div class="agent-modal-panel">
+            <h2><i class="fas fa-arrow-down"></i> Withdraw Money</h2>
+            <div class="agent-amount-box" style="border-color:#ff9800;"><div class="lbl">Available Balance</div><div class="val" style="color:#ff9800;" id="agentWdCurrentBal">₹0</div></div>
+            <div class="inp-group"><label><i class="fas fa-rupee-sign"></i> Amount (min ₹100)</label><input type="number" id="agentWdAmount" min="100" placeholder="Enter amount" /></div>
+            <div class="inp-group"><label><i class="fas fa-user"></i> Account Holder Name *</label><input type="text" id="agentWdName" placeholder="Full name" /></div>
+            <div class="inp-group"><label><i class="fas fa-university"></i> Account Number *</label><input type="text" id="agentWdAccNo" placeholder="Bank account number" /></div>
+            <div class="inp-group"><label><i class="fas fa-code"></i> IFSC Code *</label><input type="text" id="agentWdIfsc" maxlength="11" placeholder="e.g. SBIN0001234" style="text-transform:uppercase;" /></div>
+            <div class="inp-group"><label><i class="fas fa-building"></i> Bank Name *</label><input type="text" id="agentWdBank" placeholder="e.g. State Bank of India" /></div>
+            <button class="submit-btn" id="agentWdSubmitBtn" style="background:linear-gradient(135deg,#ff9800,#f57c00); color:#fff;"><i class="fas fa-paper-plane"></i> Submit Withdrawal</button>
+            <button class="modal-close-btn" id="agentWdCloseBtn">Close</button>
+        </div>
+    </div>
 </div>
 
 <!-- ADMIN PANEL -->
@@ -882,14 +966,8 @@
         <div class="admin-auth-box">
             <h2><i class="fas fa-shield-alt"></i> Admin Login</h2>
             <div class="sub">Only administrators can access</div>
-            <div class="input-group">
-                <label><i class="fas fa-user"></i> Username</label>
-                <input type="text" id="adminUserIn" placeholder="Enter username" />
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-lock"></i> Password</label>
-                <input type="password" id="adminPassIn" placeholder="Enter password" />
-            </div>
+            <div class="input-group"><label><i class="fas fa-user"></i> Username</label><input type="text" id="adminUserIn" placeholder="Enter username" /></div>
+            <div class="input-group"><label><i class="fas fa-lock"></i> Password</label><input type="password" id="adminPassIn" placeholder="Enter password" /></div>
             <button class="admin-login-btn" id="adminLoginBtn">Login as Admin</button>
             <div class="admin-error" id="adminError"></div>
             <div class="hint">Default: <strong>admin / admin123</strong></div>
@@ -930,34 +1008,19 @@
 
         <div class="admin-panel" id="panelUsers">
             <h3><i class="fas fa-users"></i> Manage Users</h3>
-            <div class="admin-search-row">
-                <input type="text" id="userSearch" placeholder="🔍 Search user..." />
-                <button id="addUserBtn"><i class="fas fa-user-plus"></i> Add</button>
-            </div>
+            <div class="admin-search-row"><input type="text" id="userSearch" placeholder="🔍 Search user..." /><button id="addUserBtn"><i class="fas fa-user-plus"></i> Add</button></div>
             <div class="admin-table-wrap">
-                <table>
-                    <thead><tr><th>#</th><th>User</th><th>Phone</th><th>Balance</th><th>Ref Code</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
-                    <tbody id="usersTableBody"></tbody>
-                </table>
+                <table><thead><tr><th>#</th><th>User</th><th>Phone</th><th>Balance</th><th>Ref Code</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="usersTableBody"></tbody></table>
             </div>
             <div class="empty-state" id="usersEmpty" style="display:none;">No users.</div>
         </div>
 
-        <!-- AGENTS TAB -->
         <div class="admin-panel" id="panelAgents" style="display:none;">
             <h3><i class="fas fa-user-tie"></i> Manage Agents</h3>
-            <div class="admin-search-row">
-                <input type="text" id="agentSearch" placeholder="🔍 Search agent..." />
-                <button id="addAgentBtn"><i class="fas fa-user-plus"></i> Create Agent</button>
-            </div>
-            <p style="color:#aab; font-size:13px; margin-bottom:14px;">
-                Agents can sell numbers. They must enter buyer name &amp; mobile before each sale.
-            </p>
+            <div class="admin-search-row"><input type="text" id="agentSearch" placeholder="🔍 Search agent..." /><button id="addAgentBtn"><i class="fas fa-user-plus"></i> Create Agent</button></div>
+            <p style="color:#aab; font-size:13px; margin-bottom:14px;">Agents can sell numbers. They must enter buyer name &amp; mobile before each sale. Their wallet is deducted ₹25 per sale.</p>
             <div class="admin-table-wrap">
-                <table>
-                    <thead><tr><th>#</th><th>Agent</th><th>Phone</th><th>Total Sales</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead>
-                    <tbody id="agentsTableBody"></tbody>
-                </table>
+                <table><thead><tr><th>#</th><th>Agent</th><th>Phone</th><th>Balance</th><th>Total Sales</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead><tbody id="agentsTableBody"></tbody></table>
             </div>
             <div class="empty-state" id="agentsEmpty" style="display:none;">No agents yet.</div>
         </div>
@@ -965,43 +1028,24 @@
         <div class="admin-panel" id="panelDeposits" style="display:none;">
             <h3><i class="fas fa-arrow-up"></i> Deposit Requests</h3>
             <div class="admin-table-wrap">
-                <table>
-                    <thead><tr><th>#</th><th>User</th><th>Amount</th><th>UPI Phone</th><th>TXID</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-                    <tbody id="depositsTableBody"></tbody>
-                </table>
+                <table><thead><tr><th>#</th><th>User</th><th>Amount</th><th>UPI Phone</th><th>TXID</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="depositsTableBody"></tbody></table>
             </div>
             <div class="empty-state" id="depositsEmpty" style="display:none;">No deposits.</div>
         </div>
 
         <div class="admin-panel" id="panelBoxResults" style="display:none;">
             <h3><i class="fas fa-box-open"></i> Box Results — Manual Prize Setting</h3>
-            <p style="color:#aab; font-size:13px; margin-bottom:14px;">
-                Yahan pending box purchases dikhengi. Prize amount set karke <b style="color:#4caf50;">"Set"</b> click karein.<br>
-                <b style="color:#4caf50;">Amount > 0 = WON</b> (wallet auto credit) &nbsp;|&nbsp; <b style="color:#f44336;">Amount 0 = LOST</b>
-            </p>
-            <div class="admin-search-row">
-                <input type="text" id="boxResultSearch" placeholder="🔍 Search by username or box code..." />
-                <button id="refreshBoxResultsBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
-            </div>
+            <p style="color:#aab; font-size:13px; margin-bottom:14px;">Yahan pending box purchases dikhengi. Prize amount set karke <b style="color:#4caf50;">"Set"</b> click karein.<br><b style="color:#4caf50;">Amount > 0 = WON</b> (wallet auto credit) &nbsp;|&nbsp; <b style="color:#f44336;">Amount 0 = LOST</b></p>
+            <div class="admin-search-row"><input type="text" id="boxResultSearch" placeholder="🔍 Search by username or box code..." /><button id="refreshBoxResultsBtn"><i class="fas fa-sync-alt"></i> Refresh</button></div>
             <div class="admin-table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th><th>User</th><th>Box Code</th><th>Amount Paid</th>
-                            <th>Status</th><th>Prize (₹)</th><th>Date</th><th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="boxResultsTableBody"></tbody>
-                </table>
+                <table><thead><tr><th>#</th><th>User/Buyer</th><th>Box Code</th><th>Amount</th><th>Status</th><th>Prize (₹)</th><th>Date</th><th>Action</th></tr></thead><tbody id="boxResultsTableBody"></tbody></table>
             </div>
             <div class="empty-state" id="boxResultsEmpty" style="display:none;">No records found.</div>
         </div>
 
         <div class="admin-panel" id="panelNumberStats" style="display:none;">
             <h3><i class="fas fa-chart-bar"></i> Complete Box Number Records</h3>
-            <p style="color:#aab; font-size:13px; margin-bottom:14px;">
-                Har box code ki sale count, revenue, aur last sold time. <b style="color:#f44336;">Red</b> = sabse kam bika, <b style="color:#4caf50;">Green</b> = sabse zyada bika.
-            </p>
+            <p style="color:#aab; font-size:13px; margin-bottom:14px;">Har box code ki sale count, revenue, aur last sold time. <b style="color:#f44336;">Red</b> = sabse kam bika, <b style="color:#4caf50;">Green</b> = sabse zyada bika.</p>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:16px;">
                 <div class="ns-summary-card"><div class="ns-value" id="nsTotalSales">0</div><div class="ns-label">Total Boxes Sold</div></div>
                 <div class="ns-summary-card green"><div class="ns-value" id="nsUniqueCodes">0</div><div class="ns-label">Unique Codes Sold</div></div>
@@ -1009,15 +1053,9 @@
                 <div class="ns-summary-card red"><div class="ns-value" id="nsLeastSold">-</div><div class="ns-label">Least Sold</div></div>
                 <div class="ns-summary-card orange"><div class="ns-value" id="nsTotalRevenue">₹0</div><div class="ns-label">Total Revenue</div></div>
             </div>
-            <div class="admin-search-row">
-                <input type="text" id="nsSearchInput" placeholder="🔍 Search box code..." />
-                <button id="nsRefreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
-            </div>
+            <div class="admin-search-row"><input type="text" id="nsSearchInput" placeholder="🔍 Search box code..." /><button id="nsRefreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button></div>
             <div class="admin-table-wrap">
-                <table>
-                    <thead><tr><th>#</th><th>Box Code</th><th>Times Sold</th><th>Revenue</th><th>Last Sold</th></tr></thead>
-                    <tbody id="numberStatsTableBody"></tbody>
-                </table>
+                <table><thead><tr><th>#</th><th>Box Code</th><th>Times Sold</th><th>Revenue</th><th>Last Sold</th></tr></thead><tbody id="numberStatsTableBody"></tbody></table>
             </div>
             <div class="empty-state" id="numberStatsEmpty" style="display:none;">No sales yet.</div>
         </div>
@@ -1026,10 +1064,7 @@
             <h3><i class="fas fa-gift"></i> Old Prize Claim Requests</h3>
             <p style="color:#aab; font-size:12px; margin-bottom:10px;">(Yeh purani claim requests hain — new system mein zaroorat nahi)</p>
             <div class="admin-table-wrap">
-                <table>
-                    <thead><tr><th>#</th><th>User</th><th>Box Code</th><th>Prize</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-                    <tbody id="claimsTableBody"></tbody>
-                </table>
+                <table><thead><tr><th>#</th><th>User</th><th>Box Code</th><th>Prize</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="claimsTableBody"></tbody></table>
             </div>
             <div class="empty-state" id="claimsEmpty" style="display:none;">No claims.</div>
         </div>
@@ -1037,10 +1072,7 @@
         <div class="admin-panel" id="panelWithdrawals" style="display:none;">
             <h3><i class="fas fa-arrow-down"></i> Withdrawal Requests</h3>
             <div class="admin-table-wrap">
-                <table>
-                    <thead><tr><th>#</th><th>User</th><th>Amount</th><th>Account</th><th>IFSC</th><th>Bank</th><th>Status</th><th>Actions</th></tr></thead>
-                    <tbody id="withdrawalsTableBody"></tbody>
-                </table>
+                <table><thead><tr><th>#</th><th>User</th><th>Amount</th><th>Account</th><th>IFSC</th><th>Bank</th><th>Status</th><th>Actions</th></tr></thead><tbody id="withdrawalsTableBody"></tbody></table>
             </div>
             <div class="empty-state" id="withdrawalsEmpty" style="display:none;">No withdrawals.</div>
         </div>
@@ -1048,10 +1080,7 @@
         <div class="admin-panel" id="panelReferrals" style="display:none;">
             <h3><i class="fas fa-share-alt"></i> Referral Records</h3>
             <div class="admin-table-wrap">
-                <table>
-                    <thead><tr><th>#</th><th>Referrer</th><th>Referred User</th><th>Referrer Reward</th><th>Referee Reward</th><th>Mobile</th><th>Date</th></tr></thead>
-                    <tbody id="referralsTableBody"></tbody>
-                </table>
+                <table><thead><tr><th>#</th><th>Referrer</th><th>Referred User</th><th>Referrer Reward</th><th>Referee Reward</th><th>Mobile</th><th>Date</th></tr></thead><tbody id="referralsTableBody"></tbody></table>
             </div>
             <div class="empty-state" id="referralsEmpty" style="display:none;">No referrals yet.</div>
         </div>
@@ -1059,26 +1088,17 @@
         <div class="admin-panel" id="panelRecords" style="display:none;">
             <h3><i class="fas fa-receipt"></i> All Records</h3>
             <div class="admin-table-wrap">
-                <table>
-                    <thead><tr><th>#</th><th>User</th><th>Box</th><th>Amount</th><th>Win</th><th>Status</th><th>Date</th></tr></thead>
-                    <tbody id="recordsTableBody"></tbody>
-                </table>
+                <table><thead><tr><th>#</th><th>User</th><th>Box</th><th>Buyer</th><th>Amount</th><th>Win</th><th>Status</th><th>Date</th></tr></thead><tbody id="recordsTableBody"></tbody></table>
             </div>
             <div class="empty-state" id="recordsEmpty" style="display:none;">No records.</div>
         </div>
 
         <div class="admin-panel" id="panelWinner" style="display:none;">
             <h3><i class="fas fa-trophy"></i> Lucky Draw Winner Setting</h3>
-            <div style="background:#121724; padding:12px 16px; border-radius:12px; margin-bottom:18px; border-left:3px solid #ffd700; color:#aab; font-size:13px;">
-                Yeh Lucky Draw section ke reels ke liye hai. Fixed mode mein reels hamesha set digits par rukenge.
-            </div>
+            <div style="background:#121724; padding:12px 16px; border-radius:12px; margin-bottom:18px; border-left:3px solid #ffd700; color:#aab; font-size:13px;">Yeh Lucky Draw section ke reels ke liye hai. Fixed mode mein reels hamesha set digits par rukenge.</div>
             <div style="background:#121724; padding:14px; border-radius:12px; margin-bottom:18px;">
-                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#fff; font-weight:700; margin-bottom:8px;">
-                    <input type="radio" name="winnerMode" value="fixed" checked /> 🔒 Fixed Mode
-                </label>
-                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#fff; font-weight:700;">
-                    <input type="radio" name="winnerMode" value="random" /> 🎲 Random Mode
-                </label>
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#fff; font-weight:700; margin-bottom:8px;"><input type="radio" name="winnerMode" value="fixed" checked /> 🔒 Fixed Mode</label>
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#fff; font-weight:700;"><input type="radio" name="winnerMode" value="random" /> 🎲 Random Mode</label>
             </div>
             <div class="ws-digits-row">
                 <div class="ws-digit-box"><label>D1</label><input type="number" id="wsDigit0" min="0" max="9" value="0" /></div>
@@ -1091,9 +1111,7 @@
                 <div id="wsSumDisplay" style="width:90px; height:90px; background:radial-gradient(circle at 30% 30%,#ffd700,#b8860b); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:900; color:#0b0e1a;">0</div>
             </div>
             <div style="background:#121724; border-radius:12px; padding:14px; margin-bottom:18px; border-left:3px solid #ff9800;">
-                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#ff9800; font-weight:700;">
-                    <input type="checkbox" id="wsUseCustomSum" style="width:18px; height:18px;" /> Manual Sum Override
-                </label>
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#ff9800; font-weight:700;"><input type="checkbox" id="wsUseCustomSum" style="width:18px; height:18px;" /> Manual Sum Override</label>
                 <div style="margin-top:10px; display:none;" id="wsCustomSumWrap">
                     <label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">Custom Sum</label>
                     <input type="number" id="wsCustomSumValue" value="0" min="0" style="width:100%; padding:10px; border-radius:8px; border:2px solid #ff9800; background:#0a0e1a; color:#ff9800; font-size:22px; font-weight:900; text-align:center; outline:none;" />
@@ -1105,24 +1123,15 @@
             </div>
         </div>
 
-        <!-- LUCKY DATE TAB -->
         <div class="admin-panel" id="panelLuckyDate" style="display:none;">
             <h3><i class="fas fa-calendar-alt"></i> Lucky Draw Date Setting</h3>
-            <p style="color:#aab; font-size:13px; margin-bottom:16px;">
-                Set the date that appears on the Lucky Draw screen below "Kon Banega KarorPati".
-            </p>
+            <p style="color:#aab; font-size:13px; margin-bottom:16px;">Set the date that appears on the Lucky Draw screen below "Kon Banega KarorPati".</p>
             <div style="background:#121724; border-radius:14px; padding:16px; border-left:3px solid #ffd700;">
-                <label style="color:#aab; font-size:13px; display:block; margin-bottom:8px;">
-                    <i class="fas fa-calendar"></i> Lucky Draw Date
-                </label>
+                <label style="color:#aab; font-size:13px; display:block; margin-bottom:8px;"><i class="fas fa-calendar"></i> Lucky Draw Date</label>
                 <input type="date" id="luckyDateInput" style="width:100%; padding:12px 14px; border-radius:12px; border:1px solid #3a4055; background:#0a0e1a; color:#ffd700; font-size:16px; font-weight:700; outline:none;" />
                 <div style="color:#889; font-size:11px; margin-top:6px;">This date will be displayed on the Lucky Draw screen. Leave empty for default "Today's Winner".</div>
-                <button id="luckyDateSaveBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#ffd700,#e6b800); color:#1a1f2f; font-weight:800; font-size:16px; cursor:pointer; margin-top:14px;">
-                    <i class="fas fa-save"></i> Save Date
-                </button>
-                <button id="luckyDateClearBtn" style="width:100%; padding:12px; border-radius:14px; border:none; background:#3a3045; color:#ccc; font-weight:700; font-size:14px; cursor:pointer; margin-top:8px;">
-                    <i class="fas fa-times"></i> Clear (Use Default)
-                </button>
+                <button id="luckyDateSaveBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#ffd700,#e6b800); color:#1a1f2f; font-weight:800; font-size:16px; cursor:pointer; margin-top:14px;"><i class="fas fa-save"></i> Save Date</button>
+                <button id="luckyDateClearBtn" style="width:100%; padding:12px; border-radius:14px; border:none; background:#3a3045; color:#ccc; font-weight:700; font-size:14px; cursor:pointer; margin-top:8px;"><i class="fas fa-times"></i> Clear (Use Default)</button>
             </div>
         </div>
 
@@ -1130,30 +1139,15 @@
             <h3><i class="fas fa-cog"></i> Admin Settings</h3>
             <div style="background:#121724; border-radius:14px; padding:16px; margin-bottom:14px; border-left:3px solid #4fc3f7;">
                 <h4 style="color:#4fc3f7; font-size:14px; margin-bottom:12px;">Change Username</h4>
-                <div style="margin-bottom:10px;">
-                    <label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">Current</label>
-                    <input type="text" id="settingsCurrentUsername" readonly style="width:100%; padding:10px; border-radius:10px; border:1px solid #3a4055; background:#0a0e1a; color:#889;" />
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">New Username</label>
-                    <input type="text" id="settingsNewUsername" style="width:100%; padding:10px; border-radius:10px; border:1px solid #3a4055; background:#0a0e1a; color:#fff; outline:none;" />
-                </div>
+                <div style="margin-bottom:10px;"><label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">Current</label><input type="text" id="settingsCurrentUsername" readonly style="width:100%; padding:10px; border-radius:10px; border:1px solid #3a4055; background:#0a0e1a; color:#889;" /></div>
+                <div style="margin-bottom:10px;"><label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">New Username</label><input type="text" id="settingsNewUsername" style="width:100%; padding:10px; border-radius:10px; border:1px solid #3a4055; background:#0a0e1a; color:#fff; outline:none;" /></div>
                 <button id="settingsSaveUsernameBtn" style="width:100%; padding:11px; border-radius:10px; border:none; background:#4fc3f7; color:#0b0e1a; font-weight:800; cursor:pointer;">Update Username</button>
             </div>
             <div style="background:#121724; border-radius:14px; padding:16px; border-left:3px solid #4caf50;">
                 <h4 style="color:#4caf50; font-size:14px; margin-bottom:12px;">Change Password</h4>
-                <div style="margin-bottom:10px;">
-                    <label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">Current Password</label>
-                    <input type="password" id="settingsCurrentPassword" style="width:100%; padding:10px; border-radius:10px; border:1px solid #3a4055; background:#0a0e1a; color:#fff; outline:none;" />
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">New Password (min 6)</label>
-                    <input type="password" id="settingsNewPassword" style="width:100%; padding:10px; border-radius:10px; border:1px solid #3a4055; background:#0a0e1a; color:#fff; outline:none;" />
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">Confirm New Password</label>
-                    <input type="password" id="settingsConfirmPassword" style="width:100%; padding:10px; border-radius:10px; border:1px solid #3a4055; background:#0a0e1a; color:#fff; outline:none;" />
-                </div>
+                <div style="margin-bottom:10px;"><label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">Current Password</label><input type="password" id="settingsCurrentPassword" style="width:100%; padding:10px; border-radius:10px; border:1px solid #3a4055; background:#0a0e1a; color:#fff; outline:none;" /></div>
+                <div style="margin-bottom:10px;"><label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">New Password (min 6)</label><input type="password" id="settingsNewPassword" style="width:100%; padding:10px; border-radius:10px; border:1px solid #3a4055; background:#0a0e1a; color:#fff; outline:none;" /></div>
+                <div style="margin-bottom:10px;"><label style="color:#aab; font-size:12px; display:block; margin-bottom:4px;">Confirm New Password</label><input type="password" id="settingsConfirmPassword" style="width:100%; padding:10px; border-radius:10px; border:1px solid #3a4055; background:#0a0e1a; color:#fff; outline:none;" /></div>
                 <button id="settingsSavePasswordBtn" style="width:100%; padding:11px; border-radius:10px; border:none; background:#4caf50; color:#fff; font-weight:800; cursor:pointer;">Update Password</button>
             </div>
         </div>
@@ -1166,24 +1160,17 @@
             <div class="input-group"><label>Phone</label><input type="text" id="newPhone" /></div>
             <div class="input-group"><label>Password</label><input type="text" id="newPassword" /></div>
             <div class="input-group"><label>Role</label><select id="newRole"><option value="user">User</option><option value="admin">Admin</option></select></div>
-            <div class="modal-actions">
-                <button class="cancel-btn" id="cancelAddUser">Cancel</button>
-                <button class="save-btn" id="saveAddUser">Add</button>
-            </div>
+            <div class="modal-actions"><button class="cancel-btn" id="cancelAddUser">Cancel</button><button class="save-btn" id="saveAddUser">Add</button></div>
         </div>
     </div>
 
-    <!-- Create Agent Modal -->
     <div class="admin-modal-overlay" id="addAgentModal">
         <div class="admin-modal" style="border-color:#ffb300;">
             <h2 style="color:#ffb300;"><i class="fas fa-user-tie"></i> Create Agent</h2>
             <div class="input-group"><label>Agent Username</label><input type="text" id="newAgentUsername" /></div>
             <div class="input-group"><label>Phone</label><input type="text" id="newAgentPhone" /></div>
             <div class="input-group"><label>Password</label><input type="text" id="newAgentPassword" /></div>
-            <div class="modal-actions">
-                <button class="cancel-btn" id="cancelAddAgent">Cancel</button>
-                <button class="save-btn" id="saveAddAgent" style="background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f;">Create</button>
-            </div>
+            <div class="modal-actions"><button class="cancel-btn" id="cancelAddAgent">Cancel</button><button class="save-btn" id="saveAddAgent" style="background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f;">Create</button></div>
         </div>
     </div>
 
@@ -1196,14 +1183,11 @@
         <p>Enter code to access Admin Panel</p>
         <input type="password" id="secretCodeInput" placeholder="Enter secret code" />
         <div id="secretCodeError"></div>
-        <div class="btn-row">
-            <button id="secretCodeCancelBtn">Cancel</button>
-            <button id="secretCodeOkBtn">Unlock</button>
-        </div>
+        <div class="btn-row"><button id="secretCodeCancelBtn">Cancel</button><button id="secretCodeOkBtn">Unlock</button></div>
     </div>
 </div>
 
-<!-- FIREBASE INIT + DB WRAPPER -->
+<!-- ============================= FIREBASE INIT + DB WRAPPER ============================= -->
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDnGHcGAbmsuMgZoXDDIAi1ovgW0Yvj6QQ",
@@ -1295,7 +1279,6 @@ var KARO_DB = (function(){
         KARO_CACHE.winnerSettings = s;
     }
 
-    // Lucky draw date
     async function fetchLuckyDrawDate() {
         try {
             var doc = await db.collection('settings').doc('luckyDate').get();
@@ -1332,8 +1315,7 @@ var KARO_DB = (function(){
     }
 
     async function addDeposit(d) {
-        d.timestamp = Date.now();
-        d.status = 'pending';
+        d.timestamp = Date.now(); d.status = 'pending';
         var ref = await db.collection('deposits').add(d);
         return ref.id;
     }
@@ -1374,7 +1356,6 @@ var KARO_DB = (function(){
     }
     async function updateWithdrawal(id, updates) { await db.collection('withdrawals').doc(id).update(updates); }
 
-    // REFERRAL
     function generateReferralCode(username) {
         var clean = (username || 'USER').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) || 'USER';
         var rand;
@@ -1382,9 +1363,7 @@ var KARO_DB = (function(){
             var arr = new Uint32Array(1);
             window.crypto.getRandomValues(arr);
             rand = arr[0].toString(36).toUpperCase();
-        } else {
-            rand = Math.random().toString(36).substring(2).toUpperCase();
-        }
+        } else { rand = Math.random().toString(36).substring(2).toUpperCase(); }
         rand = (rand + 'ABCDEF').slice(0, 6);
         return clean + rand;
     }
@@ -1394,25 +1373,16 @@ var KARO_DB = (function(){
             try {
                 var docRef = db.collection('referralCodes').doc(candidate);
                 var snap = await docRef.get();
-                if (!snap.exists) {
-                    await docRef.set({ uid: uid, createdAt: Date.now() });
-                    return candidate;
-                }
+                if (!snap.exists) { await docRef.set({ uid: uid, createdAt: Date.now() }); return candidate; }
             } catch (e) { console.warn('Ref code attempt failed:', e); }
         }
         throw new Error('Could not generate unique referral code');
     }
     function getDeviceFingerprint() {
-        var nav = window.navigator;
-        var screen = window.screen;
+        var nav = window.navigator, screen = window.screen;
         var parts = [nav.userAgent || '', nav.language || '', screen.width + 'x' + screen.height, screen.colorDepth || '', new Date().getTimezoneOffset()];
-        var hash = 0;
-        var str = parts.join('|');
-        for (var i = 0; i < str.length; i++) {
-            var chr = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + chr;
-            hash |= 0;
-        }
+        var hash = 0, str = parts.join('|');
+        for (var i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash |= 0; }
         return 'dev_' + Math.abs(hash).toString(36);
     }
     async function lookupReferralCode(code) {
@@ -1459,13 +1429,11 @@ var KARO_DB = (function(){
         if (usersSnap.empty) {
             await db.collection('users').doc('admin').set({
                 username:'admin', password:'admin123', phone:'9999999999',
-                status:'active', role:'admin', registeredAt: Date.now(), balance: 0,
-                bonusBalance: 0, referralCode: null
+                status:'active', role:'admin', registeredAt: Date.now(), balance: 0, bonusBalance: 0, referralCode: null
             });
             await db.collection('users').doc('demo').set({
                 username:'demo', password:'demo123', phone:'9876543210',
-                status:'active', role:'user', registeredAt: Date.now(), balance: 100,
-                bonusBalance: 100, referralCode: null
+                status:'active', role:'user', registeredAt: Date.now(), balance: 100, bonusBalance: 100, referralCode: null
             });
         }
         await fetchUsers();
@@ -1516,7 +1484,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- LUCKY DRAW -->
+<!-- ============================= LUCKY DRAW ============================= -->
 <script>
 (function(){
     var canvas = document.getElementById('starCanvas');
@@ -1567,7 +1535,6 @@ var KARO_DB = (function(){
     var drawBtn = document.getElementById('drawBtn');
     var isSpinning = false, timers = [];
 
-    // Update lucky draw date display
     function updateLuckyDateDisplay() {
         var dateStr = KARO_DB.getLuckyDrawDate();
         var el = document.getElementById('luckyDrawDate');
@@ -1619,19 +1586,14 @@ var KARO_DB = (function(){
         reels.forEach(function(reel, index) {
             var interval = setInterval(function(){ reel.textContent = Math.floor(Math.random()*10); }, 70);
             timers.push(interval);
-            setTimeout(function() {
-                clearInterval(interval);
-                reel.textContent = CONFIG.digits[index];
-            }, stopTimes[index]);
+            setTimeout(function() { clearInterval(interval); reel.textContent = CONFIG.digits[index]; }, stopTimes[index]);
         });
 
         var sumInterval = setInterval(function() {
             var cur = parseInt(sumBox.textContent);
             var diff = CONFIG.sum - cur;
-            if (diff > 0) {
-                var step = Math.max(1, Math.floor(diff / 10));
-                sumBox.textContent = Math.min(cur + step, CONFIG.sum);
-            } else clearInterval(sumInterval);
+            if (diff > 0) { var step = Math.max(1, Math.floor(diff / 10)); sumBox.textContent = Math.min(cur + step, CONFIG.sum); }
+            else clearInterval(sumInterval);
         }, 80);
         timers.push(sumInterval);
 
@@ -1655,7 +1617,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- KARORPATI USER SIDE -->
+<!-- ============================= KARORPATI USER SIDE ============================= -->
 <script>
 (function(){
     var FIXED_AMOUNT = 25;
@@ -1707,30 +1669,23 @@ var KARO_DB = (function(){
             if (u === 'admin') { authError.textContent = 'Reserved.'; return; }
 
             var refCode = (document.getElementById('authReferralCode')?.value || '').trim().toUpperCase();
-            var referrerUid = null;
-            var referrerData = null;
+            var referrerUid = null, referrerData = null;
 
             if (refCode) {
                 var foundUid = await KARO_DB.lookupReferralCode(refCode);
                 if (!foundUid) { authError.textContent = 'Invalid referral code.'; return; }
                 var refUser = KARO_DB.getUser(foundUid);
-                if (!refUser) {
-                    for (var k in KARO_CACHE.users) {
-                        if (KARO_CACHE.users[k].uid === foundUid) { refUser = KARO_CACHE.users[k]; break; }
-                    }
-                }
+                if (!refUser) { for (var k in KARO_CACHE.users) { if (KARO_CACHE.users[k].uid === foundUid) { refUser = KARO_CACHE.users[k]; break; } } }
                 if (!refUser) { authError.textContent = 'Referrer not found.'; return; }
                 if (refUser.phone === p) { authError.textContent = 'Apna hi code use nahi kar sakte!'; return; }
 
                 var deviceFp = KARO_DB.getDeviceFingerprint();
                 var deviceSnap = await db.collection('referralDevices').doc(deviceFp).get();
                 if (deviceSnap.exists) { authError.textContent = 'Is device se referral already use ho chuka hai.'; return; }
-
                 var mobileSnap = await db.collection('referralMobiles').doc(p).get();
                 if (mobileSnap.exists) { authError.textContent = 'Is mobile se referral already use ho chuka hai.'; return; }
 
-                referrerUid = foundUid;
-                referrerData = refUser;
+                referrerUid = foundUid; referrerData = refUser;
             }
 
             try {
@@ -1743,9 +1698,8 @@ var KARO_DB = (function(){
                     referralCode: null, referredBy: refCode || null, referredByUid: referrerUid || null
                 });
 
-                var newRefCode;
                 try {
-                    newRefCode = await KARO_DB.reserveUniqueReferralCode(u, u);
+                    var newRefCode = await KARO_DB.reserveUniqueReferralCode(u, u);
                     await KARO_DB.saveUser(u, { referralCode: newRefCode });
                 } catch (e) { console.warn('Ref code gen failed:', e); }
 
@@ -1755,36 +1709,21 @@ var KARO_DB = (function(){
                         await db.collection('referralDevices').doc(deviceFp2).set({ usedBy: u, time: Date.now() });
                         await db.collection('referralMobiles').doc(p).set({ usedBy: u, time: Date.now() });
 
-                        var referrerBalance = (referrerData.balance || 0) + REFERRER_REWARD;
                         await KARO_DB.saveUser(referrerData.username, {
-                            balance: referrerBalance,
+                            balance: (referrerData.balance || 0) + REFERRER_REWARD,
                             totalReferralEarned: (referrerData.totalReferralEarned || 0) + REFERRER_REWARD
                         });
-
                         await KARO_DB.saveReferralRecord({
                             referrerUid: referrerUid, referrerName: referrerData.username,
                             referrerCode: refCode, referredUid: u, referredName: u,
                             referredMobile: p, referrerReward: REFERRER_REWARD, referredReward: REFEREE_REWARD
                         });
-
-                        await KARO_DB.addTransaction({
-                            username: u, amount: welcomeTotal, type: 'bonus',
-                            description: 'Welcome + Referral bonus (₹' + WELCOME_BONUS + ' + ₹' + REFEREE_REWARD + ')'
-                        });
-                        await KARO_DB.addTransaction({
-                            username: referrerData.username, amount: REFERRER_REWARD, type: 'referral',
-                            description: 'Referral earning from ' + u
-                        });
-
+                        await KARO_DB.addTransaction({ username: u, amount: welcomeTotal, type: 'bonus', description: 'Welcome + Referral bonus' });
+                        await KARO_DB.addTransaction({ username: referrerData.username, amount: REFERRER_REWARD, type: 'referral', description: 'Referral earning from ' + u });
                         showToast('✅ Registered! ₹' + welcomeTotal + ' bonus (₹' + REFEREE_REWARD + ' locked)', 'success');
-                    } catch (e) {
-                        console.warn('Referral reward failed:', e);
-                        showToast('✅ Registered! ₹' + welcomeTotal + ' bonus', 'success');
-                    }
+                    } catch (e) { showToast('✅ Registered! ₹' + welcomeTotal + ' bonus', 'success'); }
                 } else {
-                    await KARO_DB.addTransaction({
-                        username: u, amount: welcomeTotal, type: 'bonus', description: 'Welcome Bonus'
-                    });
+                    await KARO_DB.addTransaction({ username: u, amount: welcomeTotal, type: 'bonus', description: 'Welcome Bonus' });
                     showToast('✅ Registered! ₹' + welcomeTotal + ' bonus (locked)', 'success');
                 }
 
@@ -1792,9 +1731,7 @@ var KARO_DB = (function(){
                 authUsername.value = ''; authPhone.value = ''; authPassword.value = '';
                 var refInput = document.getElementById('authReferralCode');
                 if (refInput) refInput.value = '';
-            } catch(err) {
-                authError.textContent = 'Error: ' + err.message;
-            }
+            } catch(err) { authError.textContent = 'Error: ' + err.message; }
         } else {
             var user = KARO_DB.getUser(u);
             if (!user) { authError.textContent = 'User not found.'; return; }
@@ -1898,7 +1835,6 @@ var KARO_DB = (function(){
         updateWalletUI();
     }
 
-    // Buyer info modal logic
     var buyerInfoOverlay = null;
     function createBuyerInfoModal() {
         var overlay = document.createElement('div');
@@ -1914,10 +1850,8 @@ var KARO_DB = (function(){
             '<div id="buyerSelectedBoxCode" style="color:#ffd700; font-weight:900; font-size:24px; letter-spacing:2px;"></div>' +
             '<div style="color:#4caf50; font-weight:700; margin-top:4px;">Amount: ₹25</div>' +
             '</div>' +
-            '<button id="buyerConfirmBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; font-size:16px; cursor:pointer;">' +
-            '<i class="fas fa-check"></i> Confirm & Pay ₹25</button>' +
-            '<button class="modal-close-btn" id="buyerCancelBtn">Cancel</button>' +
-            '</div>';
+            '<button id="buyerConfirmBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; font-size:16px; cursor:pointer;"><i class="fas fa-check"></i> Confirm & Pay ₹25</button>' +
+            '<button class="modal-close-btn" id="buyerCancelBtn">Cancel</button></div>';
         document.body.appendChild(overlay);
         return overlay;
     }
@@ -1930,21 +1864,14 @@ var KARO_DB = (function(){
 
         var u = KARO_DB.getUser(currentUser.username);
         var bal = (u && parseFloat(u.balance)) || 0;
-        if (bal < FIXED_AMOUNT) {
-            showToast('❌ Low balance! Add ₹' + (FIXED_AMOUNT - bal), 'error');
-            resultMsg.textContent = '❌ Wallet low! Click wallet to add money.';
-            resultMsg.className = 'result-msg error';
-            return;
-        }
+        if (bal < FIXED_AMOUNT) { showToast('❌ Low balance! Add ₹' + (FIXED_AMOUNT - bal), 'error'); resultMsg.textContent = '❌ Wallet low!'; resultMsg.className = 'result-msg error'; return; }
 
-        // Show buyer info modal
         if (!buyerInfoOverlay) buyerInfoOverlay = createBuyerInfoModal();
         document.getElementById('buyerSelectedBoxCode').textContent = box.code;
         document.getElementById('buyerName').value = '';
         document.getElementById('buyerMobile').value = '';
         buyerInfoOverlay.classList.add('active');
 
-        // Remove old listeners by replacing button
         var oldBtn = document.getElementById('buyerConfirmBtn');
         var newBtn = oldBtn.cloneNode(true);
         oldBtn.parentNode.replaceChild(newBtn, oldBtn);
@@ -1955,46 +1882,33 @@ var KARO_DB = (function(){
             if (!bMobile || bMobile.length < 10) { showToast('Enter valid 10-digit mobile', 'error'); return; }
 
             buyerInfoOverlay.classList.remove('active');
-
             isPlaying = true;
             playBtn.disabled = true;
             playBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
             try {
                 await KARO_DB.updateUserBalance(currentUser.username, -FIXED_AMOUNT);
-                await KARO_DB.addTransaction({
-                    username: currentUser.username, amount: -FIXED_AMOUNT, type: 'box_purchase',
-                    description: 'Opened box ' + box.code + ' for ' + bName,
-                    box_code: box.code
-                });
+                await KARO_DB.addTransaction({ username: currentUser.username, amount: -FIXED_AMOUNT, type: 'box_purchase', description: 'Opened box ' + box.code + ' for ' + bName, box_code: box.code });
 
-                box.revealed = true;
-                box.pending = true;
-                box.won = false;
-                box.prize = 0;
+                box.revealed = true; box.pending = true; box.won = false; box.prize = 0;
 
                 await KARO_DB.addRecord({
-                    username: currentUser.username, box_code: box.code,
-                    box_serial: selectedBox + 1, amount: FIXED_AMOUNT,
-                    txid: 'WALLET_' + Date.now(), timestamp: Date.now(),
+                    username: currentUser.username, box_code: box.code, box_serial: selectedBox + 1,
+                    amount: FIXED_AMOUNT, txid: 'WALLET_' + Date.now(), timestamp: Date.now(),
                     status: 'pending', win: false, prize_amount: 0,
-                    buyer_name: bName, buyer_mobile: bMobile
+                    buyer_name: bName, buyer_mobile: bMobile, source: 'user'
                 });
 
                 resultMsg.innerHTML = '✅ <strong>Box ' + box.code + ' purchased!</strong><br><span style="font-size:13px;opacity:0.8;">Buyer: ' + bName + ' (' + bMobile + ')<br>Result will be updated by admin within 24 hours.</span>';
                 resultMsg.className = 'result-msg info';
                 showToast('✅ Box purchased! Waiting for admin result.', 'success');
-                renderBoxes();
-                updateWalletUI();
-            } catch(err) {
-                showToast('Error: ' + err.message, 'error');
-            }
+                renderBoxes(); updateWalletUI();
+            } catch(err) { showToast('Error: ' + err.message, 'error'); }
             isPlaying = false;
             playBtn.disabled = false;
             playBtn.innerHTML = '<i class="fas fa-play"></i> Pick Box & Pay <span class="price-tag">₹25</span>';
         });
 
-        // Cancel button
         var oldCancel = document.getElementById('buyerCancelBtn');
         var newCancel = oldCancel.cloneNode(true);
         oldCancel.parentNode.replaceChild(newCancel, oldCancel);
@@ -2034,23 +1948,19 @@ var KARO_DB = (function(){
         walletTransactionsList.innerHTML = '<div style="text-align:center;color:#889;padding:20px;">Loading...</div>';
         try {
             var txns = await KARO_DB.getTransactions(currentUser.username);
-            if (txns.length === 0) {
-                walletTransactionsList.innerHTML = '<div style="text-align:center;color:#889;padding:20px;">No transactions yet.</div>';
-            } else {
+            if (txns.length === 0) { walletTransactionsList.innerHTML = '<div style="text-align:center;color:#889;padding:20px;">No transactions yet.</div>'; }
+            else {
                 walletTransactionsList.innerHTML = txns.map(function(t) {
                     var isPlus = t.amount > 0;
                     var color = isPlus ? '#4caf50' : '#f44336';
                     var sign = isPlus ? '+' : '';
                     var date = new Date(t.timestamp).toLocaleString('en-IN');
                     return '<div style="background:#121724; border-radius:10px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; border-left:3px solid ' + color + ';">' +
-                        '<div><div style="color:#fff; font-size:13px;">' + (t.description || 'Txn') + '</div>' +
-                        '<div style="color:#889; font-size:11px; margin-top:2px;">' + date + '</div></div>' +
+                        '<div><div style="color:#fff; font-size:13px;">' + (t.description || 'Txn') + '</div><div style="color:#889; font-size:11px; margin-top:2px;">' + date + '</div></div>' +
                         '<div style="color:' + color + '; font-weight:900; font-size:16px;">' + sign + '₹' + Math.abs(t.amount).toLocaleString() + '</div></div>';
                 }).join('');
             }
-        } catch(err) {
-            walletTransactionsList.innerHTML = '<div style="color:#f44336;text-align:center;padding:20px;">' + err.message + '</div>';
-        }
+        } catch(err) { walletTransactionsList.innerHTML = '<div style="color:#f44336;text-align:center;padding:20px;">' + err.message + '</div>'; }
     });
     walletCloseBtn.addEventListener('click', function(){ walletOverlay.classList.remove('active'); });
     walletOverlay.addEventListener('click', function(e){ if (e.target === walletOverlay) walletOverlay.classList.remove('active'); });
@@ -2069,36 +1979,22 @@ var KARO_DB = (function(){
         var qrContainer = document.getElementById('addMoneyQrCode');
         if (!qrContainer) return;
         qrContainer.innerHTML = '';
-        var upiString = 'upi://pay?pa=' + encodeURIComponent(UPI_FOR_DEPOSIT) +
-                        '&pn=' + encodeURIComponent('Karorpati Game') +
-                        (amount > 0 ? '&am=' + amount : '') + '&cu=INR';
-        new QRCode(qrContainer, {
-            text: upiString, width: 180, height: 180,
-            colorDark: '#000000', colorLight: '#ffffff',
-            correctLevel: QRCode.CorrectLevel.H
-        });
+        var upiString = 'upi://pay?pa=' + encodeURIComponent(UPI_FOR_DEPOSIT) + '&pn=' + encodeURIComponent('Karorpati Game') + (amount > 0 ? '&am=' + amount : '') + '&cu=INR';
+        new QRCode(qrContainer, { text: upiString, width: 180, height: 180, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
     }
 
     walletAddMoneyBtn.addEventListener('click', function(){
         addMoneyAmount.value = ''; addMoneyUpiPhone.value = ''; addMoneyTxId.value = '';
         addMoneySuccessMsg.style.display = 'none';
-        addMoneySubmitBtn.style.display = 'flex';
-        addMoneySubmitBtn.disabled = false;
+        addMoneySubmitBtn.style.display = 'flex'; addMoneySubmitBtn.disabled = false;
         addMoneySubmitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Deposit Request';
         setTimeout(function(){ generateAddMoneyQR(0); }, 100);
         addMoneyOverlay.classList.add('active');
     });
-
-    addMoneyAmount.addEventListener('input', function(){
-        var amt = parseFloat(this.value) || 0;
-        generateAddMoneyQR(amt);
-    });
-
+    addMoneyAmount.addEventListener('input', function(){ generateAddMoneyQR(parseFloat(this.value) || 0); });
     addMoneyCloseBtn.addEventListener('click', function(){ addMoneyOverlay.classList.remove('active'); });
     addMoneyOverlay.addEventListener('click', function(e){ if (e.target === addMoneyOverlay) addMoneyOverlay.classList.remove('active'); });
-    addMoneyCopyUpiBtn.addEventListener('click', function(){
-        if (navigator.clipboard) navigator.clipboard.writeText(UPI_FOR_DEPOSIT).then(function(){ showToast('✅ Copied!', 'success'); });
-    });
+    addMoneyCopyUpiBtn.addEventListener('click', function(){ if (navigator.clipboard) navigator.clipboard.writeText(UPI_FOR_DEPOSIT).then(function(){ showToast('✅ Copied!', 'success'); }); });
 
     addMoneySubmitBtn.addEventListener('click', async function(){
         var amt = parseFloat(addMoneyAmount.value);
@@ -2107,14 +2003,10 @@ var KARO_DB = (function(){
         if (!amt || amt < 10) { showToast('Min ₹10', 'error'); return; }
         if (!up || up.length < 10) { showToast('Valid UPI phone', 'error'); return; }
         if (!tx || tx.length < 4) { showToast('Valid TXID', 'error'); return; }
-
         addMoneySubmitBtn.disabled = true;
         addMoneySubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
         try {
-            await KARO_DB.addDeposit({
-                username: currentUser.username, user_phone: currentUser.phone || '-',
-                amount: amt, upi_phone: up, txid: tx
-            });
+            await KARO_DB.addDeposit({ username: currentUser.username, user_phone: currentUser.phone || '-', amount: amt, upi_phone: up, txid: tx });
             addMoneySubmitBtn.style.display = 'none';
             addMoneySuccessMsg.style.display = 'block';
             showToast('✅ Deposit submitted!', 'success');
@@ -2141,8 +2033,7 @@ var KARO_DB = (function(){
         withdrawAmount.value = ''; withdrawAccountName.value = ''; withdrawAccountNumber.value = '';
         withdrawIfsc.value = ''; withdrawBankName.value = '';
         withdrawSuccessMsg.style.display = 'none';
-        withdrawSubmitBtn.style.display = 'flex';
-        withdrawSubmitBtn.disabled = false;
+        withdrawSubmitBtn.style.display = 'flex'; withdrawSubmitBtn.disabled = false;
         withdrawSubmitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Withdrawal Request';
         updateWalletUI();
         withdrawOverlay.classList.add('active');
@@ -2156,11 +2047,9 @@ var KARO_DB = (function(){
         var ac = withdrawAccountNumber.value.trim();
         var ifsc = withdrawIfsc.value.trim().toUpperCase();
         var bn = withdrawBankName.value.trim();
-
         if (!amt || amt < 100) { showToast('Min ₹100', 'error'); return; }
         var u = KARO_DB.getUser(currentUser.username);
-        var bal = u.balance || 0;
-        var bonus = u.bonusBalance || 0;
+        var bal = u.balance || 0, bonus = u.bonusBalance || 0;
         var withdrawable = Math.max(0, bal - bonus);
         if (amt > withdrawable) { showToast('Max withdrawable: ₹' + withdrawable, 'error'); return; }
         if (!an || an.length < 3) { showToast('Account name required', 'error'); return; }
@@ -2171,10 +2060,7 @@ var KARO_DB = (function(){
         withdrawSubmitBtn.disabled = true;
         withdrawSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
         try {
-            await KARO_DB.addWithdrawal({
-                username: currentUser.username, amount: amt,
-                account_name: an, account_number: ac, ifsc: ifsc, bank_name: bn
-            });
+            await KARO_DB.addWithdrawal({ username: currentUser.username, amount: amt, account_name: an, account_number: ac, ifsc: ifsc, bank_name: bn });
             withdrawSubmitBtn.style.display = 'none';
             withdrawSuccessMsg.style.display = 'block';
             showToast('✅ Withdrawal submitted!', 'success');
@@ -2194,9 +2080,8 @@ var KARO_DB = (function(){
     historyBtn.addEventListener('click', function(){
         var records = KARO_DB.getRecords().filter(function(r){ return r.username === currentUser.username; });
         userSalesList.innerHTML = '';
-        if (records.length === 0) {
-            userSalesList.innerHTML = '<div class="user-sales-empty">No history yet.</div>';
-        } else {
+        if (records.length === 0) { userSalesList.innerHTML = '<div class="user-sales-empty">No history yet.</div>'; }
+        else {
             records.slice(0, 30).forEach(function(r){
                 var div = document.createElement('div');
                 div.className = 'user-sales-item';
@@ -2205,8 +2090,7 @@ var KARO_DB = (function(){
                 else if (r.win || r.prize_amount > 0) { statusText = '🎉 WON ₹' + (r.prize_amount || 0); statusColor = '#4caf50'; }
                 else { statusText = '😞 LOST'; statusColor = '#f44336'; }
                 var buyerInfo = r.buyer_name ? ' | ' + r.buyer_name : '';
-                div.innerHTML = '<span class="username">📦 ' + (r.box_code || '-') + buyerInfo + '</span>' +
-                    '<span class="sales-count" style="color:' + statusColor + ';">' + statusText + '</span>';
+                div.innerHTML = '<span class="username">📦 ' + (r.box_code || '-') + buyerInfo + '</span><span class="sales-count" style="color:' + statusColor + ';">' + statusText + '</span>';
                 userSalesList.appendChild(div);
             });
         }
@@ -2239,17 +2123,11 @@ var KARO_DB = (function(){
             var newCode = await KARO_DB.reserveUniqueReferralCode(u.username, currentUser.username);
             await KARO_DB.saveUser(currentUser.username, { referralCode: newCode });
             return newCode;
-        } catch (e) { console.error('Code gen failed:', e); return null; }
+        } catch (e) { return null; }
     }
 
     function buildReferralMessage(code) {
-        return '🎮 Karorpati Game — Khelo Aur Jeeto! 🎮\n\n' +
-               '💰 ₹100 Welcome Bonus FREE\n' +
-               '🎁 Referral code use karo: *' + code + '*\n' +
-               '✅ Extra ₹100 bonus milega!\n' +
-               '💸 Real cash withdrawal to bank\n\n' +
-               '📲 *App Download Link:*\n' + APP_DOWNLOAD_URL + '\n\n' +
-               'Download karo aur khelo! 🚀';
+        return '🎮 Karorpati Game — Khelo Aur Jeeto! 🎮\n\n💰 ₹100 Welcome Bonus FREE\n🎁 Referral code use karo: *' + code + '*\n✅ Extra ₹100 bonus milega!\n💸 Real cash withdrawal to bank\n\n📲 *App Download Link:*\n' + APP_DOWNLOAD_URL + '\n\nDownload karo aur khelo! 🚀';
     }
 
     referralBadge.addEventListener('click', async function() {
@@ -2263,52 +2141,39 @@ var KARO_DB = (function(){
         try {
             var refs = await KARO_DB.getReferrals(currentUser.username);
             refTotalCount.textContent = refs.length;
-            var total = 0;
-            refs.forEach(function(r) { total += (r.referrerReward || 0); });
+            var total = 0; refs.forEach(function(r) { total += (r.referrerReward || 0); });
             refTotalEarned.textContent = '₹' + total;
-            if (refs.length === 0) {
-                refList.innerHTML = '<div style="text-align:center; color:#889; padding:15px; font-size:12px;">Abhi tak koi referral nahi. Apna code share karo! 🚀</div>';
-            } else {
+            if (refs.length === 0) { refList.innerHTML = '<div style="text-align:center; color:#889; padding:15px; font-size:12px;">Abhi tak koi referral nahi.</div>'; }
+            else {
                 refList.innerHTML = refs.map(function(r) {
                     return '<div style="display:flex; justify-content:space-between; padding:8px 10px; background:rgba(0,0,0,0.2); border-radius:8px; margin-bottom:6px; font-size:12px;">' +
-                        '<span>👤 <b>' + (r.referredName || '-') + '</b></span>' +
-                        '<span style="color:#66bb6a;">+₹' + (r.referrerReward || 0) + '</span></div>';
+                        '<span>👤 <b>' + (r.referredName || '-') + '</b></span><span style="color:#66bb6a;">+₹' + (r.referrerReward || 0) + '</span></div>';
                 }).join('');
             }
-        } catch (e) {
-            refList.innerHTML = '<div style="color:#f44336; text-align:center; padding:15px;">Error: ' + e.message + '</div>';
-        }
+        } catch (e) { refList.innerHTML = '<div style="color:#f44336; text-align:center; padding:15px;">Error: ' + e.message + '</div>'; }
     });
 
     copyRefCodeBtn.addEventListener('click', function() {
         var code = myReferralCode.textContent;
         if (!code || code === 'Loading...' || code === 'Error') return;
-        var msg = buildReferralMessage(code);
-        if (navigator.clipboard) navigator.clipboard.writeText(msg).then(function(){ showToast('✅ Message with download link copied!', 'success'); });
+        if (navigator.clipboard) navigator.clipboard.writeText(buildReferralMessage(code)).then(function(){ showToast('✅ Copied!', 'success'); });
     });
-
     referralCloseBtn.addEventListener('click', function() { referralOverlay.classList.remove('active'); });
     referralOverlay.addEventListener('click', function(e) { if (e.target === referralOverlay) referralOverlay.classList.remove('active'); });
-
     refShareWhatsAppBtn.addEventListener('click', function() {
         var code = myReferralCode.textContent;
         if (!code || code === 'Loading...' || code === 'Error') return;
         window.open('https://wa.me/?text=' + encodeURIComponent(buildReferralMessage(code)), '_blank');
     });
-
     refShareNativeBtn.addEventListener('click', async function() {
         var code = myReferralCode.textContent;
         if (!code || code === 'Loading...' || code === 'Error') return;
         var msg = buildReferralMessage(code);
-        if (navigator.share) {
-            try { await navigator.share({ title: 'Karorpati Game', text: msg, url: APP_DOWNLOAD_URL }); } catch(e) {}
-        } else {
-            if (navigator.clipboard) { navigator.clipboard.writeText(msg); showToast('📋 Message copied!', 'success'); }
-        }
+        if (navigator.share) { try { await navigator.share({ title: 'Karorpati Game', text: msg, url: APP_DOWNLOAD_URL }); } catch(e) {} }
+        else { if (navigator.clipboard) { navigator.clipboard.writeText(msg); showToast('📋 Copied!', 'success'); } }
     });
 
     window.addEventListener('karorpati_users_updated', function(){ if (currentUser) updateWalletUI(); });
-
     window.addEventListener('karorpati_db_ready', function(){
         var saved = KARO_DB.getCurrentUser();
         if (saved && saved.role !== 'admin' && saved.role !== 'agent') {
@@ -2318,18 +2183,21 @@ var KARO_DB = (function(){
             usernameDisplay.textContent = currentUser.username;
             updateWalletUI();
             initGame();
-        } else {
-            switchAuthMode(false);
-        }
+        } else { switchAuthMode(false); }
     });
 })();
 </script>
 
-<!-- AGENT PANEL -->
+<!-- ============================= AGENT PANEL ============================= -->
 <script>
 (function(){
     var AGENT_SESSION_KEY = 'karorpati_agent_session';
+    var AGENT_SALE_AMOUNT = 25;
+    var AGENT_UPI = 's6154632725482301@slc';
     var currentAgent = null;
+    var agentSelectedBox = null;
+    var agentBoxData = [];
+    var agentIsSelling = false;
 
     var agentAuthOverlay = document.getElementById('agentAuthOverlay');
     var agentMain = document.getElementById('agentMain');
@@ -2345,12 +2213,40 @@ var KARO_DB = (function(){
     var agentSearchInput = document.getElementById('agentSearchInput');
     var agentMonthFilter = document.getElementById('agentMonthFilter');
     var agentRefreshBtn = document.getElementById('agentRefreshBtn');
+    var agentBoxGrid = document.getElementById('agentBoxGrid');
+    var agentPlayBtn = document.getElementById('agentPlayBtn');
+    var agentResultMsg = document.getElementById('agentResultMsg');
 
     function showAgentToast(msg, type) {
         agentToast.textContent = msg;
         agentToast.className = 'agent-toast show ' + (type || 'info');
         clearTimeout(agentToast._timer);
         agentToast._timer = setTimeout(function(){ agentToast.classList.remove('show'); }, 3500);
+    }
+
+    function agentGetUser() {
+        if (!currentAgent) return null;
+        var u = KARO_DB.getUser(currentAgent.username);
+        if (u) currentAgent = u;
+        return currentAgent;
+    }
+
+    function updateAgentWalletUI() {
+        var u = agentGetUser();
+        if (!u) return;
+        var bal = parseFloat(u.balance) || 0;
+        var bonus = parseFloat(u.bonusBalance) || 0;
+        var withdrawable = Math.max(0, bal - bonus);
+        var hb = document.getElementById('agentWalletBalHeader');
+        if (hb) hb.textContent = bal.toLocaleString();
+        var mb = document.getElementById('agentWalletBalModal');
+        if (mb) mb.textContent = '₹' + bal.toLocaleString();
+        var bi = document.getElementById('agentWalletBonusInfo');
+        if (bi) bi.textContent = 'Withdrawable: ₹' + withdrawable + ' | Locked bonus: ₹' + bonus;
+        var ab = document.getElementById('agentAddCurrentBal');
+        if (ab) ab.textContent = '₹' + bal.toLocaleString();
+        var wb = document.getElementById('agentWdCurrentBal');
+        if (wb) wb.textContent = '₹' + withdrawable.toLocaleString();
     }
 
     async function tryAgentLogin() {
@@ -2367,7 +2263,10 @@ var KARO_DB = (function(){
         agentAuthOverlay.style.display = 'none';
         agentMain.style.display = 'block';
         agentBadge.textContent = u;
+        initAgentSellGrid();
+        updateAgentWalletUI();
         await loadAgentData();
+        await loadAgentTxns();
     }
     agentLoginBtn.addEventListener('click', tryAgentLogin);
     agentPassIn.addEventListener('keypress', function(e){ if (e.key === 'Enter') tryAgentLogin(); });
@@ -2388,16 +2287,187 @@ var KARO_DB = (function(){
                 agentAuthOverlay.style.display = 'none';
                 agentMain.style.display = 'block';
                 agentBadge.textContent = u.username;
+                initAgentSellGrid();
+                updateAgentWalletUI();
                 loadAgentData();
+                loadAgentTxns();
             }
         }
     }
 
+    var atabs = document.querySelectorAll('#agentPanelView .agent-tabs button');
+    var apanels = {
+        sell: document.getElementById('agentPanelSell'),
+        wallet: document.getElementById('agentPanelWallet'),
+        records: document.getElementById('agentPanelRecords')
+    };
+    atabs.forEach(function(btn){
+        btn.addEventListener('click', function(){
+            atabs.forEach(function(b){ b.classList.remove('active'); });
+            this.classList.add('active');
+            var t = this.dataset.atab;
+            Object.keys(apanels).forEach(function(k){ apanels[k].style.display = (k === t) ? 'block' : 'none'; });
+            if (t === 'wallet') { updateAgentWalletUI(); loadAgentTxns(); }
+            if (t === 'records') loadAgentData();
+        });
+    });
+
+    // SELL NUMBER
+    function generateAgentBoxData() {
+        var codes = [];
+        while (codes.length < 100) {
+            var c = String(Math.floor(1000 + Math.random()*9000));
+            if (codes.indexOf(c) === -1) codes.push(c);
+        }
+        for (var i = codes.length - 1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t = codes[i]; codes[i] = codes[j]; codes[j] = t; }
+        var data = [];
+        for (var i = 0; i < 100; i++) data.push({ code: codes[i], selected: false, sold: false });
+        return data;
+    }
+
+    function initAgentSellGrid() {
+        agentBoxData = generateAgentBoxData();
+        agentSelectedBox = null;
+        agentIsSelling = false;
+        renderAgentBoxes();
+        if (agentResultMsg) { agentResultMsg.textContent = '🎯 Select a box and click "Sell Box" to start'; agentResultMsg.className = 'agent-result-msg info'; }
+    }
+
+    function renderAgentBoxes() {
+        if (!agentBoxGrid) return;
+        agentBoxGrid.innerHTML = '';
+        agentBoxData.forEach(function(box, idx){
+            var div = document.createElement('div');
+            div.className = 'agent-box-item';
+            div.dataset.index = idx;
+            div.innerHTML = '<span class="ab-code">' + box.code + '</span>';
+            if (box.selected) div.classList.add('selected');
+            if (agentIsSelling || box.sold) div.classList.add('disabled');
+            div.addEventListener('click', function(){ handleAgentBoxClick(parseInt(this.dataset.index)); });
+            agentBoxGrid.appendChild(div);
+        });
+    }
+
+    function handleAgentBoxClick(index) {
+        if (agentIsSelling) return;
+        if (agentBoxData[index].sold) return;
+        agentBoxData.forEach(function(b,i){ b.selected = (i === index); });
+        agentSelectedBox = index;
+        renderAgentBoxes();
+        agentResultMsg.textContent = '📦 Box Code: ' + agentBoxData[index].code + ' | Click "Sell Box"';
+        agentResultMsg.className = 'agent-result-msg info';
+    }
+
+    var agentBuyerOverlay = null;
+    function createAgentBuyerModal() {
+        var overlay = document.createElement('div');
+        overlay.className = 'agent-modal-overlay';
+        overlay.id = 'agentBuyerOverlay';
+        overlay.innerHTML = '<div class="agent-modal-panel" style="border-color:#4caf50;">' +
+            '<h2 style="color:#4caf50;"><i class="fas fa-user-check"></i> Buyer Details</h2>' +
+            '<p style="color:#aab; font-size:13px; text-align:center; margin-bottom:14px;">Number sell karne se pehle buyer ki details bharein</p>' +
+            '<div class="inp-group"><label><i class="fas fa-user"></i> Buyer Name *</label><input type="text" id="agentBuyerName" placeholder="Enter buyer full name" /></div>' +
+            '<div class="inp-group"><label><i class="fas fa-mobile-alt"></i> Buyer Mobile *</label><input type="text" id="agentBuyerMobile" placeholder="Enter 10-digit mobile" maxlength="10" inputmode="numeric" /></div>' +
+            '<div style="background:#121724; border-radius:12px; padding:12px; margin-bottom:12px; text-align:center;">' +
+            '<div style="color:#aab; font-size:12px;">Selected Box</div>' +
+            '<div id="agentBuyerBoxCode" style="color:#ffb300; font-weight:900; font-size:24px; letter-spacing:2px;"></div>' +
+            '<div style="color:#4caf50; font-weight:700; margin-top:4px;">Amount: ₹25</div></div>' +
+            '<button id="agentBuyerConfirm" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; font-size:16px; cursor:pointer;"><i class="fas fa-check"></i> Confirm & Sell</button>' +
+            '<button class="modal-close-btn" id="agentBuyerCancel">Cancel</button></div>';
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    agentPlayBtn.addEventListener('click', async function(){
+        if (agentIsSelling) return;
+        if (agentSelectedBox === null) { showAgentToast('Select a box first!', 'error'); return; }
+        var box = agentBoxData[agentSelectedBox];
+        if (box.sold) { showAgentToast('Box already sold', 'error'); return; }
+
+        var u = agentGetUser();
+        var bal = (u && parseFloat(u.balance)) || 0;
+        if (bal < AGENT_SALE_AMOUNT) {
+            showAgentToast('❌ Low wallet! Add ₹' + (AGENT_SALE_AMOUNT - bal), 'error');
+            agentResultMsg.textContent = '❌ Wallet low! Go to Wallet tab to add money.';
+            agentResultMsg.className = 'agent-result-msg error';
+            return;
+        }
+
+        if (!agentBuyerOverlay) agentBuyerOverlay = createAgentBuyerModal();
+        document.getElementById('agentBuyerBoxCode').textContent = box.code;
+        document.getElementById('agentBuyerName').value = '';
+        document.getElementById('agentBuyerMobile').value = '';
+        agentBuyerOverlay.classList.add('active');
+
+        var oldBtn = document.getElementById('agentBuyerConfirm');
+        var newBtn = oldBtn.cloneNode(true);
+        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+        newBtn.addEventListener('click', async function(){
+            var bName = document.getElementById('agentBuyerName').value.trim();
+            var bMobile = document.getElementById('agentBuyerMobile').value.trim();
+            if (!bName || bName.length < 2) { showAgentToast('Enter buyer name', 'error'); return; }
+            if (!bMobile || bMobile.length < 10) { showAgentToast('Enter valid 10-digit mobile', 'error'); return; }
+
+            agentBuyerOverlay.classList.remove('active');
+            agentIsSelling = true;
+            agentPlayBtn.disabled = true;
+            agentPlayBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                await KARO_DB.updateUserBalance(currentAgent.username, -AGENT_SALE_AMOUNT);
+                await KARO_DB.addTransaction({
+                    username: currentAgent.username, amount: -AGENT_SALE_AMOUNT,
+                    type: 'agent_sale', description: 'Sold box ' + box.code + ' to ' + bName,
+                    box_code: box.code
+                });
+                await KARO_DB.addAgentRecord({
+                    agentUsername: currentAgent.username,
+                    agent_phone: currentAgent.phone || '-',
+                    box_code: box.code,
+                    buyer_name: bName,
+                    buyer_mobile: bMobile,
+                    amount: AGENT_SALE_AMOUNT,
+                    timestamp: Date.now(),
+                    status: 'sold'
+                });
+                await KARO_DB.addRecord({
+                    username: currentAgent.username, box_code: box.code, box_serial: agentSelectedBox + 1,
+                    amount: AGENT_SALE_AMOUNT, txid: 'AGENT_' + Date.now(), timestamp: Date.now(),
+                    status: 'pending', win: false, prize_amount: 0,
+                    buyer_name: bName, buyer_mobile: bMobile,
+                    source: 'agent', agent_username: currentAgent.username
+                });
+
+                box.sold = true;
+                box.selected = false;
+                agentResultMsg.textContent = '✅ Box ' + box.code + ' sold to ' + bName + '!';
+                agentResultMsg.className = 'agent-result-msg success';
+                showAgentToast('✅ Sold box ' + box.code + '!', 'success');
+                updateAgentWalletUI();
+                await loadAgentData();
+                await loadAgentTxns();
+                // Select next available box
+                agentSelectedBox = null;
+            } catch(err) {
+                showAgentToast('Error: ' + err.message, 'error');
+            }
+            agentIsSelling = false;
+            agentPlayBtn.disabled = false;
+            agentPlayBtn.innerHTML = '<i class="fas fa-play"></i> Sell Box <span class="price-tag">₹25</span>';
+            renderAgentBoxes();
+        });
+
+        var oldCancel = document.getElementById('agentBuyerCancel');
+        var newCancel = oldCancel.cloneNode(true);
+        oldCancel.parentNode.replaceChild(newCancel, oldCancel);
+        newCancel.addEventListener('click', function() { agentBuyerOverlay.classList.remove('active'); });
+    });
+
+    // SALES DATA + STATS
     async function loadAgentData() {
         if (!currentAgent) return;
         try {
             var sales = await KARO_DB.getAgentSales(currentAgent.username);
-            // Stats
             var total = sales.length;
             var now = new Date();
             var thisMonth = now.getMonth();
@@ -2416,7 +2486,6 @@ var KARO_DB = (function(){
             document.getElementById('agentStatRevenue').textContent = '₹' + revenue;
             document.getElementById('agentStatUnique').textContent = Object.keys(buyers).length;
 
-            // Month filter options
             var monthKeys = {};
             sales.forEach(function(s) {
                 var d = new Date(s.timestamp);
@@ -2432,11 +2501,8 @@ var KARO_DB = (function(){
                 agentMonthFilter.appendChild(opt);
             });
             agentMonthFilter.value = currentFilter || 'all';
-
             renderSales(sales);
-        } catch(e) {
-            showAgentToast('Error: ' + e.message, 'error');
-        }
+        } catch(e) { showAgentToast('Error: ' + e.message, 'error'); }
     }
 
     function renderSales(allSales) {
@@ -2456,15 +2522,12 @@ var KARO_DB = (function(){
             }
             return true;
         });
-
         if (sales.length === 0) {
             agentSalesContainer.innerHTML = '';
             agentSalesEmpty.style.display = 'block';
             return;
         }
         agentSalesEmpty.style.display = 'none';
-
-        // Group by month
         var groups = {};
         sales.forEach(function(s) {
             var d = new Date(s.timestamp);
@@ -2473,7 +2536,6 @@ var KARO_DB = (function(){
             if (!groups[key]) groups[key] = { label: label, items: [] };
             groups[key].items.push(s);
         });
-
         var html = '';
         Object.keys(groups).sort().reverse().forEach(function(k) {
             var g = groups[k];
@@ -2508,11 +2570,131 @@ var KARO_DB = (function(){
     });
     agentRefreshBtn.addEventListener('click', loadAgentData);
 
+    // WALLET TXNS
+    async function loadAgentTxns() {
+        if (!currentAgent) return;
+        var list = document.getElementById('agentTxnList');
+        if (!list) return;
+        list.innerHTML = '<div style="text-align:center;color:#889;padding:15px;">Loading...</div>';
+        try {
+            var txns = await KARO_DB.getTransactions(currentAgent.username);
+            if (txns.length === 0) { list.innerHTML = '<div style="text-align:center;color:#889;padding:15px;">No transactions yet.</div>'; return; }
+            list.innerHTML = txns.map(function(t) {
+                var isPlus = t.amount > 0;
+                var cls = isPlus ? '' : 'neg';
+                var color = isPlus ? '#4caf50' : '#f44336';
+                var sign = isPlus ? '+' : '';
+                var date = new Date(t.timestamp).toLocaleString('en-IN');
+                return '<div class="agent-txn-item ' + cls + '"><div><div class="t-desc">' + (t.description || 'Txn') + '</div><div class="t-date">' + date + '</div></div>' +
+                    '<div class="t-amt" style="color:' + color + ';">' + sign + '₹' + Math.abs(t.amount).toLocaleString() + '</div></div>';
+            }).join('');
+        } catch(err) { list.innerHTML = '<div style="color:#f44336;text-align:center;padding:15px;">' + err.message + '</div>'; }
+    }
+
+    // ADD MONEY
+    var agentAddMoneyOverlay = document.getElementById('agentAddMoneyOverlay');
+    var agentAddAmount = document.getElementById('agentAddAmount');
+    var agentAddUpiPhone = document.getElementById('agentAddUpiPhone');
+    var agentAddTxId = document.getElementById('agentAddTxId');
+    var agentAddSubmitBtn = document.getElementById('agentAddSubmitBtn');
+    var agentAddCloseBtn = document.getElementById('agentAddCloseBtn');
+
+    function genAgentQR(amount) {
+        var qr = document.getElementById('agentAddQrCode');
+        if (!qr) return;
+        qr.innerHTML = '';
+        var upiString = 'upi://pay?pa=' + encodeURIComponent(AGENT_UPI) + '&pn=' + encodeURIComponent('Karorpati Agent') + (amount > 0 ? '&am=' + amount : '') + '&cu=INR';
+        new QRCode(qr, { text: upiString, width: 180, height: 180, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+    }
+
+    document.getElementById('agentAddMoneyBtn').addEventListener('click', function(){
+        agentAddAmount.value = ''; agentAddUpiPhone.value = ''; agentAddTxId.value = '';
+        agentAddSubmitBtn.disabled = false;
+        agentAddSubmitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Deposit Request';
+        updateAgentWalletUI();
+        setTimeout(function(){ genAgentQR(0); }, 100);
+        agentAddMoneyOverlay.classList.add('active');
+    });
+    agentAddAmount.addEventListener('input', function(){ genAgentQR(parseFloat(this.value) || 0); });
+    agentAddCloseBtn.addEventListener('click', function(){ agentAddMoneyOverlay.classList.remove('active'); });
+    agentAddMoneyOverlay.addEventListener('click', function(e){ if (e.target === agentAddMoneyOverlay) agentAddMoneyOverlay.classList.remove('active'); });
+
+    agentAddSubmitBtn.addEventListener('click', async function(){
+        var amt = parseFloat(agentAddAmount.value);
+        var up = agentAddUpiPhone.value.trim();
+        var tx = agentAddTxId.value.trim();
+        if (!amt || amt < 10) { showAgentToast('Min ₹10', 'error'); return; }
+        if (!up || up.length < 10) { showAgentToast('Valid UPI phone', 'error'); return; }
+        if (!tx || tx.length < 4) { showAgentToast('Valid TXID', 'error'); return; }
+        agentAddSubmitBtn.disabled = true;
+        agentAddSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        try {
+            await KARO_DB.addDeposit({ username: currentAgent.username, user_phone: currentAgent.phone || '-', amount: amt, upi_phone: up, txid: tx, user_role: 'agent' });
+            showAgentToast('✅ Deposit submitted! Admin will verify.', 'success');
+            agentAddMoneyOverlay.classList.remove('active');
+        } catch(err) {
+            showAgentToast('Error: ' + err.message, 'error');
+            agentAddSubmitBtn.disabled = false;
+            agentAddSubmitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Deposit Request';
+        }
+    });
+
+    // WITHDRAW
+    var agentWdOverlay = document.getElementById('agentWithdrawOverlay');
+    var agentWdAmount = document.getElementById('agentWdAmount');
+    var agentWdName = document.getElementById('agentWdName');
+    var agentWdAccNo = document.getElementById('agentWdAccNo');
+    var agentWdIfsc = document.getElementById('agentWdIfsc');
+    var agentWdBank = document.getElementById('agentWdBank');
+    var agentWdSubmitBtn = document.getElementById('agentWdSubmitBtn');
+    var agentWdCloseBtn = document.getElementById('agentWdCloseBtn');
+
+    document.getElementById('agentWithdrawBtn').addEventListener('click', function(){
+        agentWdAmount.value = ''; agentWdName.value = ''; agentWdAccNo.value = '';
+        agentWdIfsc.value = ''; agentWdBank.value = '';
+        agentWdSubmitBtn.disabled = false;
+        agentWdSubmitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Withdrawal';
+        updateAgentWalletUI();
+        agentWdOverlay.classList.add('active');
+    });
+    agentWdCloseBtn.addEventListener('click', function(){ agentWdOverlay.classList.remove('active'); });
+    agentWdOverlay.addEventListener('click', function(e){ if (e.target === agentWdOverlay) agentWdOverlay.classList.remove('active'); });
+
+    agentWdSubmitBtn.addEventListener('click', async function(){
+        var amt = parseFloat(agentWdAmount.value);
+        var an = agentWdName.value.trim();
+        var ac = agentWdAccNo.value.trim();
+        var ifsc = agentWdIfsc.value.trim().toUpperCase();
+        var bn = agentWdBank.value.trim();
+        if (!amt || amt < 100) { showAgentToast('Min ₹100', 'error'); return; }
+        var u = agentGetUser();
+        var bal = u.balance || 0, bonus = u.bonusBalance || 0;
+        var withdrawable = Math.max(0, bal - bonus);
+        if (amt > withdrawable) { showAgentToast('Max withdrawable: ₹' + withdrawable, 'error'); return; }
+        if (!an || an.length < 3) { showAgentToast('Account name required', 'error'); return; }
+        if (!ac || ac.length < 8) { showAgentToast('Valid account number', 'error'); return; }
+        if (!ifsc || ifsc.length !== 11) { showAgentToast('Valid 11-char IFSC', 'error'); return; }
+        if (!bn) { showAgentToast('Bank name required', 'error'); return; }
+
+        agentWdSubmitBtn.disabled = true;
+        agentWdSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        try {
+            await KARO_DB.addWithdrawal({ username: currentAgent.username, amount: amt, account_name: an, account_number: ac, ifsc: ifsc, bank_name: bn, user_role: 'agent' });
+            showAgentToast('✅ Withdrawal submitted!', 'success');
+            agentWdOverlay.classList.remove('active');
+        } catch(err) {
+            showAgentToast('Error: ' + err.message, 'error');
+            agentWdSubmitBtn.disabled = false;
+            agentWdSubmitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Withdrawal';
+        }
+    });
+
+    window.addEventListener('karorpati_users_updated', function(){ if (currentAgent) { updateAgentWalletUI(); } });
     window.addEventListener('karorpati_db_ready', tryAutoLogin);
 })();
 </script>
 
-<!-- ADMIN PANEL -->
+<!-- ============================= ADMIN PANEL ============================= -->
 <script>
 (function(){
     var ADMIN_SESSION_KEY = 'karorpati_admin_session';
@@ -2669,9 +2851,8 @@ var KARO_DB = (function(){
         var user = KARO_DB.getUser(uname);
         if (!user) return;
         try {
-            if (act === 'toggle') {
-                await KARO_DB.saveUser(uname, { status: user.status === 'active' ? 'disabled' : 'active' });
-            } else if (act === 'reset') {
+            if (act === 'toggle') { await KARO_DB.saveUser(uname, { status: user.status === 'active' ? 'disabled' : 'active' }); }
+            else if (act === 'reset') {
                 var np = prompt('New password for ' + uname + ':');
                 if (!np || np.length < 4) { showAdminToast('Too short', 'error'); return; }
                 await KARO_DB.saveUser(uname, { password: np });
@@ -2696,10 +2877,7 @@ var KARO_DB = (function(){
         if (!u || !p || !pw) { showAdminToast('Fill all', 'error'); return; }
         if (KARO_DB.getUser(u)) { showAdminToast('Exists', 'error'); return; }
         try {
-            await KARO_DB.saveUser(u, {
-                username: u, password: pw, phone: p,
-                status: 'active', role: r, registeredAt: Date.now(), balance: 0, bonusBalance: 0, referralCode: null
-            });
+            await KARO_DB.saveUser(u, { username: u, password: pw, phone: p, status: 'active', role: r, registeredAt: Date.now(), balance: 0, bonusBalance: 0, referralCode: null });
             addUserModal.classList.remove('active');
             refreshStats(); renderUsersTable();
             showAdminToast('User added', 'success');
@@ -2723,6 +2901,7 @@ var KARO_DB = (function(){
             tr.innerHTML = '<td>' + (i+1) + '</td>' +
                 '<td><strong style="color:#ffb300;">' + a.username + '</strong></td>' +
                 '<td>' + (a.phone || '-') + '</td>' +
+                '<td style="color:#4caf50;font-weight:700;">₹' + (a.balance || 0) + '</td>' +
                 '<td style="color:#4fc3f7;font-weight:700;">' + sales.length + '</td>' +
                 '<td style="color:#4caf50;font-weight:700;">₹' + revenue + '</td>' +
                 '<td><span class="status-pill ' + (a.status === 'active' ? 'active' : 'disabled') + '">' + a.status + '</span></td>' +
@@ -2735,12 +2914,8 @@ var KARO_DB = (function(){
                 var uname = this.dataset.u;
                 var a = KARO_DB.getUser(uname);
                 if (!a) return;
-                if (this.dataset.aact === 'toggle') {
-                    await KARO_DB.saveUser(uname, { status: a.status === 'active' ? 'disabled' : 'active' });
-                } else if (this.dataset.aact === 'delete') {
-                    if (!confirm('Delete agent ' + uname + '?')) return;
-                    await KARO_DB.deleteUser(uname);
-                }
+                if (this.dataset.aact === 'toggle') { await KARO_DB.saveUser(uname, { status: a.status === 'active' ? 'disabled' : 'active' }); }
+                else if (this.dataset.aact === 'delete') { if (!confirm('Delete agent ' + uname + '?')) return; await KARO_DB.deleteUser(uname); }
                 refreshStats(); renderAgentsTable();
                 showAdminToast('Done', 'success');
             });
@@ -2758,11 +2933,7 @@ var KARO_DB = (function(){
         if (!u || !p || !pw) { showAdminToast('Fill all', 'error'); return; }
         if (KARO_DB.getUser(u)) { showAdminToast('Username exists', 'error'); return; }
         try {
-            await KARO_DB.saveUser(u, {
-                username: u, password: pw, phone: p,
-                status: 'active', role: 'agent', registeredAt: Date.now(),
-                balance: 0, bonusBalance: 0, referralCode: null
-            });
+            await KARO_DB.saveUser(u, { username: u, password: pw, phone: p, status: 'active', role: 'agent', registeredAt: Date.now(), balance: 0, bonusBalance: 0, referralCode: null });
             addAgentModal.classList.remove('active');
             refreshStats(); renderAgentsTable();
             showAdminToast('✅ Agent created', 'success');
@@ -2780,8 +2951,9 @@ var KARO_DB = (function(){
             list.forEach(function(d, i){
                 var tr = document.createElement('tr');
                 var date = new Date(d.timestamp).toLocaleString('en-IN');
+                var roleTag = d.user_role === 'agent' ? ' <span style="font-size:9px;background:#ffb30033;color:#ffb300;padding:1px 5px;border-radius:6px;">AGENT</span>' : '';
                 tr.innerHTML = '<td>' + (i+1) + '</td>' +
-                    '<td style="color:#fff;font-weight:700;">' + d.username + '</td>' +
+                    '<td style="color:#fff;font-weight:700;">' + d.username + roleTag + '</td>' +
                     '<td style="color:#4caf50;font-weight:700;">₹' + d.amount + '</td>' +
                     '<td>' + d.upi_phone + '</td>' +
                     '<td style="font-size:11px;">' + d.txid + '</td>' +
@@ -2827,11 +2999,7 @@ var KARO_DB = (function(){
             await KARO_DB.fetchRecords();
             var records = KARO_DB.getRecords();
             var q = (boxResultSearch?.value || '').trim().toLowerCase();
-            if (q) {
-                records = records.filter(function(r){
-                    return (r.username || '').toLowerCase().includes(q) || (r.box_code || '').toLowerCase().includes(q);
-                });
-            }
+            if (q) records = records.filter(function(r){ return (r.username || '').toLowerCase().includes(q) || (r.box_code || '').toLowerCase().includes(q) || (r.buyer_name || '').toLowerCase().includes(q); });
             tb.innerHTML = '';
             document.getElementById('boxResultsEmpty').style.display = records.length === 0 ? 'block' : 'none';
             records.slice(0, 100).forEach(function(r, i){
@@ -2842,16 +3010,15 @@ var KARO_DB = (function(){
                                 : (st === 'won' || r.win) ? '<span class="status-pill won">WON</span>'
                                 : '<span class="status-pill lost">LOST</span>';
                 var prizeDisplay = r.prize_amount > 0 ? '₹' + r.prize_amount : '-';
-                var buyerDisplay = r.buyer_name ? '<br><span style="font-size:10px;color:#889;">' + r.buyer_name + '</span>' : '';
+                var buyerDisplay = r.buyer_name ? '<br><span style="font-size:10px;color:#889;">' + r.buyer_name + ' • ' + (r.buyer_mobile || '') + '</span>' : '';
+                var srcTag = r.source === 'agent' ? ' <span style="font-size:9px;background:#ffb30033;color:#ffb300;padding:1px 5px;border-radius:6px;">AGENT</span>' : '';
                 var actionCell = '-';
                 if (st === 'pending') {
                     actionCell = '<input type="number" min="0" placeholder="Prize ₹" data-record-id="' + r._id + '" style="width:80px;padding:5px 8px;border-radius:6px;border:1px solid #3a4055;background:#0a0e1a;color:#4caf50;font-weight:700;font-size:12px;" />' +
                     '<button class="tbl-btn green" data-set-result="' + r._id + '" style="margin-left:4px;">Set</button>';
-                } else {
-                    actionCell = '<span style="opacity:0.5;font-size:11px;">✓ Done</span>';
-                }
+                } else { actionCell = '<span style="opacity:0.5;font-size:11px;">✓ Done</span>'; }
                 tr.innerHTML = '<td>' + (i+1) + '</td>' +
-                    '<td style="color:#fff;font-weight:700;">' + (r.username || '-') + buyerDisplay + '</td>' +
+                    '<td style="color:#fff;font-weight:700;">' + (r.username || '-') + srcTag + buyerDisplay + '</td>' +
                     '<td style="color:#ffd700;font-weight:900;">' + (r.box_code || '-') + '</td>' +
                     '<td>₹' + (r.amount || 0) + '</td>' +
                     '<td>' + statusPill + '</td>' +
@@ -2869,9 +3036,7 @@ var KARO_DB = (function(){
                     await setBoxResult(recordId, amt);
                 });
             });
-        } catch (e) {
-            tb.innerHTML = '<tr><td colspan="8" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>';
-        }
+        } catch (e) { tb.innerHTML = '<tr><td colspan="8" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>'; }
     }
 
     async function setBoxResult(recordId, prizeAmount) {
@@ -2881,24 +3046,15 @@ var KARO_DB = (function(){
             if (!rec) { showAdminToast('Record not found', 'error'); return; }
             if (rec.status !== 'pending') { showAdminToast('Already processed', 'error'); return; }
             var isWin = prizeAmount > 0;
-            await KARO_DB.updateRecord(recordId, {
-                status: isWin ? 'won' : 'lost', win: isWin,
-                prize_amount: prizeAmount, processedAt: Date.now()
-            });
+            await KARO_DB.updateRecord(recordId, { status: isWin ? 'won' : 'lost', win: isWin, prize_amount: prizeAmount, processedAt: Date.now() });
             if (isWin) {
                 await KARO_DB.updateUserBalance(rec.username, prizeAmount);
-                await KARO_DB.addTransaction({
-                    username: rec.username, amount: prizeAmount, type: 'prize',
-                    description: 'Prize for box ' + rec.box_code, box_code: rec.box_code
-                });
+                await KARO_DB.addTransaction({ username: rec.username, amount: prizeAmount, type: 'prize', description: 'Prize for box ' + rec.box_code, box_code: rec.box_code });
                 showAdminToast('✅ ' + rec.username + ' won ₹' + prizeAmount, 'success');
-            } else {
-                showAdminToast('📉 ' + rec.username + ' lost box ' + rec.box_code, 'info');
-            }
+            } else { showAdminToast('📉 ' + rec.username + ' lost box ' + rec.box_code, 'info'); }
             refreshStats(); renderBoxResultsTable();
         } catch (e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
-
     if (refreshBoxResultsBtn) refreshBoxResultsBtn.addEventListener('click', renderBoxResultsTable);
     if (boxResultSearch) boxResultSearch.addEventListener('input', renderBoxResultsTable);
 
@@ -2932,10 +3088,7 @@ var KARO_DB = (function(){
             if (codes.length > 0) {
                 document.getElementById('nsLeastSold').textContent = codes[0];
                 document.getElementById('nsMostSold').textContent = codes[codes.length - 1];
-            } else {
-                document.getElementById('nsLeastSold').textContent = '-';
-                document.getElementById('nsMostSold').textContent = '-';
-            }
+            } else { document.getElementById('nsLeastSold').textContent = '-'; document.getElementById('nsMostSold').textContent = '-'; }
             var q = (nsSearchInput?.value || '').trim().toLowerCase();
             if (q) codes = codes.filter(function(c){ return c.toLowerCase().includes(q); });
             tb.innerHTML = '';
@@ -2950,9 +3103,7 @@ var KARO_DB = (function(){
                 if (isLeast) { countColor = '#f44336'; codeColor = '#f44336'; }
                 else if (isMost) { countColor = '#4caf50'; codeColor = '#4caf50'; }
                 var rankClass = '';
-                if (i === 0) rankClass = 'top1';
-                else if (i === 1) rankClass = 'top2';
-                else if (i === 2) rankClass = 'top3';
+                if (i === 0) rankClass = 'top1'; else if (i === 1) rankClass = 'top2'; else if (i === 2) rankClass = 'top3';
                 tr.innerHTML = '<td><span class="rank-badge ' + rankClass + '">' + (i+1) + '</span></td>' +
                     '<td><span class="code-badge" style="border-color:' + codeColor + '66;color:' + codeColor + ';">' + code + '</span></td>' +
                     '<td style="color:' + countColor + ';font-weight:700;font-size:14px;">' + info.count + '</td>' +
@@ -2960,9 +3111,7 @@ var KARO_DB = (function(){
                     '<td style="font-size:11px;color:#889;">' + lastStr + '</td>';
                 tb.appendChild(tr);
             });
-        } catch (e) {
-            tb.innerHTML = '<tr><td colspan="5" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>';
-        }
+        } catch (e) { tb.innerHTML = '<tr><td colspan="5" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>'; }
     }
     if (nsRefreshBtn) nsRefreshBtn.addEventListener('click', renderNumberStats);
     if (nsSearchInput) nsSearchInput.addEventListener('input', renderNumberStats);
@@ -3005,10 +3154,7 @@ var KARO_DB = (function(){
                 await KARO_DB.addTransaction({ username: c.username, amount: c.prize_amount, type: 'prize', description: 'Prize claimed: ' + c.box_code });
                 await KARO_DB.updateClaim(id, { status: 'approved' });
                 showAdminToast('✅ Prize credited', 'success');
-            } else {
-                await KARO_DB.updateClaim(id, { status: 'rejected' });
-                showAdminToast('Rejected', 'error');
-            }
+            } else { await KARO_DB.updateClaim(id, { status: 'rejected' }); showAdminToast('Rejected', 'error'); }
             renderClaimsTable();
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
@@ -3023,8 +3169,9 @@ var KARO_DB = (function(){
             document.getElementById('withdrawalsEmpty').style.display = list.length === 0 ? 'block' : 'none';
             list.forEach(function(w, i){
                 var tr = document.createElement('tr');
+                var roleTag = w.user_role === 'agent' ? ' <span style="font-size:9px;background:#ffb30033;color:#ffb300;padding:1px 5px;border-radius:6px;">AGENT</span>' : '';
                 tr.innerHTML = '<td>' + (i+1) + '</td>' +
-                    '<td style="color:#fff;font-weight:700;">' + w.username + '</td>' +
+                    '<td style="color:#fff;font-weight:700;">' + w.username + roleTag + '</td>' +
                     '<td style="color:#ff9800;font-weight:700;">₹' + w.amount + '</td>' +
                     '<td style="font-size:11px;">' + w.account_name + '<br>' + w.account_number + '</td>' +
                     '<td style="font-size:11px;color:#4fc3f7;">' + w.ifsc + '</td>' +
@@ -3050,10 +3197,7 @@ var KARO_DB = (function(){
                 await KARO_DB.addTransaction({ username: w.username, amount: -w.amount, type: 'withdrawal', description: 'Withdrawal to bank' });
                 await KARO_DB.updateWithdrawal(id, { status: 'approved' });
                 showAdminToast('✅ Marked as paid', 'success');
-            } else {
-                await KARO_DB.updateWithdrawal(id, { status: 'rejected' });
-                showAdminToast('Rejected', 'error');
-            }
+            } else { await KARO_DB.updateWithdrawal(id, { status: 'rejected' }); showAdminToast('Rejected', 'error'); }
             renderWithdrawalsTable();
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
@@ -3082,9 +3226,7 @@ var KARO_DB = (function(){
                     '<td style="font-size:11px;">' + date + '</td>';
                 tb.appendChild(tr);
             });
-        } catch (e) {
-            tb.innerHTML = '<tr><td colspan="7" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>';
-        }
+        } catch (e) { tb.innerHTML = '<tr><td colspan="7" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>'; }
     }
 
     // RECORDS
@@ -3100,9 +3242,11 @@ var KARO_DB = (function(){
             var statusPill = st === 'pending' ? '<span class="status-pill pending">PENDING</span>'
                             : (st === 'won' || r.win) ? '<span class="status-pill won">WON</span>'
                             : '<span class="status-pill lost">LOST</span>';
+            var buyer = r.buyer_name ? r.buyer_name + (r.buyer_mobile ? ' • ' + r.buyer_mobile : '') : '-';
             tr.innerHTML = '<td>' + (i+1) + '</td>' +
-                '<td style="color:#fff;">' + (r.username || '-') + '</td>' +
+                '<td style="color:#fff;">' + (r.username || '-') + (r.source === 'agent' ? ' <span style="font-size:9px;background:#ffb30033;color:#ffb300;padding:1px 5px;border-radius:6px;">AGENT</span>' : '') + '</td>' +
                 '<td style="color:#ffd700;">' + (r.box_code || '-') + '</td>' +
+                '<td style="font-size:11px;">' + buyer + '</td>' +
                 '<td>₹' + (r.amount || 0) + '</td>' +
                 '<td>' + (r.win ? '<span style="color:#4caf50;">WON ₹' + (r.prize_amount || 0) + '</span>' : (st === 'pending' ? '-' : '<span style="color:#f44336;">LOST</span>')) + '</td>' +
                 '<td>' + statusPill + '</td>' +
@@ -3112,41 +3256,28 @@ var KARO_DB = (function(){
     }
 
     // WINNER SETTINGS
-    var wsDigitInputs = [
-        document.getElementById('wsDigit0'), document.getElementById('wsDigit1'),
-        document.getElementById('wsDigit2'), document.getElementById('wsDigit3')
-    ];
+    var wsDigitInputs = [document.getElementById('wsDigit0'), document.getElementById('wsDigit1'), document.getElementById('wsDigit2'), document.getElementById('wsDigit3')];
     var wsSumDisplay = document.getElementById('wsSumDisplay');
     var wsUseCustomSum = document.getElementById('wsUseCustomSum');
     var wsCustomSumValue = document.getElementById('wsCustomSumValue');
     var wsCustomSumWrap = document.getElementById('wsCustomSumWrap');
 
     function updatePreview() {
-        var digits = wsDigitInputs.map(function(inp){
-            var v = parseInt(inp.value); if (isNaN(v) || v < 0) v = 0; if (v > 9) v = 9; return v;
-        });
+        var digits = wsDigitInputs.map(function(inp){ var v = parseInt(inp.value); if (isNaN(v) || v < 0) v = 0; if (v > 9) v = 9; return v; });
         var auto = digits.reduce(function(a,b){ return a+b; }, 0);
         var final = auto;
-        if (wsUseCustomSum.checked) {
-            var cv = parseInt(wsCustomSumValue.value);
-            final = isNaN(cv) ? 0 : cv;
-        }
+        if (wsUseCustomSum.checked) { var cv = parseInt(wsCustomSumValue.value); final = isNaN(cv) ? 0 : cv; }
         wsSumDisplay.textContent = final;
     }
     wsDigitInputs.forEach(function(inp){ inp.addEventListener('input', updatePreview); });
-    wsUseCustomSum.addEventListener('change', function(){
-        wsCustomSumWrap.style.display = this.checked ? 'block' : 'none';
-        updatePreview();
-    });
+    wsUseCustomSum.addEventListener('change', function(){ wsCustomSumWrap.style.display = this.checked ? 'block' : 'none'; updatePreview(); });
     wsCustomSumValue.addEventListener('input', updatePreview);
 
     function loadWinnerSettingsIntoForm() {
         var s = KARO_DB.getWinnerSettings();
         var digits = (s.digits || [0,0,0,0]).slice(0,4);
         while (digits.length < 4) digits.push(0);
-        document.querySelectorAll('#adminView input[name="winnerMode"]').forEach(function(r){
-            r.checked = (r.value === (s.mode || 'random'));
-        });
+        document.querySelectorAll('#adminView input[name="winnerMode"]').forEach(function(r){ r.checked = (r.value === (s.mode || 'random')); });
         wsDigitInputs.forEach(function(inp, i){ inp.value = digits[i]; });
         wsUseCustomSum.checked = s.useCustomSum === true;
         wsCustomSumValue.value = s.customSum || 0;
@@ -3161,16 +3292,10 @@ var KARO_DB = (function(){
         var useCustom = wsUseCustomSum.checked;
         var customSum = parseInt(wsCustomSumValue.value) || 0;
         try {
-            await KARO_DB.saveWinnerSettings({
-                mode: mode, digits: digits,
-                sum: useCustom ? customSum : auto,
-                useCustomSum: useCustom, customSum: customSum,
-                updatedAt: Date.now()
-            });
+            await KARO_DB.saveWinnerSettings({ mode: mode, digits: digits, sum: useCustom ? customSum : auto, useCustomSum: useCustom, customSum: customSum, updatedAt: Date.now() });
             showAdminToast('✅ Saved', 'success');
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
-
     document.getElementById('wsResetBtn').addEventListener('click', async function(){
         if (!confirm('Reset?')) return;
         try {
@@ -3180,29 +3305,19 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
-    // LUCKY DATE SETTINGS
+    // LUCKY DATE
     var luckyDateInput = document.getElementById('luckyDateInput');
     function loadLuckyDateIntoForm() {
         var d = KARO_DB.getLuckyDrawDate();
-        if (d) {
-            luckyDateInput.value = d;
-        } else {
-            luckyDateInput.value = '';
-        }
+        luckyDateInput.value = d || '';
     }
     document.getElementById('luckyDateSaveBtn').addEventListener('click', async function(){
-        var val = luckyDateInput.value;
-        try {
-            await KARO_DB.saveLuckyDrawDate(val);
-            showAdminToast('✅ Lucky Draw date saved!', 'success');
-        } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
+        try { await KARO_DB.saveLuckyDrawDate(luckyDateInput.value); showAdminToast('✅ Lucky Draw date saved!', 'success'); }
+        catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
     document.getElementById('luckyDateClearBtn').addEventListener('click', async function(){
-        try {
-            await KARO_DB.saveLuckyDrawDate('');
-            luckyDateInput.value = '';
-            showAdminToast('Cleared — using default', 'info');
-        } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
+        try { await KARO_DB.saveLuckyDrawDate(''); luckyDateInput.value = ''; showAdminToast('Cleared — using default', 'info'); }
+        catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
     // SETTINGS
@@ -3251,17 +3366,13 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
-    window.addEventListener('karorpati_users_updated', function(){
-        if (currentAdmin) { refreshStats(); renderUsersTable(); }
-    });
-    window.addEventListener('karorpati_records_updated', function(){
-        if (currentAdmin) { refreshStats(); renderRecordsTable(); renderBoxResultsTable(); renderNumberStats(); }
-    });
+    window.addEventListener('karorpati_users_updated', function(){ if (currentAdmin) { refreshStats(); renderUsersTable(); } });
+    window.addEventListener('karorpati_records_updated', function(){ if (currentAdmin) { refreshStats(); renderRecordsTable(); renderBoxResultsTable(); renderNumberStats(); } });
     window.addEventListener('karorpati_db_ready', function(){ tryAutoLogin(); });
 })();
 </script>
 
-<!-- VIEW SWITCHER + SECRET CODE -->
+<!-- ============================= VIEW SWITCHER + SECRET CODE ============================= -->
 <script>
 (function(){
     var SECRET_CODE = 'Sume@2025#Admin';
@@ -3283,11 +3394,7 @@ var KARO_DB = (function(){
         clickCount++;
         clearTimeout(clickTimer);
         clickTimer = setTimeout(function(){ clickCount = 0; }, 800);
-        if (clickCount >= 3) {
-            clickCount = 0;
-            clearTimeout(clickTimer);
-            switchAdmin.classList.add('visible');
-        }
+        if (clickCount >= 3) { clickCount = 0; clearTimeout(clickTimer); switchAdmin.classList.add('visible'); }
     });
 
     var newAdminBtn = switchAdmin.cloneNode(true);
@@ -3336,13 +3443,10 @@ var KARO_DB = (function(){
     switchLucky.addEventListener('click', function(){ clearAll(); luckyView.classList.add('active'); switchLucky.classList.add('active'); });
     switchKarorpati.addEventListener('click', function(){ clearAll(); karorpatiView.classList.add('active'); switchKarorpati.classList.add('active'); });
     switchAgent.addEventListener('click', function(){ clearAll(); agentPanelView.classList.add('active'); switchAgent.classList.add('active'); });
-
-    // Show agent tab always (agents need to access it)
-    switchAgent.style.display = 'flex';
 })();
 </script>
 
-<!-- APP START -->
+<!-- ============================= APP START ============================= -->
 <script>
 (async function(){
     var loadingOverlay = document.getElementById('loadingOverlay');
