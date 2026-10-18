@@ -597,6 +597,7 @@
 #agentPanelView .agent-result-msg.error { color:#f44336; background:#f4433611; }
 #agentPanelView .agent-result-msg.success { color:#4caf50; background:#4caf5011; }
 
+/* Agent wallet modals (Add Money / Withdraw) */
 #agentPanelView .agent-modal-overlay {
     position:fixed; top:0; left:0; width:100%; height:100%;
     background:rgba(0,0,0,0.85); backdrop-filter:blur(8px);
@@ -1187,7 +1188,7 @@
     </div>
 </div>
 
-<!-- ============================= FIREBASE INIT + DB WRAPPER ============================= -->
+<!-- FIREBASE INIT + DB WRAPPER -->
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDnGHcGAbmsuMgZoXDDIAi1ovgW0Yvj6QQ",
@@ -1262,10 +1263,6 @@ var KARO_DB = (function(){
         await db.collection('records').doc(id).update(updates);
         var idx = KARO_CACHE.records.findIndex(function(r){ return r._id === id; });
         if (idx !== -1) Object.assign(KARO_CACHE.records[idx], updates);
-    }
-    async function deleteRecord(id) {
-        await db.collection('records').doc(id).delete();
-        KARO_CACHE.records = KARO_CACHE.records.filter(function(r){ return r._id !== id; });
     }
 
     function getWinnerSettings() { return KARO_CACHE.winnerSettings; }
@@ -1405,7 +1402,6 @@ var KARO_DB = (function(){
         return list;
     }
 
-    // AGENTS
     async function getAgents() {
         var snap = await db.collection('users').where('role', '==', 'agent').get();
         var list = [];
@@ -1469,7 +1465,7 @@ var KARO_DB = (function(){
     return {
         init, loadUsers, fetchUsers, saveUser, deleteUser, getUser,
         getCurrentUser, setCurrentUser,
-        getRecords, fetchRecords, addRecord, updateRecord, deleteRecord,
+        getRecords, fetchRecords, addRecord, updateRecord,
         getWinnerSettings, fetchWinnerSettings, saveWinnerSettings,
         fetchLuckyDrawDate, saveLuckyDrawDate, getLuckyDrawDate,
         updateUserBalance, getTransactions, addTransaction,
@@ -1484,7 +1480,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- ============================= LUCKY DRAW ============================= -->
+<!-- LUCKY DRAW -->
 <script>
 (function(){
     var canvas = document.getElementById('starCanvas');
@@ -1617,7 +1613,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- ============================= KARORPATI USER SIDE ============================= -->
+<!-- KARORPATI USER SIDE -->
 <script>
 (function(){
     var FIXED_AMOUNT = 25;
@@ -1848,8 +1844,7 @@ var KARO_DB = (function(){
             '<div style="background:#121724; border-radius:12px; padding:12px; margin-bottom:12px; text-align:center;">' +
             '<div style="color:#aab; font-size:12px;">Selected Box</div>' +
             '<div id="buyerSelectedBoxCode" style="color:#ffd700; font-weight:900; font-size:24px; letter-spacing:2px;"></div>' +
-            '<div style="color:#4caf50; font-weight:700; margin-top:4px;">Amount: ₹25</div>' +
-            '</div>' +
+            '<div style="color:#4caf50; font-weight:700; margin-top:4px;">Amount: ₹25</div></div>' +
             '<button id="buyerConfirmBtn" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; font-size:16px; cursor:pointer;"><i class="fas fa-check"></i> Confirm & Pay ₹25</button>' +
             '<button class="modal-close-btn" id="buyerCancelBtn">Cancel</button></div>';
         document.body.appendChild(overlay);
@@ -1935,7 +1930,6 @@ var KARO_DB = (function(){
         switchAuthMode(false);
     });
 
-    // WALLET MODAL
     var walletOverlay = document.getElementById('walletOverlay');
     var walletTransactionsList = document.getElementById('walletTransactionsList');
     var walletCloseBtn = document.getElementById('walletCloseBtn');
@@ -1965,7 +1959,6 @@ var KARO_DB = (function(){
     walletCloseBtn.addEventListener('click', function(){ walletOverlay.classList.remove('active'); });
     walletOverlay.addEventListener('click', function(e){ if (e.target === walletOverlay) walletOverlay.classList.remove('active'); });
 
-    // ADD MONEY
     var addMoneyOverlay = document.getElementById('addMoneyOverlay');
     var addMoneyAmount = document.getElementById('addMoneyAmount');
     var addMoneyUpiPhone = document.getElementById('addMoneyUpiPhone');
@@ -2018,7 +2011,6 @@ var KARO_DB = (function(){
         }
     });
 
-    // WITHDRAW
     var withdrawOverlay = document.getElementById('withdrawOverlay');
     var withdrawAmount = document.getElementById('withdrawAmount');
     var withdrawAccountName = document.getElementById('withdrawAccountName');
@@ -2072,7 +2064,6 @@ var KARO_DB = (function(){
         }
     });
 
-    // HISTORY
     var historyOverlay = document.getElementById('historyOverlay');
     var userSalesList = document.getElementById('userSalesList');
     var historyBtn = document.getElementById('historyBtn');
@@ -2099,7 +2090,6 @@ var KARO_DB = (function(){
     historyCloseBtn.addEventListener('click', function(){ historyOverlay.classList.remove('active'); });
     historyOverlay.addEventListener('click', function(e){ if (e.target === historyOverlay) historyOverlay.classList.remove('active'); });
 
-    // REFERRAL
     var referralOverlay = document.getElementById('referralOverlay');
     var referralBadge = document.getElementById('referralBadge');
     var referralCloseBtn = document.getElementById('referralCloseBtn');
@@ -2188,7 +2178,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- ============================= AGENT PANEL ============================= -->
+<!-- AGENT PANEL -->
 <script>
 (function(){
     var AGENT_SESSION_KEY = 'karorpati_agent_session';
@@ -2217,7 +2207,17 @@ var KARO_DB = (function(){
     var agentPlayBtn = document.getElementById('agentPlayBtn');
     var agentResultMsg = document.getElementById('agentResultMsg');
 
+    // ===== BUYER MODAL refs (created lazily, appended to document.body) =====
+    var buyerOverlayRef = null;
+    var buyerBoxCodeRef = null;
+    var buyerNameRef = null;
+    var buyerMobileRef = null;
+    var buyerErrorRef = null;
+    var buyerConfirmRef = null;
+    var buyerCancelRef = null;
+
     function showAgentToast(msg, type) {
+        if (!agentToast) { console.log('[TOAST]', msg); return; }
         agentToast.textContent = msg;
         agentToast.className = 'agent-toast show ' + (type || 'info');
         clearTimeout(agentToast._timer);
@@ -2237,16 +2237,11 @@ var KARO_DB = (function(){
         var bal = parseFloat(u.balance) || 0;
         var bonus = parseFloat(u.bonusBalance) || 0;
         var withdrawable = Math.max(0, bal - bonus);
-        var hb = document.getElementById('agentWalletBalHeader');
-        if (hb) hb.textContent = bal.toLocaleString();
-        var mb = document.getElementById('agentWalletBalModal');
-        if (mb) mb.textContent = '₹' + bal.toLocaleString();
-        var bi = document.getElementById('agentWalletBonusInfo');
-        if (bi) bi.textContent = 'Withdrawable: ₹' + withdrawable + ' | Locked bonus: ₹' + bonus;
-        var ab = document.getElementById('agentAddCurrentBal');
-        if (ab) ab.textContent = '₹' + bal.toLocaleString();
-        var wb = document.getElementById('agentWdCurrentBal');
-        if (wb) wb.textContent = '₹' + withdrawable.toLocaleString();
+        var hb = document.getElementById('agentWalletBalHeader'); if (hb) hb.textContent = bal.toLocaleString();
+        var mb = document.getElementById('agentWalletBalModal'); if (mb) mb.textContent = '₹' + bal.toLocaleString();
+        var bi = document.getElementById('agentWalletBonusInfo'); if (bi) bi.textContent = 'Withdrawable: ₹' + withdrawable + ' | Locked bonus: ₹' + bonus;
+        var ab = document.getElementById('agentAddCurrentBal'); if (ab) ab.textContent = '₹' + bal.toLocaleString();
+        var wb = document.getElementById('agentWdCurrentBal'); if (wb) wb.textContent = '₹' + withdrawable.toLocaleString();
     }
 
     async function tryAgentLogin() {
@@ -2312,7 +2307,7 @@ var KARO_DB = (function(){
         });
     });
 
-    // SELL NUMBER
+    // ============ SELL NUMBER ============
     function generateAgentBoxData() {
         var codes = [];
         while (codes.length < 100) {
@@ -2354,116 +2349,204 @@ var KARO_DB = (function(){
         agentBoxData.forEach(function(b,i){ b.selected = (i === index); });
         agentSelectedBox = index;
         renderAgentBoxes();
-        agentResultMsg.textContent = '📦 Box Code: ' + agentBoxData[index].code + ' | Click "Sell Box"';
-        agentResultMsg.className = 'agent-result-msg info';
+        if (agentResultMsg) {
+            agentResultMsg.textContent = '📦 Box Code: ' + agentBoxData[index].code + ' | Click "Sell Box"';
+            agentResultMsg.className = 'agent-result-msg info';
+        }
     }
 
-    var agentBuyerOverlay = null;
-    function createAgentBuyerModal() {
+    // ============ BUILD BUYER MODAL (appended to body, inline styles) ============
+    function buildBuyerModal() {
+        var old = document.getElementById('agentBuyerOverlay');
+        if (old && old.parentNode) old.parentNode.removeChild(old);
+
         var overlay = document.createElement('div');
-        overlay.className = 'agent-modal-overlay';
         overlay.id = 'agentBuyerOverlay';
-        overlay.innerHTML = '<div class="agent-modal-panel" style="border-color:#4caf50;">' +
-            '<h2 style="color:#4caf50;"><i class="fas fa-user-check"></i> Buyer Details</h2>' +
-            '<p style="color:#aab; font-size:13px; text-align:center; margin-bottom:14px;">Number sell karne se pehle buyer ki details bharein</p>' +
-            '<div class="inp-group"><label><i class="fas fa-user"></i> Buyer Name *</label><input type="text" id="agentBuyerName" placeholder="Enter buyer full name" /></div>' +
-            '<div class="inp-group"><label><i class="fas fa-mobile-alt"></i> Buyer Mobile *</label><input type="text" id="agentBuyerMobile" placeholder="Enter 10-digit mobile" maxlength="10" inputmode="numeric" /></div>' +
-            '<div style="background:#121724; border-radius:12px; padding:12px; margin-bottom:12px; text-align:center;">' +
-            '<div style="color:#aab; font-size:12px;">Selected Box</div>' +
-            '<div id="agentBuyerBoxCode" style="color:#ffb300; font-weight:900; font-size:24px; letter-spacing:2px;"></div>' +
-            '<div style="color:#4caf50; font-weight:700; margin-top:4px;">Amount: ₹25</div></div>' +
-            '<button id="agentBuyerConfirm" style="width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; font-size:16px; cursor:pointer;"><i class="fas fa-check"></i> Confirm & Sell</button>' +
-            '<button class="modal-close-btn" id="agentBuyerCancel">Cancel</button></div>';
+        overlay.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; z-index:2147483000; ' +
+            'background:rgba(0,0,0,0.88); display:none; align-items:center; justify-content:center; ' +
+            'padding:20px; overflow-y:auto;';
+
+        overlay.innerHTML =
+            '<div style="background:#1e2538; border-radius:24px; max-width:440px; width:100%; ' +
+                'padding:26px 22px; border:2px solid #4caf50; box-shadow:0 30px 60px rgba(0,0,0,0.9); ' +
+                'max-height:92vh; overflow-y:auto;">' +
+                '<h2 style="color:#4caf50; text-align:center; margin-bottom:6px; font-size:22px;">' +
+                    '<i class="fas fa-user-check"></i> Buyer Details</h2>' +
+                '<p style="color:#aab; font-size:13px; text-align:center; margin-bottom:18px;">' +
+                    'Number sell karne se pehle buyer ki details bharein</p>' +
+                '<div style="background:#121724; border-radius:14px; padding:14px; margin-bottom:16px; ' +
+                    'text-align:center; border:1px solid #2a3045;">' +
+                    '<div style="color:#aab; font-size:12px; letter-spacing:1px;">SELECTED BOX</div>' +
+                    '<div id="agentBuyerBoxCode" style="color:#ffb300; font-weight:900; font-size:28px; ' +
+                        'letter-spacing:3px; margin-top:4px;">----</div>' +
+                    '<div style="color:#4caf50; font-weight:700; margin-top:6px; font-size:14px;">Amount: ₹25</div>' +
+                '</div>' +
+                '<div style="margin-bottom:12px;">' +
+                    '<label style="color:#aab; font-size:13px; display:block; margin-bottom:5px;">' +
+                        '<i class="fas fa-user"></i> Buyer Name *</label>' +
+                    '<input type="text" id="agentBuyerName" placeholder="Enter buyer full name" style="' +
+                        'width:100%; padding:13px 15px; border-radius:12px; border:1.5px solid #3a4055; ' +
+                        'background:#121724; color:#fff; font-size:15px; outline:none;" />' +
+                '</div>' +
+                '<div style="margin-bottom:16px;">' +
+                    '<label style="color:#aab; font-size:13px; display:block; margin-bottom:5px;">' +
+                        '<i class="fas fa-mobile-alt"></i> Buyer Mobile *</label>' +
+                    '<input type="text" id="agentBuyerMobile" placeholder="Enter 10-digit mobile" maxlength="10" ' +
+                        'inputmode="numeric" style="width:100%; padding:13px 15px; border-radius:12px; ' +
+                        'border:1.5px solid #3a4055; background:#121724; color:#fff; font-size:15px; outline:none;" />' +
+                '</div>' +
+                '<div id="agentBuyerError" style="color:#f44336; font-size:13px; text-align:center; ' +
+                    'min-height:18px; margin-bottom:10px;"></div>' +
+                '<button id="agentBuyerConfirm" style="width:100%; padding:15px; border-radius:14px; border:none; ' +
+                    'background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; font-weight:800; ' +
+                    'font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">' +
+                    '<i class="fas fa-check"></i> Confirm &amp; Sell ₹25</button>' +
+                '<button id="agentBuyerCancel" style="width:100%; padding:12px; margin-top:10px; ' +
+                    'border-radius:14px; border:none; background:#3a3045; color:#ccc; font-weight:700; ' +
+                    'font-size:14px; cursor:pointer;">Cancel</button>' +
+            '</div>';
+
         document.body.appendChild(overlay);
-        return overlay;
+
+        buyerOverlayRef = overlay;
+        buyerBoxCodeRef = document.getElementById('agentBuyerBoxCode');
+        buyerNameRef = document.getElementById('agentBuyerName');
+        buyerMobileRef = document.getElementById('agentBuyerMobile');
+        buyerErrorRef = document.getElementById('agentBuyerError');
+        buyerConfirmRef = document.getElementById('agentBuyerConfirm');
+        buyerCancelRef = document.getElementById('agentBuyerCancel');
+
+        buyerCancelRef.addEventListener('click', closeBuyerModal);
+        overlay.addEventListener('click', function(e){ if (e.target === overlay) closeBuyerModal(); });
+        buyerMobileRef.addEventListener('keypress', function(e){
+            if (e.key === 'Enter') buyerConfirmRef.click();
+        });
+        buyerConfirmRef.addEventListener('click', doConfirmSale);
     }
 
-    agentPlayBtn.addEventListener('click', async function(){
-        if (agentIsSelling) return;
-        if (agentSelectedBox === null) { showAgentToast('Select a box first!', 'error'); return; }
-        var box = agentBoxData[agentSelectedBox];
-        if (box.sold) { showAgentToast('Box already sold', 'error'); return; }
+    function openBuyerModal(boxCode) {
+        if (!buyerOverlayRef || !document.body.contains(buyerOverlayRef)) {
+            buildBuyerModal();
+        }
+        buyerBoxCodeRef.textContent = boxCode;
+        buyerNameRef.value = '';
+        buyerMobileRef.value = '';
+        buyerErrorRef.textContent = '';
+        buyerOverlayRef.style.display = 'flex';
+        setTimeout(function(){ buyerNameRef.focus(); }, 250);
+        console.log('[AGENT BUYER MODAL] opened for box', boxCode);
+    }
 
-        var u = agentGetUser();
-        var bal = (u && parseFloat(u.balance)) || 0;
-        if (bal < AGENT_SALE_AMOUNT) {
-            showAgentToast('❌ Low wallet! Add ₹' + (AGENT_SALE_AMOUNT - bal), 'error');
-            agentResultMsg.textContent = '❌ Wallet low! Go to Wallet tab to add money.';
-            agentResultMsg.className = 'agent-result-msg error';
+    function closeBuyerModal() {
+        if (buyerOverlayRef) buyerOverlayRef.style.display = 'none';
+    }
+
+    async function doConfirmSale() {
+        if (!buyerNameRef) return;
+        var bName = buyerNameRef.value.trim();
+        var bMobile = buyerMobileRef.value.trim();
+        if (!bName || bName.length < 2) { buyerErrorRef.textContent = '❌ Enter valid buyer name'; return; }
+        if (!bMobile || bMobile.length < 10) { buyerErrorRef.textContent = '❌ Enter valid 10-digit mobile'; return; }
+        buyerErrorRef.textContent = '';
+
+        var box = agentBoxData[agentSelectedBox];
+        if (!box) { closeBuyerModal(); showAgentToast('Box lost, reselect', 'error'); return; }
+
+        buyerConfirmRef.disabled = true;
+        buyerConfirmRef.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+        try {
+            await KARO_DB.updateUserBalance(currentAgent.username, -AGENT_SALE_AMOUNT);
+            await KARO_DB.addTransaction({
+                username: currentAgent.username, amount: -AGENT_SALE_AMOUNT,
+                type: 'agent_sale', description: 'Sold box ' + box.code + ' to ' + bName,
+                box_code: box.code
+            });
+            await KARO_DB.addAgentRecord({
+                agentUsername: currentAgent.username,
+                agent_phone: currentAgent.phone || '-',
+                box_code: box.code,
+                buyer_name: bName,
+                buyer_mobile: bMobile,
+                amount: AGENT_SALE_AMOUNT,
+                timestamp: Date.now(),
+                status: 'sold'
+            });
+            await KARO_DB.addRecord({
+                username: currentAgent.username, box_code: box.code, box_serial: agentSelectedBox + 1,
+                amount: AGENT_SALE_AMOUNT, txid: 'AGENT_' + Date.now(), timestamp: Date.now(),
+                status: 'pending', win: false, prize_amount: 0,
+                buyer_name: bName, buyer_mobile: bMobile,
+                source: 'agent', agent_username: currentAgent.username
+            });
+
+            box.sold = true;
+            box.selected = false;
+            agentSelectedBox = null;
+            closeBuyerModal();
+
+            if (agentResultMsg) {
+                agentResultMsg.textContent = '✅ Box ' + box.code + ' sold to ' + bName + '!';
+                agentResultMsg.className = 'agent-result-msg success';
+            }
+            showAgentToast('✅ Sold box ' + box.code + '!', 'success');
+            updateAgentWalletUI();
+            renderAgentBoxes();
+            await loadAgentData();
+            await loadAgentTxns();
+        } catch(err) {
+            console.error('[AGENT SALE ERROR]', err);
+            if (buyerErrorRef) buyerErrorRef.textContent = '❌ Error: ' + err.message;
+            showAgentToast('Error: ' + err.message, 'error');
+        }
+        if (buyerConfirmRef) {
+            buyerConfirmRef.disabled = false;
+            buyerConfirmRef.innerHTML = '<i class="fas fa-check"></i> Confirm &amp; Sell ₹25';
+        }
+    }
+
+    // ============ SELL BOX MAIN CLICK ============
+    agentPlayBtn.addEventListener('click', function(){
+        console.log('[SELL BOX] clicked. selected=', agentSelectedBox, 'user=', currentAgent && currentAgent.username, 'selling=', agentIsSelling);
+
+        if (agentIsSelling) return;
+        if (!currentAgent) { showAgentToast('❌ Login again', 'error'); return; }
+
+        if (agentSelectedBox === null || agentSelectedBox === undefined) {
+            if (agentResultMsg) {
+                agentResultMsg.textContent = '⚠️ Pehle ek box select karein (grid se click karein)';
+                agentResultMsg.className = 'agent-result-msg error';
+            }
+            showAgentToast('⚠️ Pehle box select karein!', 'error');
             return;
         }
 
-        if (!agentBuyerOverlay) agentBuyerOverlay = createAgentBuyerModal();
-        document.getElementById('agentBuyerBoxCode').textContent = box.code;
-        document.getElementById('agentBuyerName').value = '';
-        document.getElementById('agentBuyerMobile').value = '';
-        agentBuyerOverlay.classList.add('active');
+        var box = agentBoxData[agentSelectedBox];
+        if (!box) { showAgentToast('❌ Box not found', 'error'); agentSelectedBox = null; return; }
+        if (box.sold) { showAgentToast('Box already sold', 'error'); return; }
 
-        var oldBtn = document.getElementById('agentBuyerConfirm');
-        var newBtn = oldBtn.cloneNode(true);
-        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-        newBtn.addEventListener('click', async function(){
-            var bName = document.getElementById('agentBuyerName').value.trim();
-            var bMobile = document.getElementById('agentBuyerMobile').value.trim();
-            if (!bName || bName.length < 2) { showAgentToast('Enter buyer name', 'error'); return; }
-            if (!bMobile || bMobile.length < 10) { showAgentToast('Enter valid 10-digit mobile', 'error'); return; }
+        var u = agentGetUser();
+        if (!u) { showAgentToast('❌ Agent record not found', 'error'); return; }
+        var bal = parseFloat(u.balance) || 0;
+        console.log('[SELL BOX] balance=', bal);
 
-            agentBuyerOverlay.classList.remove('active');
-            agentIsSelling = true;
-            agentPlayBtn.disabled = true;
-            agentPlayBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-            try {
-                await KARO_DB.updateUserBalance(currentAgent.username, -AGENT_SALE_AMOUNT);
-                await KARO_DB.addTransaction({
-                    username: currentAgent.username, amount: -AGENT_SALE_AMOUNT,
-                    type: 'agent_sale', description: 'Sold box ' + box.code + ' to ' + bName,
-                    box_code: box.code
-                });
-                await KARO_DB.addAgentRecord({
-                    agentUsername: currentAgent.username,
-                    agent_phone: currentAgent.phone || '-',
-                    box_code: box.code,
-                    buyer_name: bName,
-                    buyer_mobile: bMobile,
-                    amount: AGENT_SALE_AMOUNT,
-                    timestamp: Date.now(),
-                    status: 'sold'
-                });
-                await KARO_DB.addRecord({
-                    username: currentAgent.username, box_code: box.code, box_serial: agentSelectedBox + 1,
-                    amount: AGENT_SALE_AMOUNT, txid: 'AGENT_' + Date.now(), timestamp: Date.now(),
-                    status: 'pending', win: false, prize_amount: 0,
-                    buyer_name: bName, buyer_mobile: bMobile,
-                    source: 'agent', agent_username: currentAgent.username
-                });
-
-                box.sold = true;
-                box.selected = false;
-                agentResultMsg.textContent = '✅ Box ' + box.code + ' sold to ' + bName + '!';
-                agentResultMsg.className = 'agent-result-msg success';
-                showAgentToast('✅ Sold box ' + box.code + '!', 'success');
-                updateAgentWalletUI();
-                await loadAgentData();
-                await loadAgentTxns();
-                // Select next available box
-                agentSelectedBox = null;
-            } catch(err) {
-                showAgentToast('Error: ' + err.message, 'error');
+        if (bal < AGENT_SALE_AMOUNT) {
+            if (agentResultMsg) {
+                agentResultMsg.textContent = '❌ Wallet low! Balance ₹' + bal + ' — need ₹' + AGENT_SALE_AMOUNT;
+                agentResultMsg.className = 'agent-result-msg error';
             }
-            agentIsSelling = false;
-            agentPlayBtn.disabled = false;
-            agentPlayBtn.innerHTML = '<i class="fas fa-play"></i> Sell Box <span class="price-tag">₹25</span>';
-            renderAgentBoxes();
-        });
+            showAgentToast('❌ Wallet low! Add ₹' + (AGENT_SALE_AMOUNT - bal) + ' more', 'error');
+            return;
+        }
 
-        var oldCancel = document.getElementById('agentBuyerCancel');
-        var newCancel = oldCancel.cloneNode(true);
-        oldCancel.parentNode.replaceChild(newCancel, oldCancel);
-        newCancel.addEventListener('click', function() { agentBuyerOverlay.classList.remove('active'); });
+        // OPEN BUYER MODAL
+        openBuyerModal(box.code);
     });
 
-    // SALES DATA + STATS
+    // Build eagerly so it's always ready
+    buildBuyerModal();
+
+    // ============ DATA LOADERS ============
     async function loadAgentData() {
         if (!currentAgent) return;
         try {
@@ -2472,19 +2555,17 @@ var KARO_DB = (function(){
             var now = new Date();
             var thisMonth = now.getMonth();
             var thisYear = now.getFullYear();
-            var monthCount = 0;
-            var revenue = 0;
-            var buyers = {};
+            var monthCount = 0, revenue = 0, buyers = {};
             sales.forEach(function(s) {
                 var d = new Date(s.timestamp);
                 if (d.getMonth() === thisMonth && d.getFullYear() === thisYear) monthCount++;
                 revenue += (parseFloat(s.amount) || 0);
                 if (s.buyer_mobile) buyers[s.buyer_mobile] = true;
             });
-            document.getElementById('agentStatTotal').textContent = total;
-            document.getElementById('agentStatMonth').textContent = monthCount;
-            document.getElementById('agentStatRevenue').textContent = '₹' + revenue;
-            document.getElementById('agentStatUnique').textContent = Object.keys(buyers).length;
+            var st = document.getElementById('agentStatTotal'); if (st) st.textContent = total;
+            var sm = document.getElementById('agentStatMonth'); if (sm) sm.textContent = monthCount;
+            var sr = document.getElementById('agentStatRevenue'); if (sr) sr.textContent = '₹' + revenue;
+            var su = document.getElementById('agentStatUnique'); if (su) su.textContent = Object.keys(buyers).length;
 
             var monthKeys = {};
             sales.forEach(function(s) {
@@ -2522,11 +2603,7 @@ var KARO_DB = (function(){
             }
             return true;
         });
-        if (sales.length === 0) {
-            agentSalesContainer.innerHTML = '';
-            agentSalesEmpty.style.display = 'block';
-            return;
-        }
+        if (sales.length === 0) { agentSalesContainer.innerHTML = ''; agentSalesEmpty.style.display = 'block'; return; }
         agentSalesEmpty.style.display = 'none';
         var groups = {};
         sales.forEach(function(s) {
@@ -2570,7 +2647,6 @@ var KARO_DB = (function(){
     });
     agentRefreshBtn.addEventListener('click', loadAgentData);
 
-    // WALLET TXNS
     async function loadAgentTxns() {
         if (!currentAgent) return;
         var list = document.getElementById('agentTxnList');
@@ -2591,7 +2667,7 @@ var KARO_DB = (function(){
         } catch(err) { list.innerHTML = '<div style="color:#f44336;text-align:center;padding:15px;">' + err.message + '</div>'; }
     }
 
-    // ADD MONEY
+    // ============ ADD MONEY ============
     var agentAddMoneyOverlay = document.getElementById('agentAddMoneyOverlay');
     var agentAddAmount = document.getElementById('agentAddAmount');
     var agentAddUpiPhone = document.getElementById('agentAddUpiPhone');
@@ -2639,7 +2715,7 @@ var KARO_DB = (function(){
         }
     });
 
-    // WITHDRAW
+    // ============ WITHDRAW ============
     var agentWdOverlay = document.getElementById('agentWithdrawOverlay');
     var agentWdAmount = document.getElementById('agentWdAmount');
     var agentWdName = document.getElementById('agentWdName');
@@ -2694,7 +2770,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- ============================= ADMIN PANEL ============================= -->
+<!-- ADMIN PANEL -->
 <script>
 (function(){
     var ADMIN_SESSION_KEY = 'karorpati_admin_session';
@@ -3372,7 +3448,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- ============================= VIEW SWITCHER + SECRET CODE ============================= -->
+<!-- VIEW SWITCHER + SECRET CODE -->
 <script>
 (function(){
     var SECRET_CODE = 'Sume@2025#Admin';
@@ -3446,7 +3522,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- ============================= APP START ============================= -->
+<!-- APP START -->
 <script>
 (async function(){
     var loadingOverlay = document.getElementById('loadingOverlay');
