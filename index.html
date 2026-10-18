@@ -191,15 +191,21 @@
 #karorpatiView .box-grid {
     display: grid; grid-template-columns: repeat(10,1fr); gap: 4px;
     background: #121724; padding: 6px; border-radius: 14px; border: 1px solid #2a3045;
+    width: 100%; max-width: 100%; overflow: hidden; box-sizing: border-box;
 }
 #karorpatiView .box-item {
     aspect-ratio: 1/1; background: linear-gradient(145deg,#1e2538,#161c2e);
     border-radius: 6px; border: 1px solid #2a3045; display: flex;
     flex-direction: column; align-items: center; justify-content: center;
     cursor: pointer; font-size: 9px; color: #aab; min-height: 38px;
-    padding: 2px; user-select: none;
+    padding: 2px; user-select: none; min-width: 0; overflow: hidden;
 }
-#karorpatiView .box-item .box-code { font-size: 13px; font-weight: 900; color: #fff; letter-spacing: 0.5px; line-height: 1.2; text-align: center; }
+#karorpatiView .box-item .box-code {
+    font-size: clamp(8px, 2.5vw, 13px);
+    font-weight: 900; color: #fff; letter-spacing: 0.5px; line-height: 1.2;
+    text-align: center; white-space: nowrap; overflow: hidden;
+    text-overflow: clip; width: 100%;
+}
 #karorpatiView .box-item .box-prize { font-size: 7px; font-weight: 700; color: #4caf50; display: none; }
 #karorpatiView .box-item:hover:not(.disabled):not(.revealed) { transform: scale(1.04); border-color: #ffd70088; }
 #karorpatiView .box-item.selected { border-color: #ffd700; box-shadow: 0 0 25px rgba(255,215,0,0.25); transform: scale(1.05); }
@@ -278,8 +284,7 @@
     #luckyView .sum-box { width: 70px; height: 70px; font-size: 2.8rem; }
     #luckyView .equals { font-size: 2.5rem; }
     #luckyView h1 { font-size: 1.6rem; }
-    #karorpatiView .box-item .box-code { font-size: 10px; }
-    #karorpatiView .box-item { min-height: 32px; }
+    #karorpatiView .box-item { min-height: 0; }
     #karorpatiView .header .title-area h1 { font-size: 16px; }
     #karorpatiView .header .btn-group button { font-size: 10px; padding: 2px 8px; }
 }
@@ -567,15 +572,21 @@
 #agentPanelView .agent-box-grid {
     display:grid; grid-template-columns:repeat(10,1fr); gap:4px;
     background:#121724; padding:6px; border-radius:14px; border:1px solid #2a3045;
+    width:100%; max-width:100%; overflow:hidden; box-sizing:border-box;
 }
 #agentPanelView .agent-box-item {
     aspect-ratio:1/1; background:linear-gradient(145deg,#1e2538,#161c2e);
     border-radius:6px; border:1px solid #2a3045; display:flex;
     flex-direction:column; align-items:center; justify-content:center;
     cursor:pointer; font-size:9px; color:#aab; min-height:38px;
-    padding:2px; user-select:none;
+    padding:2px; user-select:none; min-width:0; overflow:hidden;
 }
-#agentPanelView .agent-box-item .ab-code { font-size:13px; font-weight:900; color:#fff; line-height:1.2; }
+#agentPanelView .agent-box-item .ab-code {
+    font-size:clamp(8px, 2.5vw, 13px);
+    font-weight:900; color:#fff; line-height:1.2;
+    white-space:nowrap; overflow:hidden; text-overflow:clip;
+    width:100%; text-align:center;
+}
 #agentPanelView .agent-box-item.selected { border-color:#ffb300; box-shadow:0 0 25px rgba(255,179,0,0.3); transform:scale(1.05); }
 #agentPanelView .agent-box-item.disabled { cursor:not-allowed; opacity:0.4; }
 
@@ -597,7 +608,6 @@
 #agentPanelView .agent-result-msg.error { color:#f44336; background:#f4433611; }
 #agentPanelView .agent-result-msg.success { color:#4caf50; background:#4caf5011; }
 
-/* Agent wallet modals (Add Money / Withdraw) */
 #agentPanelView .agent-modal-overlay {
     position:fixed; top:0; left:0; width:100%; height:100%;
     background:rgba(0,0,0,0.85); backdrop-filter:blur(8px);
@@ -647,6 +657,18 @@
     #viewSwitcher button { padding: 6px 12px; font-size: 11px; }
     .ns-summary-card .ns-value { font-size:18px; }
     #agentPanelView .agent-stat-card .stat-value { font-size:20px; }
+    #karorpatiView .box-grid,
+    #agentPanelView .agent-box-grid { gap: 2px; padding: 4px; }
+    #karorpatiView .box-item,
+    #agentPanelView .agent-box-item { min-height: 0; }
+    #karorpatiView .box-item .box-code,
+    #agentPanelView .agent-box-item .ab-code { font-size: clamp(7px, 2.2vw, 11px); }
+}
+@media (max-width: 380px) {
+    #karorpatiView .box-item .box-code,
+    #agentPanelView .agent-box-item .ab-code { font-size: 7px; letter-spacing: 0; }
+    #karorpatiView .box-grid,
+    #agentPanelView .agent-box-grid { gap: 1.5px; padding: 3px; }
 }
 </style>
 </head>
@@ -887,7 +909,7 @@
             <!-- SELL NUMBER PANEL -->
             <div class="agent-panel" id="agentPanelSell">
                 <h3><i class="fas fa-box-open"></i> Sell a Number</h3>
-                <p style="color:#aab; font-size:13px; margin-bottom:10px;">Select a box, enter buyer name &amp; mobile, then confirm. ₹25 will be deducted from your wallet per sale.</p>
+                <p style="color:#aab; font-size:13px; margin-bottom:10px;">Select a box, enter buyer name &amp; mobile, then confirm. ₹25 will be deducted from your wallet, and ₹10 commission will be credited back on each sale.</p>
                 <div class="agent-box-grid" id="agentBoxGrid"></div>
                 <div class="agent-play-row">
                     <button class="agent-play-btn" id="agentPlayBtn"><i class="fas fa-play"></i> Sell Box <span class="price-tag">₹25</span></button>
@@ -1019,7 +1041,7 @@
         <div class="admin-panel" id="panelAgents" style="display:none;">
             <h3><i class="fas fa-user-tie"></i> Manage Agents</h3>
             <div class="admin-search-row"><input type="text" id="agentSearch" placeholder="🔍 Search agent..." /><button id="addAgentBtn"><i class="fas fa-user-plus"></i> Create Agent</button></div>
-            <p style="color:#aab; font-size:13px; margin-bottom:14px;">Agents can sell numbers. They must enter buyer name &amp; mobile before each sale. Their wallet is deducted ₹25 per sale.</p>
+            <p style="color:#aab; font-size:13px; margin-bottom:14px;">Agents can sell numbers. They must enter buyer name &amp; mobile before each sale. ₹25 deducted per sale, ₹10 commission credited back.</p>
             <div class="admin-table-wrap">
                 <table><thead><tr><th>#</th><th>Agent</th><th>Phone</th><th>Balance</th><th>Total Sales</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead><tbody id="agentsTableBody"></tbody></table>
             </div>
@@ -2183,6 +2205,7 @@ var KARO_DB = (function(){
 (function(){
     var AGENT_SESSION_KEY = 'karorpati_agent_session';
     var AGENT_SALE_AMOUNT = 25;
+    var AGENT_COMMISSION = 10;
     var AGENT_UPI = 's6154632725482301@slc';
     var currentAgent = null;
     var agentSelectedBox = null;
@@ -2207,7 +2230,6 @@ var KARO_DB = (function(){
     var agentPlayBtn = document.getElementById('agentPlayBtn');
     var agentResultMsg = document.getElementById('agentResultMsg');
 
-    // ===== BUYER MODAL refs (created lazily, appended to document.body) =====
     var buyerOverlayRef = null;
     var buyerBoxCodeRef = null;
     var buyerNameRef = null;
@@ -2307,7 +2329,7 @@ var KARO_DB = (function(){
         });
     });
 
-    // ============ SELL NUMBER ============
+    // SELL NUMBER
     function generateAgentBoxData() {
         var codes = [];
         while (codes.length < 100) {
@@ -2355,7 +2377,6 @@ var KARO_DB = (function(){
         }
     }
 
-    // ============ BUILD BUYER MODAL (appended to body, inline styles) ============
     function buildBuyerModal() {
         var old = document.getElementById('agentBuyerOverlay');
         if (old && old.parentNode) old.parentNode.removeChild(old);
@@ -2455,13 +2476,28 @@ var KARO_DB = (function(){
         buyerConfirmRef.disabled = true;
         buyerConfirmRef.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
+        var deducted = false, credited = false;
         try {
+            // 1) Deduct ₹25 from agent wallet
             await KARO_DB.updateUserBalance(currentAgent.username, -AGENT_SALE_AMOUNT);
+            deducted = true;
             await KARO_DB.addTransaction({
                 username: currentAgent.username, amount: -AGENT_SALE_AMOUNT,
                 type: 'agent_sale', description: 'Sold box ' + box.code + ' to ' + bName,
                 box_code: box.code
             });
+
+            // 2) ✅ Auto-credit ₹10 commission
+            await KARO_DB.updateUserBalance(currentAgent.username, AGENT_COMMISSION);
+            credited = true;
+            await KARO_DB.addTransaction({
+                username: currentAgent.username, amount: AGENT_COMMISSION,
+                type: 'agent_commission',
+                description: 'Sale commission (box ' + box.code + ')',
+                box_code: box.code
+            });
+
+            // 3) Save to agentSales
             await KARO_DB.addAgentRecord({
                 agentUsername: currentAgent.username,
                 agent_phone: currentAgent.phone || '-',
@@ -2469,9 +2505,12 @@ var KARO_DB = (function(){
                 buyer_name: bName,
                 buyer_mobile: bMobile,
                 amount: AGENT_SALE_AMOUNT,
+                commission: AGENT_COMMISSION,
                 timestamp: Date.now(),
                 status: 'sold'
             });
+
+            // 4) Save to records
             await KARO_DB.addRecord({
                 username: currentAgent.username, box_code: box.code, box_serial: agentSelectedBox + 1,
                 amount: AGENT_SALE_AMOUNT, txid: 'AGENT_' + Date.now(), timestamp: Date.now(),
@@ -2486,16 +2525,19 @@ var KARO_DB = (function(){
             closeBuyerModal();
 
             if (agentResultMsg) {
-                agentResultMsg.textContent = '✅ Box ' + box.code + ' sold to ' + bName + '!';
+                agentResultMsg.textContent = '✅ Box ' + box.code + ' sold to ' + bName + '! (+₹' + AGENT_COMMISSION + ' commission)';
                 agentResultMsg.className = 'agent-result-msg success';
             }
-            showAgentToast('✅ Sold box ' + box.code + '!', 'success');
+            showAgentToast('✅ Sold box ' + box.code + '! +₹' + AGENT_COMMISSION + ' commission credited', 'success');
             updateAgentWalletUI();
             renderAgentBoxes();
             await loadAgentData();
             await loadAgentTxns();
         } catch(err) {
             console.error('[AGENT SALE ERROR]', err);
+            // Rollback partial changes
+            try { if (credited) await KARO_DB.updateUserBalance(currentAgent.username, -AGENT_COMMISSION); } catch(e){}
+            try { if (deducted) await KARO_DB.updateUserBalance(currentAgent.username, AGENT_SALE_AMOUNT); } catch(e){}
             if (buyerErrorRef) buyerErrorRef.textContent = '❌ Error: ' + err.message;
             showAgentToast('Error: ' + err.message, 'error');
         }
@@ -2505,7 +2547,6 @@ var KARO_DB = (function(){
         }
     }
 
-    // ============ SELL BOX MAIN CLICK ============
     agentPlayBtn.addEventListener('click', function(){
         console.log('[SELL BOX] clicked. selected=', agentSelectedBox, 'user=', currentAgent && currentAgent.username, 'selling=', agentIsSelling);
 
@@ -2539,14 +2580,11 @@ var KARO_DB = (function(){
             return;
         }
 
-        // OPEN BUYER MODAL
         openBuyerModal(box.code);
     });
 
-    // Build eagerly so it's always ready
     buildBuyerModal();
 
-    // ============ DATA LOADERS ============
     async function loadAgentData() {
         if (!currentAgent) return;
         try {
@@ -2618,7 +2656,7 @@ var KARO_DB = (function(){
             var g = groups[k];
             var monthTotal = g.items.reduce(function(a, s){ return a + (parseFloat(s.amount)||0); }, 0);
             html += '<div class="month-group-title">📅 ' + g.label + ' — ' + g.items.length + ' sales — ₹' + monthTotal + '</div>';
-            html += '<div class="agent-table-wrap" style="margin-bottom:14px;"><table><thead><tr><th>#</th><th>Date</th><th>Box Code</th><th>Buyer Name</th><th>Buyer Mobile</th><th>Amount</th><th>Status</th></tr></thead><tbody>';
+            html += '<div class="agent-table-wrap" style="margin-bottom:14px;"><table><thead><tr><th>#</th><th>Date</th><th>Box Code</th><th>Buyer Name</th><th>Buyer Mobile</th><th>Amount</th><th>Commission</th><th>Status</th></tr></thead><tbody>';
             g.items.forEach(function(s, i) {
                 var date = new Date(s.timestamp).toLocaleString('en-IN');
                 var st = s.status || 'sold';
@@ -2628,6 +2666,7 @@ var KARO_DB = (function(){
                         '<td style="color:#fff;">' + (s.buyer_name || '-') + '</td>' +
                         '<td style="font-family:monospace;">' + (s.buyer_mobile || '-') + '</td>' +
                         '<td style="color:#4caf50;font-weight:700;">₹' + (s.amount || 0) + '</td>' +
+                        '<td style="color:#66bb6a;font-weight:700;">+₹' + (s.commission || 0) + '</td>' +
                         '<td style="color:#ffb300;">' + statusLabel + '</td></tr>';
             });
             html += '</tbody></table></div>';
@@ -2667,7 +2706,7 @@ var KARO_DB = (function(){
         } catch(err) { list.innerHTML = '<div style="color:#f44336;text-align:center;padding:15px;">' + err.message + '</div>'; }
     }
 
-    // ============ ADD MONEY ============
+    // ADD MONEY
     var agentAddMoneyOverlay = document.getElementById('agentAddMoneyOverlay');
     var agentAddAmount = document.getElementById('agentAddAmount');
     var agentAddUpiPhone = document.getElementById('agentAddUpiPhone');
@@ -2715,7 +2754,7 @@ var KARO_DB = (function(){
         }
     });
 
-    // ============ WITHDRAW ============
+    // WITHDRAW
     var agentWdOverlay = document.getElementById('agentWithdrawOverlay');
     var agentWdAmount = document.getElementById('agentWdAmount');
     var agentWdName = document.getElementById('agentWdName');
@@ -2890,7 +2929,6 @@ var KARO_DB = (function(){
         });
     });
 
-    // USERS
     var userSearch = document.getElementById('userSearch');
     function renderUsersTable() {
         var users = KARO_DB.loadUsers();
@@ -2960,7 +2998,6 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
-    // AGENTS
     var agentSearch = document.getElementById('agentSearch');
     async function renderAgentsTable() {
         var agents = await KARO_DB.getAgents();
@@ -3016,7 +3053,6 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
-    // DEPOSITS
     async function renderDepositsTable() {
         var tb = document.getElementById('depositsTableBody');
         tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#889;">Loading...</td></tr>';
@@ -3063,7 +3099,6 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
-    // BOX RESULTS
     var boxResultSearch = document.getElementById('boxResultSearch');
     var refreshBoxResultsBtn = document.getElementById('refreshBoxResultsBtn');
 
@@ -3134,7 +3169,6 @@ var KARO_DB = (function(){
     if (refreshBoxResultsBtn) refreshBoxResultsBtn.addEventListener('click', renderBoxResultsTable);
     if (boxResultSearch) boxResultSearch.addEventListener('input', renderBoxResultsTable);
 
-    // NUMBER STATS
     var nsSearchInput = document.getElementById('nsSearchInput');
     var nsRefreshBtn = document.getElementById('nsRefreshBtn');
 
@@ -3192,7 +3226,6 @@ var KARO_DB = (function(){
     if (nsRefreshBtn) nsRefreshBtn.addEventListener('click', renderNumberStats);
     if (nsSearchInput) nsSearchInput.addEventListener('input', renderNumberStats);
 
-    // CLAIMS
     async function renderClaimsTable() {
         var tb = document.getElementById('claimsTableBody');
         tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#889;">Loading...</td></tr>';
@@ -3235,7 +3268,6 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
-    // WITHDRAWALS
     async function renderWithdrawalsTable() {
         var tb = document.getElementById('withdrawalsTableBody');
         tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#889;">Loading...</td></tr>';
@@ -3278,7 +3310,6 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
-    // REFERRALS
     async function renderReferralsTable() {
         var tb = document.getElementById('referralsTableBody');
         if (!tb) return;
@@ -3305,7 +3336,6 @@ var KARO_DB = (function(){
         } catch (e) { tb.innerHTML = '<tr><td colspan="7" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>'; }
     }
 
-    // RECORDS
     function renderRecordsTable() {
         var records = KARO_DB.getRecords();
         var tb = document.getElementById('recordsTableBody');
@@ -3331,7 +3361,6 @@ var KARO_DB = (function(){
         });
     }
 
-    // WINNER SETTINGS
     var wsDigitInputs = [document.getElementById('wsDigit0'), document.getElementById('wsDigit1'), document.getElementById('wsDigit2'), document.getElementById('wsDigit3')];
     var wsSumDisplay = document.getElementById('wsSumDisplay');
     var wsUseCustomSum = document.getElementById('wsUseCustomSum');
@@ -3381,7 +3410,6 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
-    // LUCKY DATE
     var luckyDateInput = document.getElementById('luckyDateInput');
     function loadLuckyDateIntoForm() {
         var d = KARO_DB.getLuckyDrawDate();
@@ -3396,7 +3424,6 @@ var KARO_DB = (function(){
         catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
-    // SETTINGS
     function loadSettingsIntoForm() {
         if (currentAdmin) document.getElementById('settingsCurrentUsername').value = currentAdmin.username;
         document.getElementById('settingsNewUsername').value = '';
