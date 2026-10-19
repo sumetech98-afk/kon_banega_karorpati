@@ -1949,6 +1949,24 @@ var KARO_DB = (function(){
     var toast = document.getElementById('toast');
     var isRegisterMode = false;
 
+    /* ============================================================
+       FIXED 100 BOX CODES — deterministic, never change on refresh.
+       Same seed = same 100 codes + same order, on every device.
+       Agent side uses the SAME seed so user/agent grids match.
+       ============================================================ */
+    var FIXED_BOX_CODES = (function(){
+        var codes = [], seed = 987654321;
+        function nextRand() {
+            seed = (seed * 1664525 + 1013904223) % 4294967296;
+            return seed / 4294967296;
+        }
+        while (codes.length < 100) {
+            var c = String(1000 + Math.floor(nextRand() * 9000));
+            if (codes.indexOf(c) === -1) codes.push(c);
+        }
+        return codes;
+    })();
+
     function switchAuthMode(reg) {
         isRegisterMode = reg;
         authBtn.textContent = reg ? 'Register' : 'Login';
@@ -2082,11 +2100,10 @@ var KARO_DB = (function(){
     }
 
     function generateBoxData() {
-        var codes = [];
-        while (codes.length < 100) { var c = String(Math.floor(1000 + Math.random()*9000)); if (codes.indexOf(c) === -1) codes.push(c); }
-        for (var i = codes.length - 1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t = codes[i]; codes[i]=codes[j]; codes[j]=t; }
         var data = [];
-        for (var i = 0; i < 100; i++) data.push({ code: codes[i], prize: 0, revealed:false, won:false, selected:false, claimed:false, pending:false });
+        for (var i = 0; i < 100; i++) {
+            data.push({ code: FIXED_BOX_CODES[i], prize: 0, revealed:false, won:false, selected:false, claimed:false, pending:false });
+        }
         return data;
     }
 
@@ -2494,6 +2511,23 @@ var KARO_DB = (function(){
     var agentBoxData = [];
     var agentIsSelling = false;
 
+    /* ============================================================
+       SAME FIXED 100 BOX CODES as the user side.
+       Same seed = same codes + same order, so both grids match.
+       ============================================================ */
+    var AGENT_FIXED_BOX_CODES = (function(){
+        var codes = [], seed = 987654321;
+        function nextRand() {
+            seed = (seed * 1664525 + 1013904223) % 4294967296;
+            return seed / 4294967296;
+        }
+        while (codes.length < 100) {
+            var c = String(1000 + Math.floor(nextRand() * 9000));
+            if (codes.indexOf(c) === -1) codes.push(c);
+        }
+        return codes;
+    })();
+
     var agentAuthOverlay = document.getElementById('agentAuthOverlay');
     var agentMain = document.getElementById('agentMain');
     var agentUserIn = document.getElementById('agentUserIn');
@@ -2612,14 +2646,10 @@ var KARO_DB = (function(){
     });
 
     function generateAgentBoxData() {
-        var codes = [];
-        while (codes.length < 100) {
-            var c = String(Math.floor(1000 + Math.random()*9000));
-            if (codes.indexOf(c) === -1) codes.push(c);
-        }
-        for (var i = codes.length - 1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t = codes[i]; codes[i] = codes[j]; codes[j] = t; }
         var data = [];
-        for (var i = 0; i < 100; i++) data.push({ code: codes[i], selected: false, sold: false });
+        for (var i = 0; i < 100; i++) {
+            data.push({ code: AGENT_FIXED_BOX_CODES[i], selected: false, sold: false });
+        }
         return data;
     }
 
