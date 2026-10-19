@@ -3796,7 +3796,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- VIEW SWITCHER + SECRET CODE -->
+<!-- VIEW SWITCHER + SECRET CODE (WITH MOBILE BACK-BUTTON FIX) -->
 <script>
 (function(){
     var SECRET_CODE = 'Sume@2025#Admin';
@@ -3812,6 +3812,150 @@ var KARO_DB = (function(){
     var secretOverlay = document.getElementById('secretCodeOverlay');
     var secretInput = document.getElementById('secretCodeInput');
     var secretError = document.getElementById('secretCodeError');
+
+    /* ============================================================
+       HISTORY / BACK-BUTTON HANDLING
+       ------------------------------------------------------------
+       Har view change aur har modal open par ek history entry push
+       hoti hai. Mobile back dabane par browser app se bahar nahi
+       jayega — popstate fire hoga aur pichhli screen restore hogi.
+       ============================================================ */
+
+    function currentScreen() {
+        if (adminView.classList.contains('active')) return 'admin';
+        if (agentPanelView.classList.contains('active')) return 'agent';
+        if (karorpatiView.classList.contains('active')) return 'karorpati';
+        return 'lucky';
+    }
+
+    // Seed the very first history entry
+    if (!history.state || !history.state.kpView) {
+        try { history.replaceState({ kpView: currentScreen(), kpModal: null }, ''); } catch(e) {}
+    }
+
+    function pushView(screen) {
+        try { history.pushState({ kpView: screen, kpModal: null }, ''); } catch(e) {}
+    }
+
+    function pushModal(modalId) {
+        try { history.pushState({ kpView: currentScreen(), kpModal: modalId }, ''); } catch(e) {}
+    }
+
+    function applyScreen(screen) {
+        luckyView.classList.remove('active');
+        karorpatiView.classList.remove('active');
+        agentPanelView.classList.remove('active');
+        adminView.classList.remove('active');
+        switchLucky.classList.remove('active');
+        switchKarorpati.classList.remove('active');
+        switchAgent.classList.remove('active');
+        newAdminBtn.classList.remove('active');
+
+        if (screen === 'admin') {
+            adminView.classList.add('active');
+            newAdminBtn.classList.add('active');
+        } else if (screen === 'agent') {
+            agentPanelView.classList.add('active');
+            switchAgent.classList.add('active');
+        } else if (screen === 'karorpati') {
+            karorpatiView.classList.add('active');
+            switchKarorpati.classList.add('active');
+        } else {
+            luckyView.classList.add('active');
+            switchLucky.classList.add('active');
+        }
+    }
+
+    function closeAllModals() {
+        var modalIds = [
+            'luckyPrizeOverlay', 'historyOverlay', 'walletOverlay',
+            'addMoneyOverlay', 'withdrawOverlay', 'referralOverlay',
+            'secretCodeOverlay', 'addUserModal', 'addAgentModal',
+            'agentAddMoneyOverlay', 'agentWithdrawOverlay',
+            'agentBuyerOverlay'
+        ];
+        modalIds.forEach(function(id){
+            var el = document.getElementById(id);
+            if (!el) return;
+            if (el.classList.contains('active')) el.classList.remove('active');
+            if (id === 'agentBuyerOverlay' || id === 'agentAddMoneyOverlay' || id === 'agentWithdrawOverlay') {
+                if (el.style.display === 'flex' || el.style.display === 'block') el.style.display = 'none';
+            }
+        });
+        document.querySelectorAll('.modal-overlay.active, .admin-modal-overlay.active, .agent-modal-overlay.active')
+            .forEach(function(el){ el.classList.remove('active'); });
+    }
+
+    function hookModal(modalEl, modalId) {
+        if (!modalEl) return;
+        var obs = new MutationObserver(function(muts){
+            muts.forEach(function(m){
+                if (m.attributeName === 'class' || m.attributeName === 'style') {
+                    var isActive = modalEl.classList.contains('active') ||
+                                   modalEl.style.display === 'flex' ||
+                                   modalEl.style.display === 'block';
+                    if (isActive) {
+                        var st = history.state;
+                        if (!st || st.kpModal !== modalId) {
+                            pushModal(modalId);
+                        }
+                    }
+                }
+            });
+        });
+        obs.observe(modalEl, { attributes: true, attributeFilter: ['class', 'style'] });
+    }
+
+    hookModal(document.getElementById('luckyPrizeOverlay'), 'luckyPrizeOverlay');
+    hookModal(document.getElementById('historyOverlay'), 'historyOverlay');
+    hookModal(document.getElementById('walletOverlay'), 'walletOverlay');
+    hookModal(document.getElementById('addMoneyOverlay'), 'addMoneyOverlay');
+    hookModal(document.getElementById('withdrawOverlay'), 'withdrawOverlay');
+    hookModal(document.getElementById('referralOverlay'), 'referralOverlay');
+    hookModal(document.getElementById('secretCodeOverlay'), 'secretCodeOverlay');
+    hookModal(document.getElementById('addUserModal'), 'addUserModal');
+    hookModal(document.getElementById('addAgentModal'), 'addAgentModal');
+    hookModal(document.getElementById('agentAddMoneyOverlay'), 'agentAddMoneyOverlay');
+    hookModal(document.getElementById('agentWithdrawOverlay'), 'agentWithdrawOverlay');
+
+    // The agent "buyer details" overlay is created dynamically by the agent script.
+    // Re-hook it whenever it appears in the DOM.
+    function hookDynamicBuyerOverlay() {
+        var el = document.getElementById('agentBuyerOverlay');
+        if (el && !el._kpHooked) {
+            el._kpHooked = true;
+            hookModal(el, 'agentBuyerOverlay');
+        }
+    }
+    setInterval(hookDynamicBuyerOverlay, 1500);
+
+    window.addEventListener('popstate', function(e){
+        var st = e.state || {};
+
+        if (st.kpModal) {
+            // Back navigated to a state where a specific modal was open.
+            closeAllModals();
+            var target = document.getElementById(st.kpModal);
+            if (target) {
+                if (st.kpModal === 'agentBuyerOverlay') target.style.display = 'flex';
+                else target.classList.add('active');
+            }
+            if (st.kpView) applyScreen(st.kpView);
+            return;
+        }
+
+        if (st.kpView) {
+            closeAllModals();
+            applyScreen(st.kpView);
+        } else {
+            applyScreen('lucky');
+            try { history.pushState({ kpView: 'lucky', kpModal: null }, ''); } catch(err) {}
+        }
+    });
+
+    /* ============================================================
+       SECRET-CODE ADMIN ACCESS (unchanged behaviour)
+       ============================================================ */
 
     var clickCount = 0, clickTimer = null;
     appLogo.addEventListener('click', function(){
@@ -3831,19 +3975,14 @@ var KARO_DB = (function(){
         secretError.textContent = '';
         secretOverlay.classList.add('active');
         setTimeout(function(){ secretInput.focus(); }, 100);
+        // hookModal above will push a history entry for this overlay.
     });
 
     function tryUnlock() {
         if (secretInput.value.trim() === SECRET_CODE) {
             secretOverlay.classList.remove('active');
-            luckyView.classList.remove('active');
-            karorpatiView.classList.remove('active');
-            agentPanelView.classList.remove('active');
-            adminView.classList.add('active');
-            switchLucky.classList.remove('active');
-            switchKarorpati.classList.remove('active');
-            switchAgent.classList.remove('active');
-            newAdminBtn.classList.add('active');
+            applyScreen('admin');
+            pushView('admin');
         } else {
             secretError.textContent = '❌ Wrong code!';
             secretInput.value = '';
@@ -3854,19 +3993,25 @@ var KARO_DB = (function(){
     document.getElementById('secretCodeCancelBtn').addEventListener('click', function(){ secretOverlay.classList.remove('active'); });
     secretOverlay.addEventListener('click', function(e){ if (e.target === secretOverlay) secretOverlay.classList.remove('active'); });
 
-    function clearAll() {
-        luckyView.classList.remove('active');
-        karorpatiView.classList.remove('active');
-        agentPanelView.classList.remove('active');
-        adminView.classList.remove('active');
-        switchLucky.classList.remove('active');
-        switchKarorpati.classList.remove('active');
-        switchAgent.classList.remove('active');
-        newAdminBtn.classList.remove('active');
-    }
-    switchLucky.addEventListener('click', function(){ clearAll(); luckyView.classList.add('active'); switchLucky.classList.add('active'); });
-    switchKarorpati.addEventListener('click', function(){ clearAll(); karorpatiView.classList.add('active'); switchKarorpati.classList.add('active'); });
-    switchAgent.addEventListener('click', function(){ clearAll(); agentPanelView.classList.add('active'); switchAgent.classList.add('active'); });
+    /* ============================================================
+       VIEW SWITCHER BUTTONS — push history too
+       ============================================================ */
+
+    switchLucky.addEventListener('click', function(){
+        if (currentScreen() === 'lucky') return;
+        applyScreen('lucky');
+        pushView('lucky');
+    });
+    switchKarorpati.addEventListener('click', function(){
+        if (currentScreen() === 'karorpati') return;
+        applyScreen('karorpati');
+        pushView('karorpati');
+    });
+    switchAgent.addEventListener('click', function(){
+        if (currentScreen() === 'agent') return;
+        applyScreen('agent');
+        pushView('agent');
+    });
 })();
 </script>
 
