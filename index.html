@@ -1155,7 +1155,12 @@
         <div class="admin-panel" id="panelBoxResults" style="display:none;">
             <h3><i class="fas fa-box-open"></i> Box Results — Manual Prize Setting</h3>
             <p style="color:#aab; font-size:13px; margin-bottom:14px;">Yahan pending box purchases dikhengi. Prize amount set karke <b style="color:#4caf50;">"Set"</b> click karein.<br><b style="color:#4caf50;">Amount > 0 = WON</b> (wallet auto credit) &nbsp;|&nbsp; <b style="color:#f44336;">Amount 0 = LOST</b></p>
-            <div class="admin-search-row"><input type="text" id="boxResultSearch" placeholder="🔍 Search by username or box code..." /><button id="refreshBoxResultsBtn"><i class="fas fa-sync-alt"></i> Refresh</button></div>
+            <div class="admin-search-row">
+                <input type="text" id="boxResultSearch" placeholder="🔍 Search by username or box code..." />
+                <input type="date" id="boxResultDate" style="flex:0 0 170px; min-width:150px; padding:10px 14px; border-radius:12px; border:1px solid #3a4055; background:#121724; color:#fff; font-size:14px; outline:none;" />
+                <button id="refreshBoxResultsBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button id="boxResultAllDatesBtn" style="background:linear-gradient(135deg,#4fc3f7,#0288d1);"><i class="fas fa-calendar"></i> All</button>
+            </div>
             <div class="admin-table-wrap">
                 <table><thead><tr><th>#</th><th>User/Buyer</th><th>Box Code</th><th>Amount</th><th>Status</th><th>Prize (₹)</th><th>Date</th><th>Action</th></tr></thead><tbody id="boxResultsTableBody"></tbody></table>
             </div>
@@ -1172,7 +1177,12 @@
                 <div class="ns-summary-card red"><div class="ns-value" id="nsLeastSold">-</div><div class="ns-label">Least Sold</div></div>
                 <div class="ns-summary-card orange"><div class="ns-value" id="nsTotalRevenue">₹0</div><div class="ns-label">Total Revenue</div></div>
             </div>
-            <div class="admin-search-row"><input type="text" id="nsSearchInput" placeholder="🔍 Search box code..." /><button id="nsRefreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button></div>
+            <div class="admin-search-row">
+                <input type="text" id="nsSearchInput" placeholder="🔍 Search box code..." />
+                <input type="date" id="nsDateFilter" style="flex:0 0 170px; min-width:150px; padding:10px 14px; border-radius:12px; border:1px solid #3a4055; background:#121724; color:#fff; font-size:14px; outline:none;" />
+                <button id="nsRefreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button id="nsAllDatesBtn" style="background:linear-gradient(135deg,#4fc3f7,#0288d1);"><i class="fas fa-calendar"></i> All</button>
+            </div>
             <div class="admin-table-wrap">
                 <table><thead><tr><th>#</th><th>Box Code</th><th>Times Sold</th><th>Revenue</th><th>Last Sold</th></tr></thead><tbody id="numberStatsTableBody"></tbody></table>
             </div>
@@ -1205,7 +1215,15 @@
         </div>
 
         <div class="admin-panel" id="panelRecords" style="display:none;">
-            <h3><i class="fas fa-receipt"></i> All Records</h3>
+            <h3><i class="fas fa-receipt"></i> All Records — Date-wise</h3>
+            <p style="color:#aab; font-size:13px; margin-bottom:14px;">Select a date to view that day's records. Data is stored date-wise (YYYY-MM-DD folder).</p>
+            <div class="admin-search-row">
+                <input type="date" id="recordsDateFilter" style="flex:0 0 180px; min-width:160px; padding:10px 14px; border-radius:12px; border:1px solid #3a4055; background:#121724; color:#fff; font-size:14px; outline:none;" />
+                <button id="recordsRefreshBtn"><i class="fas fa-sync-alt"></i> Load</button>
+                <button id="recordsTodayBtn" style="background:linear-gradient(135deg,#4caf50,#45a049);"><i class="fas fa-calendar-day"></i> Today</button>
+                <button id="recordsAllBtn" style="background:linear-gradient(135deg,#4fc3f7,#0288d1);"><i class="fas fa-calendar"></i> All</button>
+            </div>
+            <div id="recordsDateLabel" style="color:#ffd700; font-size:12px; margin-bottom:10px; font-weight:700;"></div>
             <div class="admin-table-wrap">
                 <table><thead><tr><th>#</th><th>User</th><th>Box</th><th>Buyer</th><th>Amount</th><th>Win</th><th>Status</th><th>Date</th></tr></thead><tbody id="recordsTableBody"></tbody></table>
             </div>
@@ -1325,7 +1343,15 @@ var db = firebase.firestore();
 const REFERRER_REWARD = 20;
 const REFEREE_REWARD = 100;
 const WELCOME_BONUS = 100;
-const REFERRAL_PURCHASE_COMMISSION_PERCENT = 5;   // 5% lifetime commission on every box purchase
+const REFERRAL_PURCHASE_COMMISSION_PERCENT = 5;
+
+function getDateKey(ts) {
+    var d = new Date(ts || Date.now());
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+}
 
 var KARO_CACHE = {
     users: {},
@@ -1348,8 +1374,45 @@ var KARO_DB = (function(){
         KARO_CACHE.users[username] = Object.assign(KARO_CACHE.users[username] || {}, data);
     }
     async function deleteUser(username) {
-        await db.collection('users').doc(username).delete();
+        /* === UPDATED: cascade delete everything related to this user/agent === */
+        try { await db.collection('users').doc(username).delete(); } catch(e) {}
         delete KARO_CACHE.users[username];
+
+        async function deleteWhere(collectionName, field, value) {
+            try {
+                var snap = await db.collection(collectionName).where(field, '==', value).get();
+                var tasks = [];
+                snap.forEach(function(doc){ tasks.push(doc.ref.delete()); });
+                if (tasks.length) await Promise.all(tasks);
+            } catch(e) { console.warn('Cascade delete on ' + collectionName + ' failed:', e); }
+        }
+
+        await deleteWhere('records', 'username', username);
+        await deleteWhere('transactions', 'username', username);
+        await deleteWhere('deposits', 'username', username);
+        await deleteWhere('withdrawals', 'username', username);
+        await deleteWhere('claims', 'username', username);
+        await deleteWhere('agentSales', 'agentUsername', username);
+        await deleteWhere('referrals', 'referrerName', username);
+        await deleteWhere('referralDevices', 'usedBy', username);
+        await deleteWhere('referralMobiles', 'usedBy', username);
+
+        // remove referral code doc if it exists
+        try {
+            var refDocSnap = await db.collection('referralCodes').doc(username).get();
+            if (refDocSnap.exists) await db.collection('referralCodes').doc(username).delete();
+            // also check by stored user's referralCode (in case different doc name)
+            var prev = KARO_CACHE.users[username];
+            if (prev && prev.referralCode) {
+                var cdoc = await db.collection('referralCodes').doc(prev.referralCode).get();
+                if (cdoc.exists && cdoc.data().uid === username) {
+                    await db.collection('referralCodes').doc(prev.referralCode).delete();
+                }
+            }
+        } catch(e) {}
+
+        // refresh local cache for records
+        await fetchRecords();
     }
     function getUser(username) { return KARO_CACHE.users[username] || null; }
     function loadUsers() { return KARO_CACHE.users; }
@@ -1367,12 +1430,20 @@ var KARO_DB = (function(){
     async function fetchRecords() {
         var snap = await db.collection('records').get();
         var records = [];
-        snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; records.push(d); });
+        snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; if (!d.dateKey) d.dateKey = getDateKey(d.timestamp); records.push(d); });
         records.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
         KARO_CACHE.records = records;
         return records;
     }
+    async function fetchRecordsByDate(dateKey) {
+        var snap = await db.collection('records').where('dateKey', '==', dateKey).get();
+        var records = [];
+        snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; records.push(d); });
+        records.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
+        return records;
+    }
     async function addRecord(record) {
+        if (!record.dateKey) record.dateKey = getDateKey(record.timestamp);
         var ref = await db.collection('records').add(record);
         record._id = ref.id;
         KARO_CACHE.records.unshift(record);
@@ -1382,6 +1453,22 @@ var KARO_DB = (function(){
         await db.collection('records').doc(id).update(updates);
         var idx = KARO_CACHE.records.findIndex(function(r){ return r._id === id; });
         if (idx !== -1) Object.assign(KARO_CACHE.records[idx], updates);
+    }
+
+    // Migration: fill dateKey for old records that don't have it
+    async function migrateRecordsDateKeys() {
+        try {
+            var snap = await db.collection('records').get();
+            var tasks = [];
+            snap.forEach(function(doc){
+                var d = doc.data();
+                if (!d.dateKey && d.timestamp) {
+                    tasks.push(doc.ref.update({ dateKey: getDateKey(d.timestamp) }));
+                }
+            });
+            if (tasks.length) await Promise.all(tasks);
+            if (tasks.length) console.log('Migrated ' + tasks.length + ' records with dateKey');
+        } catch(e) { console.warn('Migration failed:', e); }
     }
 
     function getWinnerSettings() { return KARO_CACHE.winnerSettings; }
@@ -1521,13 +1608,10 @@ var KARO_DB = (function(){
         return list;
     }
 
-    // NEW: resolve the referrer (username) of a given user.
-    // First tries user record's `referredByUid` (which stores referrer username), then falls back to referrals collection.
     async function getReferrerOf(username) {
         try {
             var user = getUser(username);
             if (user && user.referredByUid) {
-                // referredByUid was stored as referrer's username in this app
                 if (getUser(user.referredByUid)) return user.referredByUid;
             }
             var snap = await db.collection('referrals').where('referredName', '==', username).get();
@@ -1540,7 +1624,6 @@ var KARO_DB = (function(){
         return null;
     }
 
-    // NEW: credit 5% referral purchase commission to the referrer (if any)
     async function creditReferralPurchaseCommission(buyerUsername, purchaseAmount, boxCode) {
         try {
             var referrerUsername = await getReferrerOf(buyerUsername);
@@ -1601,6 +1684,8 @@ var KARO_DB = (function(){
         }
         await fetchUsers();
         await fetchRecords();
+        await migrateRecordsDateKeys();
+        await fetchRecords();
         await fetchWinnerSettings();
         await fetchLuckyDrawDate();
         KARO_CACHE.loaded = true;
@@ -1613,7 +1698,7 @@ var KARO_DB = (function(){
         });
         db.collection('records').onSnapshot(function(snap){
             var records = [];
-            snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; records.push(d); });
+            snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; if (!d.dateKey) d.dateKey = getDateKey(d.timestamp); records.push(d); });
             records.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
             KARO_CACHE.records = records;
             window.dispatchEvent(new Event('karorpati_records_updated'));
@@ -1632,7 +1717,8 @@ var KARO_DB = (function(){
     return {
         init, loadUsers, fetchUsers, saveUser, deleteUser, getUser,
         getCurrentUser, setCurrentUser,
-        getRecords, fetchRecords, addRecord, updateRecord,
+        getRecords, fetchRecords, fetchRecordsByDate, addRecord, updateRecord,
+        migrateRecordsDateKeys,
         getWinnerSettings, fetchWinnerSettings, saveWinnerSettings,
         fetchLuckyDrawDate, saveLuckyDrawDate, getLuckyDrawDate,
         updateUserBalance, getTransactions, addTransaction,
@@ -1643,7 +1729,8 @@ var KARO_DB = (function(){
         getDeviceFingerprint, lookupReferralCode,
         saveReferralRecord, getReferrals,
         getReferrerOf, creditReferralPurchaseCommission,
-        getAgents, addAgentRecord, getAgentSales
+        getAgents, addAgentRecord, getAgentSales,
+        getDateKey
     };
 })();
 </script>
@@ -2058,7 +2145,6 @@ var KARO_DB = (function(){
         toast._timer = setTimeout(function(){ toast.classList.remove('show'); }, 4000);
     }
 
-    // USER SALE — direct, no buyer form, also credits 5% referral commission
     async function executeUserSale() {
         if (isPlaying) return;
         if (selectedBox === null) { showToast('❌ Pehle box select karein', 'error'); return; }
@@ -2091,14 +2177,15 @@ var KARO_DB = (function(){
             box.revealed = true; box.pending = true; box.won = false; box.prize = 0;
             box.selected = false;
 
+            var nowTs = Date.now();
             await KARO_DB.addRecord({
                 username: currentUser.username, box_code: boxCode, box_serial: serial,
-                amount: FIXED_AMOUNT, txid: 'WALLET_' + Date.now(), timestamp: Date.now(),
+                amount: FIXED_AMOUNT, txid: 'WALLET_' + nowTs, timestamp: nowTs,
+                dateKey: getDateKey(nowTs),
                 status: 'pending', win: false, prize_amount: 0,
                 buyer_name: bName, buyer_mobile: bMobile, source: 'user'
             });
 
-            // 5% lifetime referral commission (if user has a referrer)
             await KARO_DB.creditReferralPurchaseCommission(currentUser.username, FIXED_AMOUNT, boxCode);
 
             selectedBox = null;
@@ -2700,15 +2787,16 @@ var KARO_DB = (function(){
                 status: 'sold'
             });
 
+            var nowTs = Date.now();
             await KARO_DB.addRecord({
                 username: currentAgent.username, box_code: box.code, box_serial: agentSelectedBox + 1,
-                amount: AGENT_SALE_AMOUNT, txid: 'AGENT_' + Date.now(), timestamp: Date.now(),
+                amount: AGENT_SALE_AMOUNT, txid: 'AGENT_' + nowTs, timestamp: nowTs,
+                dateKey: getDateKey(nowTs),
                 status: 'pending', win: false, prize_amount: 0,
                 buyer_name: bName, buyer_mobile: bMobile,
                 source: 'agent', agent_username: currentAgent.username
             });
 
-            // 5% lifetime referral commission to agent's referrer (if any)
             await KARO_DB.creditReferralPurchaseCommission(currentAgent.username, AGENT_SALE_AMOUNT, box.code);
 
             box.sold = true;
@@ -3112,6 +3200,7 @@ var KARO_DB = (function(){
             if (t === 'numberstats') renderNumberStats();
             if (t === 'agents') renderAgentsTable();
             if (t === 'luckydate') loadLuckyDateIntoForm();
+            if (t === 'records') renderRecordsTable();
         });
     });
 
@@ -3157,11 +3246,12 @@ var KARO_DB = (function(){
                 if (!np || np.length < 4) { showAdminToast('Too short', 'error'); return; }
                 await KARO_DB.saveUser(uname, { password: np });
             } else if (act === 'delete') {
-                if (!confirm('Delete ' + uname + '?')) return;
+                if (!confirm('DELETE ' + uname + '?\n\nYeh user ka SAARA data (records, transactions, deposits, withdrawals, agentSales, referrals) permanently delete ho jayega. Continue?')) return;
+                showAdminToast('Deleting all data for ' + uname + '...', 'info');
                 await KARO_DB.deleteUser(uname);
+                showAdminToast('✅ ' + uname + ' and all related data deleted', 'success');
             }
-            refreshStats(); renderUsersTable();
-            showAdminToast('Done', 'success');
+            refreshStats(); renderUsersTable(); renderAgentsTable(); renderRecordsTable();
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
     userSearch.addEventListener('input', renderUsersTable);
@@ -3214,9 +3304,13 @@ var KARO_DB = (function(){
                 var a = KARO_DB.getUser(uname);
                 if (!a) return;
                 if (this.dataset.aact === 'toggle') { await KARO_DB.saveUser(uname, { status: a.status === 'active' ? 'disabled' : 'active' }); }
-                else if (this.dataset.aact === 'delete') { if (!confirm('Delete agent ' + uname + '?')) return; await KARO_DB.deleteUser(uname); }
-                refreshStats(); renderAgentsTable();
-                showAdminToast('Done', 'success');
+                else if (this.dataset.aact === 'delete') {
+                    if (!confirm('DELETE agent ' + uname + '?\n\nYeh agent ka SAARA data (records, transactions, deposits, withdrawals, agentSales, referrals) permanently delete ho jayega. Continue?')) return;
+                    showAdminToast('Deleting all data for ' + uname + '...', 'info');
+                    await KARO_DB.deleteUser(uname);
+                    showAdminToast('✅ ' + uname + ' and all related data deleted', 'success');
+                }
+                refreshStats(); renderAgentsTable(); renderUsersTable(); renderRecordsTable();
             });
         });
     }
@@ -3287,14 +3381,21 @@ var KARO_DB = (function(){
 
     var boxResultSearch = document.getElementById('boxResultSearch');
     var refreshBoxResultsBtn = document.getElementById('refreshBoxResultsBtn');
+    var boxResultDate = document.getElementById('boxResultDate');
+    var boxResultAllDatesBtn = document.getElementById('boxResultAllDatesBtn');
 
     async function renderBoxResultsTable() {
         var tb = document.getElementById('boxResultsTableBody');
         if (!tb) return;
         tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#889;">Loading...</td></tr>';
         try {
-            await KARO_DB.fetchRecords();
-            var records = KARO_DB.getRecords();
+            var records;
+            if (boxResultDate.value) {
+                records = await KARO_DB.fetchRecordsByDate(boxResultDate.value);
+            } else {
+                await KARO_DB.fetchRecords();
+                records = KARO_DB.getRecords();
+            }
             var q = (boxResultSearch?.value || '').trim().toLowerCase();
             if (q) records = records.filter(function(r){ return (r.username || '').toLowerCase().includes(q) || (r.box_code || '').toLowerCase().includes(q) || (r.buyer_name || '').toLowerCase().includes(q); });
             tb.innerHTML = '';
@@ -3354,17 +3455,26 @@ var KARO_DB = (function(){
     }
     if (refreshBoxResultsBtn) refreshBoxResultsBtn.addEventListener('click', renderBoxResultsTable);
     if (boxResultSearch) boxResultSearch.addEventListener('input', renderBoxResultsTable);
+    if (boxResultDate) boxResultDate.addEventListener('change', renderBoxResultsTable);
+    if (boxResultAllDatesBtn) boxResultAllDatesBtn.addEventListener('click', function(){ boxResultDate.value = ''; renderBoxResultsTable(); });
 
     var nsSearchInput = document.getElementById('nsSearchInput');
     var nsRefreshBtn = document.getElementById('nsRefreshBtn');
+    var nsDateFilter = document.getElementById('nsDateFilter');
+    var nsAllDatesBtn = document.getElementById('nsAllDatesBtn');
 
     async function renderNumberStats() {
         var tb = document.getElementById('numberStatsTableBody');
         if (!tb) return;
         tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#889;">Loading...</td></tr>';
         try {
-            await KARO_DB.fetchRecords();
-            var records = KARO_DB.getRecords();
+            var records;
+            if (nsDateFilter.value) {
+                records = await KARO_DB.fetchRecordsByDate(nsDateFilter.value);
+            } else {
+                await KARO_DB.fetchRecords();
+                records = KARO_DB.getRecords();
+            }
             var codeMap = {};
             records.forEach(function(r) {
                 var code = r.box_code || '';
@@ -3411,6 +3521,8 @@ var KARO_DB = (function(){
     }
     if (nsRefreshBtn) nsRefreshBtn.addEventListener('click', renderNumberStats);
     if (nsSearchInput) nsSearchInput.addEventListener('input', renderNumberStats);
+    if (nsDateFilter) nsDateFilter.addEventListener('change', renderNumberStats);
+    if (nsAllDatesBtn) nsAllDatesBtn.addEventListener('click', function(){ nsDateFilter.value = ''; renderNumberStats(); });
 
     async function renderClaimsTable() {
         var tb = document.getElementById('claimsTableBody');
@@ -3522,12 +3634,31 @@ var KARO_DB = (function(){
         } catch (e) { tb.innerHTML = '<tr><td colspan="7" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>'; }
     }
 
-    function renderRecordsTable() {
-        var records = KARO_DB.getRecords();
+    /* === UPDATED: Records are now shown date-wise === */
+    var recordsDateFilter = document.getElementById('recordsDateFilter');
+    var recordsRefreshBtn = document.getElementById('recordsRefreshBtn');
+    var recordsTodayBtn = document.getElementById('recordsTodayBtn');
+    var recordsAllBtn = document.getElementById('recordsAllBtn');
+    var recordsDateLabel = document.getElementById('recordsDateLabel');
+
+    if (recordsDateFilter) recordsDateFilter.value = getDateKey(Date.now());
+
+    async function renderRecordsTable() {
+        var records;
+        var dateKey = recordsDateFilter ? recordsDateFilter.value : '';
+        if (dateKey) {
+            records = await KARO_DB.fetchRecordsByDate(dateKey);
+        } else {
+            await KARO_DB.fetchRecords();
+            records = KARO_DB.getRecords();
+        }
+        if (recordsDateLabel) {
+            recordsDateLabel.textContent = dateKey ? ('📁 Showing folder: ' + dateKey) : ('📁 Showing all records (' + records.length + ')');
+        }
         var tb = document.getElementById('recordsTableBody');
         tb.innerHTML = '';
         document.getElementById('recordsEmpty').style.display = records.length === 0 ? 'block' : 'none';
-        records.slice(0, 100).forEach(function(r, i){
+        records.slice(0, 200).forEach(function(r, i){
             var tr = document.createElement('tr');
             var date = new Date(r.timestamp).toLocaleString('en-IN');
             var st = r.status || 'pending';
@@ -3546,6 +3677,10 @@ var KARO_DB = (function(){
             tb.appendChild(tr);
         });
     }
+    if (recordsRefreshBtn) recordsRefreshBtn.addEventListener('click', renderRecordsTable);
+    if (recordsDateFilter) recordsDateFilter.addEventListener('change', renderRecordsTable);
+    if (recordsTodayBtn) recordsTodayBtn.addEventListener('click', function(){ recordsDateFilter.value = getDateKey(Date.now()); renderRecordsTable(); });
+    if (recordsAllBtn) recordsAllBtn.addEventListener('click', function(){ recordsDateFilter.value = ''; renderRecordsTable(); });
 
     var wsDigitInputs = [document.getElementById('wsDigit0'), document.getElementById('wsDigit1'), document.getElementById('wsDigit2'), document.getElementById('wsDigit3')];
     var wsSumDisplay = document.getElementById('wsSumDisplay');
