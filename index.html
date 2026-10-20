@@ -191,7 +191,7 @@
     gap: 10px; margin: 0 0 22px; flex-wrap: wrap;
 }
 #soldCounterStrip .sc-card {
-    flex: 1; min-width: 96px; max-width: 150px;
+    flex: 1; min-width: 110px; max-width: 180px;
     background: linear-gradient(145deg, rgba(31,31,46,0.95), rgba(13,13,22,0.95));
     border: 1px solid rgba(212,160,23,0.35);
     border-radius: 16px; padding: 12px 8px; text-align: center;
@@ -215,7 +215,6 @@
     color: #cfc1a6; opacity: 0.85; margin-top: 5px; font-weight: 700;
 }
 #soldCounterStrip .sc-card.green .sc-value { color: #4caf50; text-shadow: 0 0 18px rgba(76,175,80,0.5); }
-#soldCounterStrip .sc-card.blue  .sc-value { color: #4fc3f7; text-shadow: 0 0 18px rgba(79,195,247,0.5); }
 #soldCounterStrip .sc-live-dot {
     display: inline-block; width: 7px; height: 7px; border-radius: 50%;
     background: #4caf50; margin-right: 4px; vertical-align: middle;
@@ -227,7 +226,7 @@
 }
 @media (max-width: 520px) {
     #soldCounterStrip { gap: 6px; }
-    #soldCounterStrip .sc-card { min-width: 72px; padding: 9px 4px; border-radius: 12px; }
+    #soldCounterStrip .sc-card { min-width: 80px; padding: 9px 4px; border-radius: 12px; }
     #soldCounterStrip .sc-value { font-size: 1.2rem; }
     #soldCounterStrip .sc-label { font-size: 0.5rem; letter-spacing: 1px; }
 }
@@ -973,10 +972,6 @@
             <div class="sc-card green">
                 <div class="sc-value" id="scTodaySold">0</div>
                 <div class="sc-label">Today</div>
-            </div>
-            <div class="sc-card blue">
-                <div class="sc-value" id="scUniqueCodes">0</div>
-                <div class="sc-label">Numbers Hit</div>
             </div>
         </div>
         <!-- ===== END FAKE SOLD COUNTER STRIP ===== -->
@@ -1779,6 +1774,17 @@ var KARO_DB = (function(){
     }
     function getLuckyDrawDate() { return KARO_CACHE.luckyDrawDate; }
 
+    async function fetchFakeCounter() {
+        try {
+            var doc = await db.collection('settings').doc('fakeCounter').get();
+            return doc.exists ? doc.data() : null;
+        } catch(e) { return null; }
+    }
+    async function saveFakeCounter(data) {
+        await db.collection('settings').doc('fakeCounter').set(data);
+        return data;
+    }
+
     async function updateUserBalance(username, delta) {
         var user = KARO_CACHE.users[username];
         if (!user) throw new Error('User not found');
@@ -2005,6 +2011,7 @@ var KARO_DB = (function(){
         migrateRecordsDateKeys,
         getWinnerSettings, fetchWinnerSettings, saveWinnerSettings,
         fetchLuckyDrawDate, saveLuckyDrawDate, getLuckyDrawDate,
+        fetchFakeCounter, saveFakeCounter,
         updateUserBalance, getTransactions, addTransaction,
         addDeposit, getDeposits, updateDeposit,
         addClaim, getClaims, updateClaim,
@@ -2204,23 +2211,24 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- ===== FAKE SOLD COUNTER LOGIC (daily rotating, min 1,00,000) ===== -->
+<!-- ===== FAKE SOLD COUNTER LOGIC (Firestore-synced, +5 min bump, daily base) ===== -->
 <script>
 (function(){
-    var elTotal  = document.getElementById('scTotalSold');
-    var elToday  = document.getElementById('scTodaySold');
-    var elUnique = document.getElementById('scUniqueCodes');
+    var elTotal = document.getElementById('scTotalSold');
+    var elToday = document.getElementById('scTodaySold');
     if (!elTotal) return;
 
-    var MIN_BASE = 100000;          // minimum guaranteed daily display
-    var STORAGE_KEY = 'kp_fake_sold_counter';
+    var MIN_BASE      = 100000;
+    var MAX_BASE      = 250000;
+    var BUMP_EVERY_MS = 5 * 60 * 1000;
+    var BUMP_MIN      = 40;
+    var BUMP_MAX      = 140;
 
     function todayKey() {
         var d = new Date();
         return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
     }
 
-    // Deterministic pseudo-random from a string seed (same date => same number all day)
     function seedRandom(seedStr) {
         var h = 2166136261;
         for (var i = 0; i < seedStr.length; i++) {
@@ -2236,33 +2244,14 @@ var KARO_DB = (function(){
         };
     }
 
-    // Build today's fake stats ONCE per day, persist in localStorage
-    function getDailyStats() {
-        var tk = todayKey();
-        var raw = null;
-        try { raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch(e) {}
-
-        if (raw && raw.dateKey === tk) return raw;
-
+    function buildBaseForDate(tk) {
         var rnd = seedRandom('kp-sold-' + tk);
-
-        // Total: 1,00,000 to 2,50,000
-        var total = MIN_BASE + Math.floor(rnd() * 150000);
-
-        // Today: 40% – 75% of total
-        var today = Math.floor(total * (0.40 + rnd() * 0.35));
-
-        // Numbers hit: 60 – 100 unique codes out of 100
-        var unique = 60 + Math.floor(rnd() * 41);
-
-        var stats = { dateKey: tk, total: total, today: today, unique: unique };
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(stats)); } catch(e) {}
-        return stats;
+        var baseTotal = MIN_BASE + Math.floor(rnd() * (MAX_BASE - MIN_BASE));
+        var baseToday = Math.floor(baseTotal * (0.35 + rnd() * 0.25));
+        return { dateKey: tk, baseTotal: baseTotal, baseToday: baseToday };
     }
 
-    function formatIndian(n) {
-        return n.toLocaleString('en-IN');
-    }
+    function formatIndian(n) { return Number(n).toLocaleString('en-IN'); }
 
     function bump(el) {
         el.classList.add('bump');
@@ -2270,36 +2259,63 @@ var KARO_DB = (function(){
     }
 
     function animateTo(el, target, suffix) {
-        var start = 0;
-        var steps = 40;
-        var diff = target - start;
-        var step = diff / steps, cur = start, i = 0;
+        var startVal = parseInt(el.textContent.replace(/[^0-9]/g,'')) || 0;
+        if (startVal === target) { el.textContent = formatIndian(target) + (suffix||''); return; }
+        var diff = target - startVal;
+        var steps = 30;
+        var step = diff / steps, cur = startVal, i = 0;
         var iv = setInterval(function(){
-            i++;
-            cur += step;
+            i++; cur += step;
             if (i >= steps) {
-                cur = target;
                 clearInterval(iv);
                 el.textContent = formatIndian(target) + (suffix || '');
                 bump(el);
             } else {
                 el.textContent = formatIndian(Math.round(cur)) + (suffix || '');
             }
-        }, 28);
+        }, 30);
     }
 
-    var lastRenderedDate = null;
+    function bumpsSinceMidnight() {
+        var now = new Date();
+        var midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+        var elapsed = now.getTime() - midnight.getTime();
+        return Math.floor(elapsed / BUMP_EVERY_MS);
+    }
+
+    function computeCurrent(base) {
+        var bumps = bumpsSinceMidnight();
+        var rnd = seedRandom(base.dateKey + '-bumps');
+        var totalExtra = 0, todayExtra = 0;
+        for (var i = 0; i < bumps; i++) {
+            var r = rnd();
+            var inc = BUMP_MIN + Math.floor(r * (BUMP_MAX - BUMP_MIN + 1));
+            totalExtra += inc;
+            todayExtra += inc;
+        }
+        return {
+            dateKey: base.dateKey,
+            total: base.baseTotal + totalExtra,
+            today: base.baseToday + todayExtra
+        };
+    }
+
+    var lastPaintedKey = null;
+
+    function paint(stats) {
+        if (!stats) return;
+        var paintKey = stats.dateKey + ':' + stats.total;
+        if (lastPaintedKey === paintKey) return;
+        lastPaintedKey = paintKey;
+        animateTo(elTotal, stats.total, '+');
+        if (elToday) elToday.textContent = formatIndian(stats.today);
+    }
 
     function render() {
-        var s = getDailyStats();
-        var isNewDay = (lastRenderedDate !== s.dateKey);
-
-        if (isNewDay) {
-            animateTo(elTotal, s.total, '+');
-            if (elToday)  elToday.textContent  = formatIndian(s.today);
-            if (elUnique) elUnique.textContent = s.unique;
-            lastRenderedDate = s.dateKey;
-        }
+        var tk = todayKey();
+        var base = buildBaseForDate(tk);
+        var cur = computeCurrent(base);
+        paint(cur);
     }
 
     render();
@@ -2309,17 +2325,25 @@ var KARO_DB = (function(){
         if (!document.hidden) render();
     });
 
-    // Slow "live ticker" — Today's count creeps up slightly every few seconds (cosmetic only)
-    setInterval(function(){
-        if (!elToday) return;
-        var s = getDailyStats();
-        var current = parseInt(elToday.textContent.replace(/[^0-9]/g, '')) || 0;
-        var maxAllowed = Math.floor(s.total * 0.95);
-        if (current < maxAllowed) {
-            var inc = Math.floor(Math.random() * 3) + 1;
-            elToday.textContent = formatIndian(current + inc);
-        }
-    }, 7000);
+    async function syncBase() {
+        try {
+            var remote = await KARO_DB.fetchFakeCounter();
+            var tk = todayKey();
+            if (!remote || remote.dateKey !== tk) {
+                var base = buildBaseForDate(tk);
+                try { await KARO_DB.saveFakeCounter(base); } catch(e) {}
+            }
+        } catch(e) {}
+    }
+    window.addEventListener('karorpati_db_ready', syncBase);
+
+    try {
+        db.collection('settings').doc('fakeCounter').onSnapshot(function(doc){
+            if (!doc.exists) return;
+            var d = doc.data();
+            if (d && d.dateKey === todayKey()) render();
+        });
+    } catch(e) {}
 })();
 </script>
 <!-- ===== END FAKE SOLD COUNTER LOGIC ===== -->
@@ -4063,9 +4087,6 @@ var KARO_DB = (function(){
         } catch (e) { tb.innerHTML = '<tr><td colspan="7" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>'; }
     }
 
-    /* ============================================================
-       SUPPORT TICKETS — FIXED (full message + screenshots modal)
-       ============================================================ */
     var supportSearch = document.getElementById('supportSearch');
     var supportRefreshBtn = document.getElementById('supportRefreshBtn');
     var supportDetailOverlay = document.getElementById('supportDetailOverlay');
@@ -4364,9 +4385,6 @@ var KARO_DB = (function(){
 <!-- HELP / SUPPORT FORM LOGIC (with image compression) -->
 <script>
 (function(){
-    /* ============================================================
-       EMAILJS CONFIG — Replace these 3 values (optional)
-       ============================================================ */
     var EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
     var EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
     var EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
