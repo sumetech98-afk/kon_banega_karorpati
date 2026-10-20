@@ -1188,6 +1188,7 @@
                 <div class="agent-user">
                     <span class="badge" id="agentBadge">agent</span>
                     <span style="background:#4caf50; color:#fff; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;"><i class="fas fa-wallet"></i> ₹<span id="agentWalletBalHeader">0</span></span>
+                    <button id="agentReferBtn" style="background:linear-gradient(135deg,#9c27b0,#e91e63); color:#fff; border:none; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:5px;"><i class="fas fa-gift"></i> Refer &amp; Earn</button>
                     <button id="agentLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
             </div>
@@ -1275,6 +1276,45 @@
             <div class="inp-group"><label><i class="fas fa-building"></i> Bank Name *</label><input type="text" id="agentWdBank" placeholder="e.g. State Bank of India" /></div>
             <button class="submit-btn" id="agentWdSubmitBtn" style="background:linear-gradient(135deg,#ff9800,#f57c00); color:#fff;"><i class="fas fa-paper-plane"></i> Submit Withdrawal</button>
             <button class="modal-close-btn" id="agentWdCloseBtn">Close</button>
+        </div>
+    </div>
+
+    <!-- AGENT REFERRAL MODAL -->
+    <div class="agent-modal-overlay" id="agentReferralOverlay">
+        <div class="agent-modal-panel" style="border-color:#9c27b0; max-width:480px;">
+            <h2 style="color:#e91e63;"><i class="fas fa-gift"></i> Refer &amp; Earn</h2>
+            <p style="font-size:12px; opacity:0.8; text-align:center; margin-bottom:16px;">
+                Apna code share karo — jab bhi koi aapke referral se signup karke <b style="color:#66bb6a;">box purchase</b> karega,
+                aapko <b style="color:#66bb6a;">₹10 commission</b> milega per box!
+            </p>
+
+            <div style="background:linear-gradient(135deg,rgba(156,39,176,0.15),rgba(233,30,99,0.15)); border:1px solid rgba(233,30,99,0.4); padding:15px; border-radius:12px; margin-bottom:15px;">
+                <div style="font-size:13px; font-weight:700; color:#e91e63; margin-bottom:10px;">🔑 Your Agent Referral Code</div>
+                <div style="display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.4); padding:12px 15px; border-radius:10px;">
+                    <div id="agentMyReferralCode" style="flex:1; font-family:monospace; font-weight:900; color:#feca57; font-size:16px; letter-spacing:2px; word-break:break-all;">Loading...</div>
+                    <button id="agentCopyRefCodeBtn" style="background:#2196f3; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">📋 Copy</button>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <div style="flex:1; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:center;">
+                    <div style="font-size:22px; font-weight:900; color:#feca57;" id="agentRefTotalCount">0</div>
+                    <div style="font-size:10px; opacity:0.7; text-transform:uppercase; letter-spacing:1px;">Total Referrals</div>
+                </div>
+                <div style="flex:1; background:rgba(0,0,0,0.3); padding:12px; border-radius:10px; text-align:center;">
+                    <div style="font-size:22px; font-weight:900; color:#66bb6a;" id="agentRefTotalEarned">₹0</div>
+                    <div style="font-size:10px; opacity:0.7; text-transform:uppercase; letter-spacing:1px;">Total Earned</div>
+                </div>
+            </div>
+
+            <div style="font-size:12px; font-weight:600; margin-bottom:8px; opacity:0.8;">👥 Your Referrals:</div>
+            <div id="agentRefList" style="max-height:180px; overflow-y:auto; margin-bottom:15px;"></div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                <button id="agentRefShareWhatsAppBtn" style="padding:12px; border:none; border-radius:10px; background:linear-gradient(135deg,#25D366,#128C7E); color:#fff; font-weight:700; font-size:13px; cursor:pointer;">💬 WhatsApp</button>
+                <button id="agentRefShareNativeBtn" style="padding:12px; border:none; border-radius:10px; background:linear-gradient(135deg,#feca57,#ff6b6b); color:#111; font-weight:700; font-size:13px; cursor:pointer;">📤 Share</button>
+            </div>
+            <button class="modal-close-btn" id="agentReferralCloseBtn">Close</button>
         </div>
     </div>
 </div>
@@ -1464,7 +1504,7 @@
         <div class="admin-panel" id="panelReferrals" style="display:none;">
             <h3><i class="fas fa-share-alt"></i> Referral Records</h3>
             <div class="admin-table-wrap">
-                <table><thead><tr><th>#</th><th>Referrer</th><th>Referred User</th><th>Referrer Reward</th><th>Referee Reward</th><th>Mobile</th><th>Date</th></tr></thead><tbody id="referralsTableBody"></tbody></table>
+                <table><thead><tr><th>#</th><th>Referrer</th><th>Type</th><th>Referred User</th><th>Referrer Reward</th><th>Referee Reward</th><th>Mobile</th><th>Date</th></tr></thead><tbody id="referralsTableBody"></tbody></table>
             </div>
             <div class="empty-state" id="referralsEmpty" style="display:none;">No referrals yet.</div>
         </div>
@@ -1628,6 +1668,7 @@ const REFERRER_REWARD = 20;
 const REFEREE_REWARD = 100;
 const WELCOME_BONUS = 100;
 const REFERRAL_PURCHASE_COMMISSION_PERCENT = 5;
+const AGENT_REFERRAL_COMMISSION = 10; // ⭐ NEW: Agent referral per box commission
 
 function getDateKey(ts) {
     var d = new Date(ts || Date.now());
@@ -1688,6 +1729,12 @@ var KARO_DB = (function(){
                 var cdoc = await db.collection('referralCodes').doc(prev.referralCode).get();
                 if (cdoc.exists && cdoc.data().uid === username) {
                     await db.collection('referralCodes').doc(prev.referralCode).delete();
+                }
+            }
+            if (prev && prev.agentReferralCode) {
+                var adoc = await db.collection('agentReferralCodes').doc(prev.agentReferralCode).get();
+                if (adoc.exists && adoc.data().uid === username) {
+                    await db.collection('agentReferralCodes').doc(prev.agentReferralCode).delete();
                 }
             }
         } catch(e) {}
@@ -1881,8 +1928,11 @@ var KARO_DB = (function(){
     async function lookupReferralCode(code) {
         try {
             var snap = await db.collection('referralCodes').doc(code).get();
-            if (!snap.exists) return null;
-            return snap.data().uid;
+            if (snap.exists) return { uid: snap.data().uid, isAgent: false };
+            // ⭐ Agent referral code check
+            var agentSnap = await db.collection('agentReferralCodes').doc(code).get();
+            if (agentSnap.exists) return { uid: agentSnap.data().uid, isAgent: true };
+            return null;
         } catch (e) { return null; }
     }
     async function saveReferralRecord(data) {
@@ -1938,6 +1988,37 @@ var KARO_DB = (function(){
             return { referrer: referrerUsername, commission: commission };
         } catch(e) {
             console.warn('Referral purchase commission failed:', e);
+            return null;
+        }
+    }
+
+    // ⭐ NEW: Agent referral commission — ₹10 per box
+    async function creditAgentReferralCommission(buyerUsername, boxCode) {
+        try {
+            var user = getUser(buyerUsername);
+            if (!user) return null;
+            var agentUsername = user.referredByAgentUid || user.referredByAgent || null;
+            if (!agentUsername) return null;
+            if (agentUsername === buyerUsername) return null;
+            var agent = getUser(agentUsername);
+            if (!agent) return null;
+            if (agent.role !== 'agent') return null;
+
+            await updateUserBalance(agentUsername, AGENT_REFERRAL_COMMISSION);
+            await saveUser(agentUsername, {
+                totalAgentReferralCommission: (agent.totalAgentReferralCommission || 0) + AGENT_REFERRAL_COMMISSION
+            });
+            await addTransaction({
+                username: agentUsername,
+                amount: AGENT_REFERRAL_COMMISSION,
+                type: 'agent_referral_commission',
+                description: '₹' + AGENT_REFERRAL_COMMISSION + ' referral commission from ' + buyerUsername + ' box ' + boxCode,
+                box_code: boxCode,
+                from_user: buyerUsername
+            });
+            return { agent: agentUsername, commission: AGENT_REFERRAL_COMMISSION };
+        } catch(e) {
+            console.warn('Agent referral commission failed:', e);
             return null;
         }
     }
@@ -2019,7 +2100,7 @@ var KARO_DB = (function(){
         generateReferralCode, reserveUniqueReferralCode,
         getDeviceFingerprint, lookupReferralCode,
         saveReferralRecord, getReferrals,
-        getReferrerOf, creditReferralPurchaseCommission,
+        getReferrerOf, creditReferralPurchaseCommission, creditAgentReferralCommission,
         getAgents, addAgentRecord, getAgentSales,
         getDateKey
     };
@@ -2211,7 +2292,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- ===== FAKE SOLD COUNTER LOGIC (Firestore-synced, +5 min bump, daily base) ===== -->
+<!-- ===== FAKE SOLD COUNTER LOGIC ===== -->
 <script>
 (function(){
     var elTotal = document.getElementById('scTotalSold');
@@ -2346,7 +2427,6 @@ var KARO_DB = (function(){
     } catch(e) {}
 })();
 </script>
-<!-- ===== END FAKE SOLD COUNTER LOGIC ===== -->
 
 <!-- KARORPATI USER SIDE -->
 <script>
@@ -2413,11 +2493,14 @@ var KARO_DB = (function(){
             if (u === 'admin') { authError.textContent = 'Reserved.'; return; }
 
             var refCode = (document.getElementById('authReferralCode')?.value || '').trim().toUpperCase();
-            var referrerUid = null, referrerData = null;
+            var referrerUid = null, referrerData = null, referrerIsAgent = false;
 
             if (refCode) {
-                var foundUid = await KARO_DB.lookupReferralCode(refCode);
-                if (!foundUid) { authError.textContent = 'Invalid referral code.'; return; }
+                var found = await KARO_DB.lookupReferralCode(refCode);
+                if (!found) { authError.textContent = 'Invalid referral code.'; return; }
+                var foundUid = found.uid;
+                referrerIsAgent = found.isAgent;
+
                 var refUser = KARO_DB.getUser(foundUid);
                 if (!refUser) { for (var k in KARO_CACHE.users) { if (KARO_CACHE.users[k].uid === foundUid) { refUser = KARO_CACHE.users[k]; break; } } }
                 if (!refUser) { authError.textContent = 'Referrer not found.'; return; }
@@ -2439,7 +2522,9 @@ var KARO_DB = (function(){
                     role: 'user', registeredAt: Date.now(),
                     balance: welcomeTotal, bonusBalance: welcomeTotal,
                     totalDeposit: 0, totalWithdraw: 0, isBanned: false,
-                    referralCode: null, referredBy: refCode || null, referredByUid: referrerUid || null
+                    referralCode: null, referredBy: refCode || null, referredByUid: referrerUid || null,
+                    referredByAgent: (referrerIsAgent && referrerData) ? referrerData.username : null,
+                    referredByAgentUid: (referrerIsAgent && referrerUid) ? referrerUid : null
                 });
 
                 try {
@@ -2453,17 +2538,23 @@ var KARO_DB = (function(){
                         await db.collection('referralDevices').doc(deviceFp2).set({ usedBy: u, time: Date.now() });
                         await db.collection('referralMobiles').doc(p).set({ usedBy: u, time: Date.now() });
 
-                        await KARO_DB.saveUser(referrerData.username, {
-                            balance: (referrerData.balance || 0) + REFERRER_REWARD,
-                            totalReferralEarned: (referrerData.totalReferralEarned || 0) + REFERRER_REWARD
-                        });
+                        // Agent ko signup pe ₹20 nahi, sirf record rakhenge (commission box purchase pe milega)
+                        if (!referrerIsAgent) {
+                            await KARO_DB.saveUser(referrerData.username, {
+                                balance: (referrerData.balance || 0) + REFERRER_REWARD,
+                                totalReferralEarned: (referrerData.totalReferralEarned || 0) + REFERRER_REWARD
+                            });
+                        }
                         await KARO_DB.saveReferralRecord({
                             referrerUid: referrerUid, referrerName: referrerData.username,
                             referrerCode: refCode, referredUid: u, referredName: u,
-                            referredMobile: p, referrerReward: REFERRER_REWARD, referredReward: REFEREE_REWARD
+                            referredMobile: p, referrerReward: referrerIsAgent ? 0 : REFERRER_REWARD, referredReward: REFEREE_REWARD,
+                            referrerIsAgent: referrerIsAgent
                         });
                         await KARO_DB.addTransaction({ username: u, amount: welcomeTotal, type: 'bonus', description: 'Welcome + Referral bonus' });
-                        await KARO_DB.addTransaction({ username: referrerData.username, amount: REFERRER_REWARD, type: 'referral', description: 'Referral earning from ' + u });
+                        if (!referrerIsAgent) {
+                            await KARO_DB.addTransaction({ username: referrerData.username, amount: REFERRER_REWARD, type: 'referral', description: 'Referral earning from ' + u });
+                        }
                         showToast('✅ Registered! ₹' + welcomeTotal + ' bonus (₹' + REFEREE_REWARD + ' locked)', 'success');
                     } catch (e) { showToast('✅ Registered! ₹' + welcomeTotal + ' bonus', 'success'); }
                 } else {
@@ -2627,6 +2718,7 @@ var KARO_DB = (function(){
             });
 
             await KARO_DB.creditReferralPurchaseCommission(currentUser.username, FIXED_AMOUNT, boxCode);
+            await KARO_DB.creditAgentReferralCommission(currentUser.username, boxCode); // ⭐ NEW
 
             selectedBox = null;
 
@@ -3019,6 +3111,14 @@ var KARO_DB = (function(){
         updateAgentWalletUI();
         await loadAgentData();
         await loadAgentTxns();
+        // ⭐ Auto-generate agent referral code if missing
+        if (!user.agentReferralCode) {
+            try {
+                var newCode = await KARO_DB.reserveUniqueReferralCode(u, u);
+                await KARO_DB.saveUser(u, { agentReferralCode: newCode });
+                await db.collection('agentReferralCodes').doc(newCode).set({ uid: u, createdAt: Date.now() });
+            } catch(e) { console.warn('Agent ref code gen failed:', e); }
+        }
     }
     agentLoginBtn.addEventListener('click', tryAgentLogin);
     agentPassIn.addEventListener('keypress', function(e){ if (e.key === 'Enter') tryAgentLogin(); });
@@ -3043,6 +3143,16 @@ var KARO_DB = (function(){
                 updateAgentWalletUI();
                 loadAgentData();
                 loadAgentTxns();
+                // ⭐ Existing agent ke liye code auto-generate
+                if (!u.agentReferralCode) {
+                    setTimeout(async function(){
+                        try {
+                            var newCode = await KARO_DB.reserveUniqueReferralCode(u.username, u.username);
+                            await KARO_DB.saveUser(u.username, { agentReferralCode: newCode });
+                            await db.collection('agentReferralCodes').doc(newCode).set({ uid: u.username, createdAt: Date.now() });
+                        } catch(e) {}
+                    }, 1000);
+                }
             }
         }
     }
@@ -3247,6 +3357,7 @@ var KARO_DB = (function(){
             });
 
             await KARO_DB.creditReferralPurchaseCommission(currentAgent.username, AGENT_SALE_AMOUNT, box.code);
+            await KARO_DB.creditAgentReferralCommission(currentAgent.username, box.code); // ⭐ NEW
 
             box.sold = true;
             box.selected = false;
@@ -3527,6 +3638,87 @@ var KARO_DB = (function(){
         }
     });
 
+    // ===== AGENT REFERRAL LOGIC =====
+    var agentReferralOverlay = document.getElementById('agentReferralOverlay');
+    var agentMyReferralCode = document.getElementById('agentMyReferralCode');
+    var agentCopyRefCodeBtn = document.getElementById('agentCopyRefCodeBtn');
+    var agentRefTotalCount = document.getElementById('agentRefTotalCount');
+    var agentRefTotalEarned = document.getElementById('agentRefTotalEarned');
+    var agentRefList = document.getElementById('agentRefList');
+    var agentRefShareWhatsAppBtn = document.getElementById('agentRefShareWhatsAppBtn');
+    var agentRefShareNativeBtn = document.getElementById('agentRefShareNativeBtn');
+    var agentReferralCloseBtn = document.getElementById('agentReferralCloseBtn');
+    var agentReferBtn = document.getElementById('agentReferBtn');
+
+    async function ensureAgentReferralCode() {
+        if (!currentAgent) return null;
+        var u = KARO_DB.getUser(currentAgent.username);
+        if (!u) return null;
+        if (u.agentReferralCode) {
+            var snap = await db.collection('agentReferralCodes').doc(u.agentReferralCode).get();
+            if (snap.exists && snap.data().uid === currentAgent.username) return u.agentReferralCode;
+        }
+        try {
+            var newCode = await KARO_DB.reserveUniqueReferralCode(u.username, currentAgent.username);
+            await KARO_DB.saveUser(currentAgent.username, { agentReferralCode: newCode });
+            await db.collection('agentReferralCodes').doc(newCode).set({ uid: currentAgent.username, createdAt: Date.now() });
+            return newCode;
+        } catch(e) { return null; }
+    }
+
+    function buildAgentReferralMessage(code) {
+        return '🎮 Karorpati Game — Khelo Aur Jeeto! 🎮\n\n💰 ₹100 Welcome Bonus FREE\n🎁 Agent Referral code use karo: *' + code + '*\n✅ Extra ₹100 bonus milega!\n💸 Real cash withdrawal to bank\n\nDownload karo aur khelo! 🚀';
+    }
+
+    async function openAgentReferralModal() {
+        if (!currentAgent) return;
+        agentReferralOverlay.classList.add('active');
+        agentMyReferralCode.textContent = 'Loading...';
+        agentRefList.innerHTML = '<div style="text-align:center; color:#889; padding:15px;">Loading...</div>';
+        var code = await ensureAgentReferralCode();
+        if (!code) { agentMyReferralCode.textContent = 'Error'; return; }
+        agentMyReferralCode.textContent = code;
+        try {
+            var snap = await db.collection('referrals').where('referrerUid', '==', currentAgent.username).get();
+            var refs = [];
+            snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; if (d.referrerIsAgent) refs.push(d); });
+            refs.sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); });
+            agentRefTotalCount.textContent = refs.length;
+            var u = KARO_DB.getUser(currentAgent.username);
+            agentRefTotalEarned.textContent = '₹' + ((u && u.totalAgentReferralCommission) || 0);
+            if (refs.length === 0) {
+                agentRefList.innerHTML = '<div style="text-align:center; color:#889; padding:15px; font-size:12px;">Abhi tak koi referral nahi.</div>';
+            } else {
+                agentRefList.innerHTML = refs.map(function(r) {
+                    return '<div style="display:flex; justify-content:space-between; padding:8px 10px; background:rgba(0,0,0,0.2); border-radius:8px; margin-bottom:6px; font-size:12px;">' +
+                        '<span>👤 <b>' + (r.referredName || '-') + '</b></span><span style="color:#66bb6a;">₹10/box</span></div>';
+                }).join('');
+            }
+        } catch(e) { agentRefList.innerHTML = '<div style="color:#f44336; text-align:center; padding:15px;">Error: ' + e.message + '</div>'; }
+    }
+
+    if (agentReferBtn) agentReferBtn.addEventListener('click', openAgentReferralModal);
+    if (agentReferralCloseBtn) agentReferralCloseBtn.addEventListener('click', function(){ agentReferralOverlay.classList.remove('active'); });
+    if (agentReferralOverlay) agentReferralOverlay.addEventListener('click', function(e){ if (e.target === agentReferralOverlay) agentReferralOverlay.classList.remove('active'); });
+
+    if (agentCopyRefCodeBtn) agentCopyRefCodeBtn.addEventListener('click', function() {
+        var code = agentMyReferralCode.textContent;
+        if (!code || code === 'Loading...' || code === 'Error') return;
+        if (navigator.clipboard) navigator.clipboard.writeText(buildAgentReferralMessage(code)).then(function(){ showAgentToast('✅ Copied!', 'success'); });
+    });
+    if (agentRefShareWhatsAppBtn) agentRefShareWhatsAppBtn.addEventListener('click', function() {
+        var code = agentMyReferralCode.textContent;
+        if (!code || code === 'Loading...' || code === 'Error') return;
+        window.open('https://wa.me/?text=' + encodeURIComponent(buildAgentReferralMessage(code)), '_blank');
+    });
+    if (agentRefShareNativeBtn) agentRefShareNativeBtn.addEventListener('click', async function() {
+        var code = agentMyReferralCode.textContent;
+        if (!code || code === 'Loading...' || code === 'Error') return;
+        var msg = buildAgentReferralMessage(code);
+        if (navigator.share) { try { await navigator.share({ title: 'Karorpati Game', text: msg }); } catch(e) {} }
+        else { if (navigator.clipboard) { navigator.clipboard.writeText(msg); showAgentToast('📋 Copied!', 'success'); } }
+    });
+
     window.addEventListener('karorpati_users_updated', function(){ if (currentAgent) { updateAgentWalletUI(); } });
     window.addEventListener('karorpati_db_ready', tryAutoLogin);
 })();
@@ -3673,11 +3865,17 @@ var KARO_DB = (function(){
             var bal = u.balance || 0;
             var bonus = u.bonusBalance || 0;
             var withdrawable = Math.max(0, bal - bonus);
+            var refDisplay = '-';
+            if (u.role === 'agent' && u.agentReferralCode) {
+                refDisplay = '<span class="ref-code-pill" style="color:#ffb300;border-color:#ffb30066;background:rgba(255,179,0,0.15);">🤝 ' + u.agentReferralCode + '</span>';
+            } else if (u.referralCode) {
+                refDisplay = '<span class="ref-code-pill">' + u.referralCode + '</span>';
+            }
             tr.innerHTML = '<td>' + (i+1) + '</td>' +
                 '<td><strong style="color:#fff;">' + u.username + '</strong></td>' +
                 '<td>' + (u.phone || '-') + '</td>' +
                 '<td style="color:#4caf50;font-weight:700;">₹' + bal + '<br><span style="font-size:10px;color:#889;">W: ₹' + withdrawable + ' B: ₹' + bonus + '</span></td>' +
-                '<td>' + (u.referralCode ? '<span class="ref-code-pill">' + u.referralCode + '</span>' : '-') + '</td>' +
+                '<td>' + refDisplay + '</td>' +
                 '<td><span class="role-pill ' + (u.role === 'admin' ? 'admin' : u.role === 'agent' ? 'agent' : '') + '">' + u.role + '</span></td>' +
                 '<td><span class="status-pill ' + (u.status === 'active' ? 'active' : 'disabled') + '">' + u.status + '</span></td>' +
                 '<td><button class="tbl-btn ' + (u.status === 'active' ? 'red' : 'green') + '" data-act="toggle" data-u="' + u.username + '"' + (isSelf ? ' disabled' : '') + '>' + (u.status === 'active' ? 'Disable' : 'Enable') + '</button>' +
@@ -3780,6 +3978,14 @@ var KARO_DB = (function(){
         if (KARO_DB.getUser(u)) { showAdminToast('Username exists', 'error'); return; }
         try {
             await KARO_DB.saveUser(u, { username: u, password: pw, phone: p, status: 'active', role: 'agent', registeredAt: Date.now(), balance: 0, bonusBalance: 0, referralCode: null });
+
+            // ⭐ Agent ke liye referral code generate karo
+            try {
+                var agentCode = await KARO_DB.reserveUniqueReferralCode(u, u);
+                await KARO_DB.saveUser(u, { agentReferralCode: agentCode });
+                await db.collection('agentReferralCodes').doc(agentCode).set({ uid: u, createdAt: Date.now() });
+            } catch(refErr) { console.warn('Agent ref code gen failed:', refErr); }
+
             addAgentModal.classList.remove('active');
             refreshStats(); renderAgentsTable();
             showAdminToast('✅ Agent created', 'success');
@@ -4064,7 +4270,7 @@ var KARO_DB = (function(){
     async function renderReferralsTable() {
         var tb = document.getElementById('referralsTableBody');
         if (!tb) return;
-        tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#889;">Loading...</td></tr>';
+        tb.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#889;">Loading...</td></tr>';
         try {
             var snap = await db.collection('referrals').get();
             var list = [];
@@ -4075,16 +4281,18 @@ var KARO_DB = (function(){
             list.forEach(function(r, i) {
                 var tr = document.createElement('tr');
                 var date = new Date(r.createdAt).toLocaleString('en-IN');
+                var typeTag = r.referrerIsAgent ? '<span style="font-size:10px;background:#ffb30033;color:#ffb300;padding:2px 6px;border-radius:6px;font-weight:700;">AGENT</span>' : '<span style="font-size:10px;background:#4fc3f733;color:#4fc3f7;padding:2px 6px;border-radius:6px;font-weight:700;">USER</span>';
                 tr.innerHTML = '<td>' + (i+1) + '</td>' +
                     '<td style="color:#e91e63;font-weight:700;">' + (r.referrerName || '-') + '<br><span style="font-size:10px;color:#feca57;font-family:monospace;">' + (r.referrerCode || '-') + '</span></td>' +
+                    '<td>' + typeTag + '</td>' +
                     '<td style="color:#fff;font-weight:700;">' + (r.referredName || '-') + '</td>' +
-                    '<td style="color:#66bb6a;font-weight:700;">₹' + (r.referrerReward || 0) + '</td>' +
+                    '<td style="color:#66bb6a;font-weight:700;">' + (r.referrerIsAgent ? '₹10/box' : '₹' + (r.referrerReward || 0)) + '</td>' +
                     '<td style="color:#feca57;font-weight:700;">₹' + (r.referredReward || 0) + ' 🔒</td>' +
                     '<td style="font-family:monospace;font-size:11px;">' + (r.referredMobile || '-') + '</td>' +
                     '<td style="font-size:11px;">' + date + '</td>';
                 tb.appendChild(tr);
             });
-        } catch (e) { tb.innerHTML = '<tr><td colspan="7" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>'; }
+        } catch (e) { tb.innerHTML = '<tr><td colspan="8" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>'; }
     }
 
     var supportSearch = document.getElementById('supportSearch');
@@ -4382,7 +4590,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- HELP / SUPPORT FORM LOGIC (with image compression) -->
+<!-- HELP / SUPPORT FORM LOGIC -->
 <script>
 (function(){
     var EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
@@ -4633,14 +4841,14 @@ var KARO_DB = (function(){
             'luckyPrizeOverlay', 'historyOverlay', 'walletOverlay',
             'addMoneyOverlay', 'withdrawOverlay', 'referralOverlay',
             'secretCodeOverlay', 'addUserModal', 'addAgentModal',
-            'agentAddMoneyOverlay', 'agentWithdrawOverlay',
+            'agentAddMoneyOverlay', 'agentWithdrawOverlay', 'agentReferralOverlay',
             'agentBuyerOverlay', 'supportDetailOverlay', 'supportImageZoomOverlay'
         ];
         modalIds.forEach(function(id){
             var el = document.getElementById(id);
             if (!el) return;
             if (el.classList.contains('active')) el.classList.remove('active');
-            if (id === 'agentBuyerOverlay' || id === 'agentAddMoneyOverlay' || id === 'agentWithdrawOverlay') {
+            if (id === 'agentBuyerOverlay' || id === 'agentAddMoneyOverlay' || id === 'agentWithdrawOverlay' || id === 'agentReferralOverlay') {
                 if (el.style.display === 'flex' || el.style.display === 'block') el.style.display = 'none';
             }
         });
@@ -4679,6 +4887,7 @@ var KARO_DB = (function(){
     hookModal(document.getElementById('addAgentModal'), 'addAgentModal');
     hookModal(document.getElementById('agentAddMoneyOverlay'), 'agentAddMoneyOverlay');
     hookModal(document.getElementById('agentWithdrawOverlay'), 'agentWithdrawOverlay');
+    hookModal(document.getElementById('agentReferralOverlay'), 'agentReferralOverlay');
     hookModal(document.getElementById('supportDetailOverlay'), 'supportDetailOverlay');
     hookModal(document.getElementById('supportImageZoomOverlay'), 'supportImageZoomOverlay');
 
