@@ -185,6 +185,53 @@
 }
 #luckyView .btn-prizes:hover { background: rgba(255,215,0,0.15); border-color: #ffd700; }
 
+/* ===== FAKE SOLD COUNTER STRIP ===== */
+#soldCounterStrip {
+    display: flex; justify-content: center; align-items: stretch;
+    gap: 10px; margin: 0 0 22px; flex-wrap: wrap;
+}
+#soldCounterStrip .sc-card {
+    flex: 1; min-width: 96px; max-width: 150px;
+    background: linear-gradient(145deg, rgba(31,31,46,0.95), rgba(13,13,22,0.95));
+    border: 1px solid rgba(212,160,23,0.35);
+    border-radius: 16px; padding: 12px 8px; text-align: center;
+    box-shadow: inset 0 -3px 0 #7a5f0a, 0 6px 18px rgba(0,0,0,0.5);
+    position: relative; overflow: hidden;
+}
+#soldCounterStrip .sc-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(247,212,74,0.14), transparent 70%);
+    pointer-events: none;
+}
+#soldCounterStrip .sc-value {
+    font-size: 1.65rem; font-weight: 900; color: #f7d44a;
+    text-shadow: 0 0 18px rgba(247,212,74,0.55);
+    font-variant-numeric: tabular-nums; line-height: 1.1;
+    transition: transform 0.25s ease;
+}
+#soldCounterStrip .sc-value.bump { transform: scale(1.22); }
+#soldCounterStrip .sc-label {
+    font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase;
+    color: #cfc1a6; opacity: 0.85; margin-top: 5px; font-weight: 700;
+}
+#soldCounterStrip .sc-card.green .sc-value { color: #4caf50; text-shadow: 0 0 18px rgba(76,175,80,0.5); }
+#soldCounterStrip .sc-card.blue  .sc-value { color: #4fc3f7; text-shadow: 0 0 18px rgba(79,195,247,0.5); }
+#soldCounterStrip .sc-live-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: #4caf50; margin-right: 4px; vertical-align: middle;
+    animation: scPulse 1.6s infinite;
+}
+@keyframes scPulse {
+    0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(76,175,80,0.6); }
+    50%     { opacity: 0.5; box-shadow: 0 0 0 6px rgba(76,175,80,0); }
+}
+@media (max-width: 520px) {
+    #soldCounterStrip { gap: 6px; }
+    #soldCounterStrip .sc-card { min-width: 72px; padding: 9px 4px; border-radius: 12px; }
+    #soldCounterStrip .sc-value { font-size: 1.2rem; }
+    #soldCounterStrip .sc-label { font-size: 0.5rem; letter-spacing: 1px; }
+}
+
 #karorpatiView { display: none; position: fixed; inset: 0; overflow-y: auto; padding-top: 60px; background: linear-gradient(145deg,#0b0e1a 0%,#1a1f2f 100%); z-index: 50; }
 #karorpatiView.active { display: block; }
 #karorpatiView .container-wrap { display: flex; justify-content: center; padding: 12px; min-height: calc(100vh - 60px); }
@@ -916,6 +963,24 @@
     <div class="main-box">
         <h1 id="appLogo">✨ Kon Banega KarorPati ✨</h1>
         <div class="sub-text" id="luckyDrawDate">🎰 Today's Winner</div>
+
+        <!-- ===== FAKE SOLD COUNTER STRIP ===== -->
+        <div id="soldCounterStrip">
+            <div class="sc-card">
+                <div class="sc-value" id="scTotalSold">1,00,000+</div>
+                <div class="sc-label"><span class="sc-live-dot"></span>Total Sold</div>
+            </div>
+            <div class="sc-card green">
+                <div class="sc-value" id="scTodaySold">0</div>
+                <div class="sc-label">Today</div>
+            </div>
+            <div class="sc-card blue">
+                <div class="sc-value" id="scUniqueCodes">0</div>
+                <div class="sc-label">Numbers Hit</div>
+            </div>
+        </div>
+        <!-- ===== END FAKE SOLD COUNTER STRIP ===== -->
+
         <div class="reel-container" id="reelContainer">
             <div class="reel" id="reel1">0</div>
             <div class="reel" id="reel2">0</div>
@@ -2138,6 +2203,126 @@ var KARO_DB = (function(){
     }, 400);
 })();
 </script>
+
+<!-- ===== FAKE SOLD COUNTER LOGIC (daily rotating, min 1,00,000) ===== -->
+<script>
+(function(){
+    var elTotal  = document.getElementById('scTotalSold');
+    var elToday  = document.getElementById('scTodaySold');
+    var elUnique = document.getElementById('scUniqueCodes');
+    if (!elTotal) return;
+
+    var MIN_BASE = 100000;          // minimum guaranteed daily display
+    var STORAGE_KEY = 'kp_fake_sold_counter';
+
+    function todayKey() {
+        var d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+
+    // Deterministic pseudo-random from a string seed (same date => same number all day)
+    function seedRandom(seedStr) {
+        var h = 2166136261;
+        for (var i = 0; i < seedStr.length; i++) {
+            h ^= seedStr.charCodeAt(i);
+            h = Math.imul(h, 16777619);
+        }
+        return function() {
+            h += 0x6D2B79F5;
+            var t = h;
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+    }
+
+    // Build today's fake stats ONCE per day, persist in localStorage
+    function getDailyStats() {
+        var tk = todayKey();
+        var raw = null;
+        try { raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch(e) {}
+
+        if (raw && raw.dateKey === tk) return raw;
+
+        var rnd = seedRandom('kp-sold-' + tk);
+
+        // Total: 1,00,000 to 2,50,000
+        var total = MIN_BASE + Math.floor(rnd() * 150000);
+
+        // Today: 40% – 75% of total
+        var today = Math.floor(total * (0.40 + rnd() * 0.35));
+
+        // Numbers hit: 60 – 100 unique codes out of 100
+        var unique = 60 + Math.floor(rnd() * 41);
+
+        var stats = { dateKey: tk, total: total, today: today, unique: unique };
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(stats)); } catch(e) {}
+        return stats;
+    }
+
+    function formatIndian(n) {
+        return n.toLocaleString('en-IN');
+    }
+
+    function bump(el) {
+        el.classList.add('bump');
+        setTimeout(function(){ el.classList.remove('bump'); }, 300);
+    }
+
+    function animateTo(el, target, suffix) {
+        var start = 0;
+        var steps = 40;
+        var diff = target - start;
+        var step = diff / steps, cur = start, i = 0;
+        var iv = setInterval(function(){
+            i++;
+            cur += step;
+            if (i >= steps) {
+                cur = target;
+                clearInterval(iv);
+                el.textContent = formatIndian(target) + (suffix || '');
+                bump(el);
+            } else {
+                el.textContent = formatIndian(Math.round(cur)) + (suffix || '');
+            }
+        }, 28);
+    }
+
+    var lastRenderedDate = null;
+
+    function render() {
+        var s = getDailyStats();
+        var isNewDay = (lastRenderedDate !== s.dateKey);
+
+        if (isNewDay) {
+            animateTo(elTotal, s.total, '+');
+            if (elToday)  elToday.textContent  = formatIndian(s.today);
+            if (elUnique) elUnique.textContent = s.unique;
+            lastRenderedDate = s.dateKey;
+        }
+    }
+
+    render();
+    setInterval(render, 30000);
+
+    document.addEventListener('visibilitychange', function(){
+        if (!document.hidden) render();
+    });
+
+    // Slow "live ticker" — Today's count creeps up slightly every few seconds (cosmetic only)
+    setInterval(function(){
+        if (!elToday) return;
+        var s = getDailyStats();
+        var current = parseInt(elToday.textContent.replace(/[^0-9]/g, '')) || 0;
+        var maxAllowed = Math.floor(s.total * 0.95);
+        if (current < maxAllowed) {
+            var inc = Math.floor(Math.random() * 3) + 1;
+            elToday.textContent = formatIndian(current + inc);
+        }
+    }, 7000);
+})();
+</script>
+<!-- ===== END FAKE SOLD COUNTER LOGIC ===== -->
 
 <!-- KARORPATI USER SIDE -->
 <script>
@@ -4231,7 +4416,6 @@ var KARO_DB = (function(){
         helpFileInput.value = '';
     });
 
-    /* Compress image to keep under Firestore 1MB document limit */
     function compressImageToBase64(file) {
         return new Promise(function(resolve, reject){
             var reader = new FileReader();
