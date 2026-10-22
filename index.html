@@ -185,6 +185,119 @@
 }
 #luckyView .btn-prizes:hover { background: rgba(255,215,0,0.15); border-color: #ffd700; }
 
+/* ===== HISTORY BUTTON (NEW) ===== */
+#luckyView .btn-history {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 14px; margin-left: 8px; padding: 10px 24px; border-radius: 40px;
+    border: 1px solid #4fc3f755; background: rgba(79,195,247,0.08);
+    color: #4fc3f7; font-weight: 700; font-size: 13px; cursor: pointer;
+    transition: 0.2s;
+}
+#luckyView .btn-history:hover { background: rgba(79,195,247,0.18); border-color: #4fc3f7; }
+
+/* ===== HISTORY OVERLAY (NEW) ===== */
+#luckyHistoryOverlay {
+    position: fixed; inset: 0; background: rgba(11,14,26,0.96);
+    backdrop-filter: blur(10px); display: none; align-items: center;
+    justify-content: center; z-index: 999998; padding: 20px;
+}
+#luckyHistoryOverlay.active { display: flex; }
+#luckyHistoryOverlay .history-panel {
+    max-width: 640px; width: 100%; background: #1e2538;
+    border-radius: 32px; padding: 26px 22px; border: 2px solid #4fc3f7;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 40px rgba(79,195,247,0.15);
+    max-height: 90vh; overflow-y: auto;
+}
+#luckyHistoryOverlay h2 {
+    color: #4fc3f7; text-align: center; font-size: 22px;
+    margin-bottom: 6px; letter-spacing: 1px;
+}
+#luckyHistoryOverlay .history-sub {
+    text-align: center; color: #aab; font-size: 12px;
+    margin-bottom: 18px; letter-spacing: 1px;
+}
+#luckyHistoryOverlay .history-filter-bar {
+    display: flex; gap: 8px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 16px;
+}
+#luckyHistoryOverlay .hfilter-btn {
+    padding: 8px 18px; border-radius: 24px;
+    border: 1px solid #3a4055; background: #121724;
+    color: #aab; font-weight: 700; font-size: 12px; cursor: pointer;
+    transition: 0.2s;
+}
+#luckyHistoryOverlay .hfilter-btn:hover { border-color: #4fc3f7; color: #4fc3f7; }
+#luckyHistoryOverlay .hfilter-btn.active {
+    background: linear-gradient(135deg,#4fc3f7,#0288d1);
+    color: #fff; border-color: #4fc3f7;
+}
+#luckyHistoryOverlay .history-summary-strip {
+    display: flex; gap: 10px; margin-bottom: 18px;
+}
+#luckyHistoryOverlay .hs-card {
+    flex: 1; background: #121724;
+    border: 1px solid #2a3045; border-radius: 14px;
+    padding: 12px 8px; text-align: center;
+}
+#luckyHistoryOverlay .hs-card .hs-val {
+    color: #ffd700; font-size: 26px; font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+#luckyHistoryOverlay .hs-card .hs-label {
+    color: #889; font-size: 10px; text-transform: uppercase;
+    letter-spacing: 1px; margin-top: 4px; font-weight: 700;
+}
+#luckyHistoryOverlay .hs-card.green .hs-val { color: #4caf50; }
+#luckyHistoryOverlay .history-list {
+    max-height: 55vh; overflow-y: auto; padding-right: 4px;
+}
+#luckyHistoryOverlay .history-date-group {
+    margin-bottom: 14px;
+}
+#luckyHistoryOverlay .history-date-header {
+    color: #4fc3f7; font-size: 13px; font-weight: 800;
+    padding: 6px 12px; border-left: 3px solid #4fc3f7;
+    background: rgba(79,195,247,0.08); border-radius: 6px;
+    margin-bottom: 8px; display: flex; justify-content: space-between;
+    align-items: center;
+}
+#luckyHistoryOverlay .history-date-header .hd-count {
+    color: #ffd700; font-size: 11px;
+    background: rgba(255,215,0,0.1); padding: 2px 8px;
+    border-radius: 10px;
+}
+#luckyHistoryOverlay .history-entry {
+    display: flex; align-items: center;
+    justify-content: space-between; padding: 8px 12px;
+    background: #0a0e1a; border-radius: 10px;
+    margin-bottom: 5px; border-left: 2px solid #ffd70066;
+    font-size: 12px;
+}
+#luckyHistoryOverlay .history-entry .he-digits {
+    color: #fff; font-weight: 700;
+    font-family: monospace; font-size: 13px;
+    letter-spacing: 1px;
+}
+#luckyHistoryOverlay .history-entry .he-sum {
+    color: #ffd700; font-weight: 900;
+    font-size: 15px; padding: 0 6px;
+}
+#luckyHistoryOverlay .history-entry .he-time {
+    color: #667; font-size: 10px;
+}
+#luckyHistoryOverlay .history-empty {
+    text-align: center; padding: 40px 20px;
+    color: #667; font-size: 13px;
+}
+
+@media (max-width: 520px) {
+    #luckyView .btn-history {
+        padding: 8px 18px; font-size: 12px; margin-top: 10px;
+    }
+    #luckyHistoryOverlay .history-panel { padding: 20px 14px; }
+    #luckyHistoryOverlay .hs-card .hs-val { font-size: 22px; }
+}
+
 /* ===== FAKE SOLD COUNTER STRIP ===== */
 #soldCounterStrip {
     display: flex; justify-content: center; align-items: stretch;
@@ -963,7 +1076,6 @@
         <h1 id="appLogo">✨ Kon Banega KarorPati ✨</h1>
         <div class="sub-text" id="luckyDrawDate">🎰 Today's Winner</div>
 
-        <!-- ===== FAKE SOLD COUNTER STRIP ===== -->
         <div id="soldCounterStrip">
             <div class="sc-card">
                 <div class="sc-value" id="scTotalSold">1,00,000+</div>
@@ -974,7 +1086,6 @@
                 <div class="sc-label">Today</div>
             </div>
         </div>
-        <!-- ===== END FAKE SOLD COUNTER STRIP ===== -->
 
         <div class="reel-container" id="reelContainer">
             <div class="reel" id="reel1">0</div>
@@ -986,6 +1097,7 @@
         </div>
         <button class="btn-draw" id="drawBtn">🎲 Check Number</button>
         <button class="btn-prizes" id="showPrizesBtn"><i class="fas fa-trophy"></i> Prize Details (1-100)</button>
+        <button class="btn-history" id="showHistoryBtn"><i class="fas fa-history"></i> History</button>
         <div class="footer-msg">⭐ Today Try Your Luck ⭐</div>
     </div>
 </div>
@@ -1001,6 +1113,42 @@
         </div>
         <div class="prize-grid" id="prizeGrid"></div>
         <button class="prize-close-btn" id="closePrizesBtn"><i class="fas fa-times"></i> Close</button>
+    </div>
+</div>
+
+<!-- LUCKY DRAW HISTORY OVERLAY (NEW) -->
+<div id="luckyHistoryOverlay">
+    <div class="history-panel">
+        <h2><i class="fas fa-history"></i> Number History</h2>
+        <div class="history-sub">Date-wise saare checked numbers</div>
+
+        <div class="history-filter-bar">
+            <button class="hfilter-btn active" data-hfilter="today">📅 Today</button>
+            <button class="hfilter-btn" data-hfilter="saved">⭐ Lucky Date</button>
+            <button class="hfilter-btn" data-hfilter="all">📚 All Dates</button>
+        </div>
+
+        <div id="historySummaryStrip" class="history-summary-strip">
+            <div class="hs-card">
+                <div class="hs-val" id="hsTotalCount">0</div>
+                <div class="hs-label">Total Entries</div>
+            </div>
+            <div class="hs-card green">
+                <div class="hs-val" id="hsDateCount">0</div>
+                <div class="hs-label">Dates Covered</div>
+            </div>
+        </div>
+
+        <div id="luckyHistoryList" class="history-list">
+            <div class="history-empty">
+                <i class="fas fa-hourglass-half" style="font-size:36px;opacity:0.4;"></i>
+                <div style="margin-top:10px;">Loading...</div>
+            </div>
+        </div>
+
+        <button class="prize-close-btn" id="closeLuckyHistoryBtn" style="margin-top:14px;">
+            <i class="fas fa-times"></i> Close
+        </button>
     </div>
 </div>
 
@@ -1279,7 +1427,6 @@
         </div>
     </div>
 
-    <!-- AGENT REFERRAL MODAL -->
     <div class="agent-modal-overlay" id="agentReferralOverlay">
         <div class="agent-modal-panel" style="border-color:#9c27b0; max-width:480px;">
             <h2 style="color:#e91e63;"><i class="fas fa-gift"></i> Refer &amp; Earn</h2>
@@ -1529,7 +1676,6 @@
             <h3><i class="fas fa-trophy"></i> Lucky Draw Winner Setting</h3>
             <div style="background:#121724; padding:12px 16px; border-radius:12px; margin-bottom:18px; border-left:3px solid #ffd700; color:#aab; font-size:13px;">Yeh Lucky Draw section ke reels ke liye hai. Admin jo save karega, woh <b style="color:#4fc3f7;">history</b> mein add hoga — Lucky Draw screen pe "Check Number" click karne pe <b style="color:#4fc3f7;">bari-bari se</b> saare numbers show honge (same date ke andar).</div>
 
-            <!-- WINNER HISTORY VIEWER -->
             <div style="background:#121724; border-radius:12px; padding:14px; margin-bottom:16px; border-left:3px solid #4fc3f7;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <h4 style="color:#4fc3f7; font-size:13px; margin:0;"><i class="fas fa-list"></i> Saved Winner History (Selected Date)</h4>
@@ -1818,7 +1964,7 @@ var KARO_DB = (function(){
         KARO_CACHE.winnerSettings = s;
     }
 
-    // ===== WINNER HISTORY (NEW) =====
+    // ===== WINNER HISTORY =====
     async function addWinnerHistory(entry) {
         entry.createdAt = Date.now();
         var ref = await db.collection('winnerHistory').add(entry);
@@ -2149,7 +2295,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- LUCKY DRAW (UPDATED: HISTORY QUEUE) -->
+<!-- LUCKY DRAW (HISTORY QUEUE + HISTORY PAGE) -->
 <script>
 (function(){
     var canvas = document.getElementById('starCanvas');
@@ -2200,11 +2346,9 @@ var KARO_DB = (function(){
     var drawBtn = document.getElementById('drawBtn');
     var isSpinning = false, timers = [];
 
-    // ===== HISTORY QUEUE STATE (NEW) =====
     var historyQueue = [];
     var historyPointer = 0;
     var historyLoading = false;
-    var historyCacheDateKey = null;
 
     var PRIZE_TABLE = {
         1: 100, 2: 200, 3: 300, 4: 400, 5: 500, 6: 600, 7: 700, 8: 800, 9: 900, 10: 1000,
@@ -2280,13 +2424,11 @@ var KARO_DB = (function(){
         loadHistoryQueue(true);
     });
 
-    // ===== HISTORY LOADER (NEW) =====
     async function loadHistoryQueue(resetPointer) {
         if (historyLoading) return;
         historyLoading = true;
         try {
             var dateKey = KARO_DB.getLuckyDrawDate() || getDateKey(Date.now());
-            historyCacheDateKey = dateKey;
             var list = await KARO_DB.getWinnerHistoryByDate(dateKey);
             historyQueue = list;
             if (resetPointer) historyPointer = 0;
@@ -2393,6 +2535,147 @@ var KARO_DB = (function(){
     }
 
     drawBtn.addEventListener('click', startSpin);
+
+    // ===== HISTORY PAGE (NEW) =====
+    var luckyHistoryOverlay = document.getElementById('luckyHistoryOverlay');
+    var luckyHistoryList = document.getElementById('luckyHistoryList');
+    var hsTotalCount = document.getElementById('hsTotalCount');
+    var hsDateCount = document.getElementById('hsDateCount');
+    var closeLuckyHistoryBtn = document.getElementById('closeLuckyHistoryBtn');
+    var showHistoryBtn = document.getElementById('showHistoryBtn');
+    var historyFilterBtns = document.querySelectorAll('#luckyHistoryOverlay .hfilter-btn');
+    var historyFilterMode = 'today';
+
+    function fmtDateLabel(dateKey) {
+        try {
+            var d = new Date(dateKey + 'T00:00:00');
+            return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        } catch(e) { return dateKey; }
+    }
+
+    function fmtTime(ts) {
+        try {
+            var d = new Date(ts);
+            return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        } catch(e) { return '-'; }
+    }
+
+    function renderHistoryList(entries, filterMode) {
+        luckyHistoryList.innerHTML = '';
+
+        if (!entries || entries.length === 0) {
+            luckyHistoryList.innerHTML =
+                '<div class="history-empty">' +
+                    '<i class="fas fa-inbox" style="font-size:36px;opacity:0.4;"></i>' +
+                    '<div style="margin-top:10px;">Is date pe abhi koi check-number history nahi hai.</div>' +
+                '</div>';
+            hsTotalCount.textContent = '0';
+            hsDateCount.textContent = '0';
+            return;
+        }
+
+        // Group by date
+        var groups = {};
+        entries.forEach(function(e){
+            var dateKey = e.date || 'unknown';
+            if (!groups[dateKey]) groups[dateKey] = [];
+            groups[dateKey].push(e);
+        });
+
+        var dateKeys = Object.keys(groups).sort().reverse();
+        hsTotalCount.textContent = entries.length;
+        hsDateCount.textContent = dateKeys.length;
+
+        dateKeys.forEach(function(dateKey){
+            var items = groups[dateKey];
+            // sort by createdAt asc
+            items.sort(function(a,b){ return (a.createdAt||0) - (b.createdAt||0); });
+
+            var groupEl = document.createElement('div');
+            groupEl.className = 'history-date-group';
+
+            var headerEl = document.createElement('div');
+            headerEl.className = 'history-date-header';
+            headerEl.innerHTML =
+                '<span><i class="fas fa-calendar-day"></i> ' + fmtDateLabel(dateKey) + '</span>' +
+                '<span class="hd-count">' + items.length + ' entries</span>';
+            groupEl.appendChild(headerEl);
+
+            items.forEach(function(e){
+                var digits = (e.digits || [0,0,0,0]).slice(0,4).join(' ');
+                var sum = (typeof e.sum === 'number') ? e.sum : ((e.digits || []).reduce(function(a,b){ return (parseInt(a)||0)+(parseInt(b)||0); }, 0));
+                var timeStr = fmtTime(e.createdAt);
+                var row = document.createElement('div');
+                row.className = 'history-entry';
+                row.innerHTML =
+                    '<div style="display:flex; align-items:center; gap:10px;">' +
+                        '<span class="he-digits">' + digits + '</span>' +
+                        '<span style="color:#667;">=</span>' +
+                        '<span class="he-sum">' + sum + '</span>' +
+                    '</div>' +
+                    '<div class="he-time">' + timeStr + '</div>';
+                groupEl.appendChild(row);
+            });
+
+            luckyHistoryList.appendChild(groupEl);
+        });
+    }
+
+    async function loadAndShowHistory() {
+        luckyHistoryList.innerHTML =
+            '<div class="history-empty"><i class="fas fa-hourglass-half" style="font-size:36px;opacity:0.4;"></i><div style="margin-top:10px;">Loading...</div></div>';
+        hsTotalCount.textContent = '0';
+        hsDateCount.textContent = '0';
+
+        try {
+            var entries = [];
+            if (historyFilterMode === 'today') {
+                var todayKey = getDateKey(Date.now());
+                entries = await KARO_DB.getWinnerHistoryByDate(todayKey);
+            } else if (historyFilterMode === 'saved') {
+                var savedKey = KARO_DB.getLuckyDrawDate();
+                if (savedKey) {
+                    entries = await KARO_DB.getWinnerHistoryByDate(savedKey);
+                } else {
+                    // no saved date — show today's
+                    var todayKey2 = getDateKey(Date.now());
+                    entries = await KARO_DB.getWinnerHistoryByDate(todayKey2);
+                }
+            } else {
+                // all
+                entries = await KARO_DB.getAllWinnerHistory();
+            }
+            renderHistoryList(entries, historyFilterMode);
+        } catch(e) {
+            luckyHistoryList.innerHTML =
+                '<div class="history-empty" style="color:#f44336;">Error: ' + e.message + '</div>';
+        }
+    }
+
+    if (showHistoryBtn) {
+        showHistoryBtn.addEventListener('click', function(){
+            luckyHistoryOverlay.classList.add('active');
+            loadAndShowHistory();
+        });
+    }
+    if (closeLuckyHistoryBtn) {
+        closeLuckyHistoryBtn.addEventListener('click', function(){
+            luckyHistoryOverlay.classList.remove('active');
+        });
+    }
+    if (luckyHistoryOverlay) {
+        luckyHistoryOverlay.addEventListener('click', function(e){
+            if (e.target === luckyHistoryOverlay) luckyHistoryOverlay.classList.remove('active');
+        });
+    }
+    historyFilterBtns.forEach(function(btn){
+        btn.addEventListener('click', function(){
+            historyFilterBtns.forEach(function(b){ b.classList.remove('active'); });
+            this.classList.add('active');
+            historyFilterMode = this.dataset.hfilter;
+            loadAndShowHistory();
+        });
+    });
 
     setTimeout(function(){
         loadHistoryQueue(true).then(function(){
@@ -4064,7 +4347,7 @@ var KARO_DB = (function(){
                 if (!a) return;
                 if (this.dataset.aact === 'toggle') { await KARO_DB.saveUser(uname, { status: a.status === 'active' ? 'disabled' : 'active' }); }
                 else if (this.dataset.aact === 'delete') {
-                    if (!confirm('DELETE agent ' + uname + '?\n\nYeh agent ka SAARA data (records, transactions, deposits, withdrawals, agentSales, referrals) permanently delete ho jayega. Continue?')) return;
+                    if (!confirm('DELETE agent ' + uname + '?\n\nYeh agent ka SAARA data permanently delete ho jayega. Continue?')) return;
                     showAdminToast('Deleting all data for ' + uname + '...', 'info');
                     await KARO_DB.deleteUser(uname);
                     showAdminToast('✅ ' + uname + ' and all related data deleted', 'success');
@@ -4612,7 +4895,6 @@ var KARO_DB = (function(){
         updatePreview();
     }
 
-    // ===== SAVE WINNER SETTINGS — with HISTORY APPEND (UPDATED) =====
     document.getElementById('wsSaveBtn').addEventListener('click', async function(){
         var mode = document.querySelector('#adminView input[name="winnerMode"]:checked').value;
         var digits = wsDigitInputs.map(function(inp){ return parseInt(inp.value) || 0; });
@@ -4620,12 +4902,9 @@ var KARO_DB = (function(){
         var useCustom = wsUseCustomSum.checked;
         var customSum = parseInt(wsCustomSumValue.value) || 0;
         var finalSum = useCustom ? customSum : auto;
-
-        // Lucky date = admin ki saved date, warna aaj ki date
         var dateKey = KARO_DB.getLuckyDrawDate() || getDateKey(Date.now());
 
         try {
-            // 1) Latest state settings mein bhi save karo (fallback ke liye)
             await KARO_DB.saveWinnerSettings({
                 mode: mode,
                 digits: digits,
@@ -4635,7 +4914,6 @@ var KARO_DB = (function(){
                 updatedAt: Date.now()
             });
 
-            // 2) History mein naya entry append karo (purana delete NAHI hota)
             await KARO_DB.addWinnerHistory({
                 date: dateKey,
                 mode: mode,
@@ -4647,11 +4925,7 @@ var KARO_DB = (function(){
             });
 
             showAdminToast('✅ Saved — History mein naya entry add hua (Date: ' + dateKey + ')', 'success');
-
-            // History list refresh
-            if (typeof window.refreshWinnerHistoryPanel === 'function') {
-                window.refreshWinnerHistoryPanel();
-            }
+            if (typeof window.refreshWinnerHistoryPanel === 'function') window.refreshWinnerHistoryPanel();
         } catch(e) {
             showAdminToast('Error: ' + e.message, 'error');
         }
@@ -4666,7 +4940,6 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
-    // ===== WINNER HISTORY VIEWER (NEW) =====
     window.refreshWinnerHistoryPanel = async function() {
         var container = document.getElementById('winnerHistoryList');
         if (!container) return;
@@ -5011,7 +5284,7 @@ var KARO_DB = (function(){
 
     function closeAllModals() {
         var modalIds = [
-            'luckyPrizeOverlay', 'historyOverlay', 'walletOverlay',
+            'luckyPrizeOverlay', 'luckyHistoryOverlay', 'historyOverlay', 'walletOverlay',
             'addMoneyOverlay', 'withdrawOverlay', 'referralOverlay',
             'secretCodeOverlay', 'addUserModal', 'addAgentModal',
             'agentAddMoneyOverlay', 'agentWithdrawOverlay', 'agentReferralOverlay',
@@ -5050,6 +5323,7 @@ var KARO_DB = (function(){
     }
 
     hookModal(document.getElementById('luckyPrizeOverlay'), 'luckyPrizeOverlay');
+    hookModal(document.getElementById('luckyHistoryOverlay'), 'luckyHistoryOverlay');
     hookModal(document.getElementById('historyOverlay'), 'historyOverlay');
     hookModal(document.getElementById('walletOverlay'), 'walletOverlay');
     hookModal(document.getElementById('addMoneyOverlay'), 'addMoneyOverlay');
