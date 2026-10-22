@@ -1527,7 +1527,19 @@
 
         <div class="admin-panel" id="panelWinner" style="display:none;">
             <h3><i class="fas fa-trophy"></i> Lucky Draw Winner Setting</h3>
-            <div style="background:#121724; padding:12px 16px; border-radius:12px; margin-bottom:18px; border-left:3px solid #ffd700; color:#aab; font-size:13px;">Yeh Lucky Draw section ke reels ke liye hai. Fixed mode mein reels hamesha set digits par rukenge.</div>
+            <div style="background:#121724; padding:12px 16px; border-radius:12px; margin-bottom:18px; border-left:3px solid #ffd700; color:#aab; font-size:13px;">Yeh Lucky Draw section ke reels ke liye hai. Admin jo save karega, woh <b style="color:#4fc3f7;">history</b> mein add hoga — Lucky Draw screen pe "Check Number" click karne pe <b style="color:#4fc3f7;">bari-bari se</b> saare numbers show honge (same date ke andar).</div>
+
+            <!-- WINNER HISTORY VIEWER -->
+            <div style="background:#121724; border-radius:12px; padding:14px; margin-bottom:16px; border-left:3px solid #4fc3f7;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h4 style="color:#4fc3f7; font-size:13px; margin:0;"><i class="fas fa-list"></i> Saved Winner History (Selected Date)</h4>
+                    <button id="refreshWinnerHistoryBtn" style="background:#4fc3f7; color:#0b0e1a; border:none; padding:5px 12px; border-radius:8px; font-weight:700; font-size:11px; cursor:pointer;">Refresh</button>
+                </div>
+                <div id="winnerHistoryList" style="max-height:220px; overflow-y:auto; font-size:12px;">
+                    <div style="text-align:center; color:#667; padding:12px;">Loading...</div>
+                </div>
+            </div>
+
             <div style="background:#121724; padding:14px; border-radius:12px; margin-bottom:18px;">
                 <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#fff; font-weight:700; margin-bottom:8px;"><input type="radio" name="winnerMode" value="fixed" checked /> 🔒 Fixed Mode</label>
                 <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#fff; font-weight:700;"><input type="radio" name="winnerMode" value="random" /> 🎲 Random Mode</label>
@@ -1567,7 +1579,6 @@
             </div>
         </div>
 
-        <!-- SUPPORT TICKETS PANEL -->
         <div class="admin-panel" id="panelSupport" style="display:none;">
             <h3><i class="fas fa-headset"></i> Support Tickets</h3>
             <p style="color:#aab; font-size:13px; margin-bottom:14px;">Help form se aayi requests. Click on message or View to see full details + screenshots.</p>
@@ -1620,7 +1631,6 @@
         </div>
     </div>
 
-    <!-- SUPPORT DETAIL MODAL -->
     <div id="supportDetailOverlay">
         <div class="support-detail-panel">
             <h2><i class="fas fa-headset"></i> Support Ticket</h2>
@@ -1806,6 +1816,39 @@ var KARO_DB = (function(){
     async function saveWinnerSettings(s) {
         await db.collection('settings').doc('winner').set(s);
         KARO_CACHE.winnerSettings = s;
+    }
+
+    // ===== WINNER HISTORY (NEW) =====
+    async function addWinnerHistory(entry) {
+        entry.createdAt = Date.now();
+        var ref = await db.collection('winnerHistory').add(entry);
+        return ref.id;
+    }
+
+    async function getWinnerHistoryByDate(dateKey) {
+        try {
+            var snap = await db.collection('winnerHistory')
+                .where('date', '==', dateKey)
+                .get();
+            var list = [];
+            snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
+            list.sort(function(a,b){ return (a.createdAt||0) - (b.createdAt||0); });
+            return list;
+        } catch(e) { console.warn('getWinnerHistoryByDate failed:', e); return []; }
+    }
+
+    async function getAllWinnerHistory() {
+        try {
+            var snap = await db.collection('winnerHistory').get();
+            var list = [];
+            snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
+            list.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+            return list;
+        } catch(e) { return []; }
+    }
+
+    async function deleteWinnerHistory(id) {
+        await db.collection('winnerHistory').doc(id).delete();
     }
 
     async function fetchLuckyDrawDate() {
@@ -2089,6 +2132,7 @@ var KARO_DB = (function(){
         getRecords, fetchRecords, fetchRecordsByDate, addRecord, updateRecord,
         migrateRecordsDateKeys,
         getWinnerSettings, fetchWinnerSettings, saveWinnerSettings,
+        addWinnerHistory, getWinnerHistoryByDate, getAllWinnerHistory, deleteWinnerHistory,
         fetchLuckyDrawDate, saveLuckyDrawDate, getLuckyDrawDate,
         fetchFakeCounter, saveFakeCounter,
         updateUserBalance, getTransactions, addTransaction,
@@ -2105,7 +2149,7 @@ var KARO_DB = (function(){
 })();
 </script>
 
-<!-- LUCKY DRAW -->
+<!-- LUCKY DRAW (UPDATED: HISTORY QUEUE) -->
 <script>
 (function(){
     var canvas = document.getElementById('starCanvas');
@@ -2155,6 +2199,12 @@ var KARO_DB = (function(){
     var sumBox = document.getElementById('sumBox');
     var drawBtn = document.getElementById('drawBtn');
     var isSpinning = false, timers = [];
+
+    // ===== HISTORY QUEUE STATE (NEW) =====
+    var historyQueue = [];
+    var historyPointer = 0;
+    var historyLoading = false;
+    var historyCacheDateKey = null;
 
     var PRIZE_TABLE = {
         1: 100, 2: 200, 3: 300, 4: 400, 5: 500, 6: 600, 7: 700, 8: 800, 9: 900, 10: 1000,
@@ -2221,10 +2271,34 @@ var KARO_DB = (function(){
             }
         }
     }
-    window.addEventListener('karorpati_luckydate_updated', updateLuckyDateDisplay);
-    window.addEventListener('karorpati_db_ready', updateLuckyDateDisplay);
+    window.addEventListener('karorpati_luckydate_updated', function(){
+        updateLuckyDateDisplay();
+        loadHistoryQueue(true);
+    });
+    window.addEventListener('karorpati_db_ready', function(){
+        updateLuckyDateDisplay();
+        loadHistoryQueue(true);
+    });
 
-    function getConfig() {
+    // ===== HISTORY LOADER (NEW) =====
+    async function loadHistoryQueue(resetPointer) {
+        if (historyLoading) return;
+        historyLoading = true;
+        try {
+            var dateKey = KARO_DB.getLuckyDrawDate() || getDateKey(Date.now());
+            historyCacheDateKey = dateKey;
+            var list = await KARO_DB.getWinnerHistoryByDate(dateKey);
+            historyQueue = list;
+            if (resetPointer) historyPointer = 0;
+        } catch(e) {
+            console.warn('History load failed:', e);
+            historyQueue = [];
+        } finally {
+            historyLoading = false;
+        }
+    }
+
+    function getFallbackConfig() {
         var s = KARO_DB.getWinnerSettings();
         if (s.mode === 'fixed') {
             var digits = (s.digits || [0,0,0,0]).slice(0,4).map(function(d){ return parseInt(d) || 0; });
@@ -2237,6 +2311,24 @@ var KARO_DB = (function(){
         var rd = [];
         for (var i = 0; i < 4; i++) rd.push(Math.floor(Math.random()*10));
         return { digits: rd, sum: rd.reduce(function(a,b){ return a+b; }, 0) };
+    }
+
+    async function getNextDrawConfig() {
+        if (historyQueue && historyQueue.length > 0) {
+            if (historyPointer >= historyQueue.length) {
+                historyPointer = 0;
+            }
+            var entry = historyQueue[historyPointer];
+            historyPointer++;
+            return {
+                digits: (entry.digits || [0,0,0,0]).slice(0,4),
+                sum: (typeof entry.sum === 'number') ? entry.sum : (entry.digits || []).reduce(function(a,b){ return (parseInt(a)||0)+(parseInt(b)||0); }, 0),
+                source: 'history',
+                index: historyPointer,
+                total: historyQueue.length
+            };
+        }
+        return Object.assign(getFallbackConfig(), { source: 'fallback' });
     }
 
     function startSpin() {
@@ -2252,40 +2344,60 @@ var KARO_DB = (function(){
         timers.forEach(function(t){ clearInterval(t); });
         timers = [];
 
-        var CONFIG = getConfig();
-        var reels = [reel1, reel2, reel3, reel4];
-        var stopTimes = [800, 1400, 2000, 2600];
+        getNextDrawConfig().then(function(CONFIG){
+            var reels = [reel1, reel2, reel3, reel4];
+            var stopTimes = [800, 1400, 2000, 2600];
 
-        reels.forEach(function(reel, index) {
-            var interval = setInterval(function(){ reel.textContent = Math.floor(Math.random()*10); }, 70);
-            timers.push(interval);
-            setTimeout(function() { clearInterval(interval); reel.textContent = CONFIG.digits[index]; }, stopTimes[index]);
-        });
+            reels.forEach(function(reel, index) {
+                var interval = setInterval(function(){ reel.textContent = Math.floor(Math.random()*10); }, 70);
+                timers.push(interval);
+                setTimeout(function() { clearInterval(interval); reel.textContent = CONFIG.digits[index]; }, stopTimes[index]);
+            });
 
-        var sumInterval = setInterval(function() {
-            var cur = parseInt(sumBox.textContent);
-            var diff = CONFIG.sum - cur;
-            if (diff > 0) { var step = Math.max(1, Math.floor(diff / 10)); sumBox.textContent = Math.min(cur + step, CONFIG.sum); }
-            else clearInterval(sumInterval);
-        }, 80);
-        timers.push(sumInterval);
+            var sumInterval = setInterval(function() {
+                var cur = parseInt(sumBox.textContent);
+                var diff = CONFIG.sum - cur;
+                if (diff > 0) { var step = Math.max(1, Math.floor(diff / 10)); sumBox.textContent = Math.min(cur + step, CONFIG.sum); }
+                else clearInterval(sumInterval);
+            }, 80);
+            timers.push(sumInterval);
 
-        setTimeout(function() {
-            sumBox.textContent = CONFIG.sum;
-            var str = String(CONFIG.sum);
-            if (str.length === 3) sumBox.style.fontSize = '2.4rem';
-            else if (str.length >= 4) sumBox.style.fontSize = '1.8rem';
-            else sumBox.style.fontSize = '3.8rem';
-            sumBox.classList.add('pop');
-            sumBox.style.transform = 'scale(1)';
+            setTimeout(function() {
+                sumBox.textContent = CONFIG.sum;
+                var str = String(CONFIG.sum);
+                if (str.length === 3) sumBox.style.fontSize = '2.4rem';
+                else if (str.length >= 4) sumBox.style.fontSize = '1.8rem';
+                else sumBox.style.fontSize = '3.8rem';
+                sumBox.classList.add('pop');
+                sumBox.style.transform = 'scale(1)';
+                isSpinning = false;
+                drawBtn.disabled = false;
+
+                if (CONFIG.source === 'history') {
+                    var footer = document.querySelector('#luckyView .footer-msg');
+                    if (footer) {
+                        var orig = footer.dataset.orig || footer.innerHTML;
+                        footer.dataset.orig = orig;
+                        footer.innerHTML = '📜 Entry ' + CONFIG.index + ' / ' + CONFIG.total + ' of saved numbers';
+                        setTimeout(function(){
+                            if (footer.dataset.orig) footer.innerHTML = footer.dataset.orig;
+                        }, 2500);
+                    }
+                }
+            }, 2800);
+        }).catch(function(err){
+            console.error('Draw error:', err);
             isSpinning = false;
             drawBtn.disabled = false;
-        }, 2800);
+        });
     }
 
     drawBtn.addEventListener('click', startSpin);
-    setTimeout(function() {
-        if (document.getElementById('luckyView').classList.contains('active')) startSpin();
+
+    setTimeout(function(){
+        loadHistoryQueue(true).then(function(){
+            if (document.getElementById('luckyView').classList.contains('active')) startSpin();
+        });
     }, 400);
 })();
 </script>
@@ -3778,7 +3890,7 @@ var KARO_DB = (function(){
             renderBoxResultsTable(), renderNumberStats(), renderClaimsTable(),
             renderWithdrawalsTable(), renderReferralsTable(), renderRecordsTable(),
             loadWinnerSettingsIntoForm(), loadSettingsIntoForm(), loadLuckyDateIntoForm(),
-            renderSupportTickets()
+            renderSupportTickets(), window.refreshWinnerHistoryPanel && window.refreshWinnerHistoryPanel()
         ]);
     }
     adminLoginBtn.addEventListener('click', tryAdminLogin);
@@ -3805,7 +3917,7 @@ var KARO_DB = (function(){
                     renderBoxResultsTable(), renderNumberStats(), renderClaimsTable(),
                     renderWithdrawalsTable(), renderReferralsTable(), renderRecordsTable(),
                     loadWinnerSettingsIntoForm(), loadSettingsIntoForm(), loadLuckyDateIntoForm(),
-                    renderSupportTickets()
+                    renderSupportTickets(), window.refreshWinnerHistoryPanel && window.refreshWinnerHistoryPanel()
                 ]);
             }
         }
@@ -3833,7 +3945,7 @@ var KARO_DB = (function(){
             this.classList.add('active');
             var t = this.dataset.tab;
             Object.keys(panels).forEach(function(k){ panels[k].style.display = (k === t) ? 'block' : 'none'; });
-            if (t === 'winner') loadWinnerSettingsIntoForm();
+            if (t === 'winner') { loadWinnerSettingsIntoForm(); if (window.refreshWinnerHistoryPanel) window.refreshWinnerHistoryPanel(); }
             if (t === 'settings') loadSettingsIntoForm();
             if (t === 'referrals') renderReferralsTable();
             if (t === 'boxresults') renderBoxResultsTable();
@@ -4500,17 +4612,51 @@ var KARO_DB = (function(){
         updatePreview();
     }
 
+    // ===== SAVE WINNER SETTINGS — with HISTORY APPEND (UPDATED) =====
     document.getElementById('wsSaveBtn').addEventListener('click', async function(){
         var mode = document.querySelector('#adminView input[name="winnerMode"]:checked').value;
         var digits = wsDigitInputs.map(function(inp){ return parseInt(inp.value) || 0; });
         var auto = digits.reduce(function(a,b){ return a+b; }, 0);
         var useCustom = wsUseCustomSum.checked;
         var customSum = parseInt(wsCustomSumValue.value) || 0;
+        var finalSum = useCustom ? customSum : auto;
+
+        // Lucky date = admin ki saved date, warna aaj ki date
+        var dateKey = KARO_DB.getLuckyDrawDate() || getDateKey(Date.now());
+
         try {
-            await KARO_DB.saveWinnerSettings({ mode: mode, digits: digits, sum: useCustom ? customSum : auto, useCustomSum: useCustom, customSum: customSum, updatedAt: Date.now() });
-            showAdminToast('✅ Saved', 'success');
-        } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
+            // 1) Latest state settings mein bhi save karo (fallback ke liye)
+            await KARO_DB.saveWinnerSettings({
+                mode: mode,
+                digits: digits,
+                sum: finalSum,
+                useCustomSum: useCustom,
+                customSum: customSum,
+                updatedAt: Date.now()
+            });
+
+            // 2) History mein naya entry append karo (purana delete NAHI hota)
+            await KARO_DB.addWinnerHistory({
+                date: dateKey,
+                mode: mode,
+                digits: digits,
+                sum: finalSum,
+                useCustomSum: useCustom,
+                customSum: customSum,
+                savedBy: currentAdmin ? currentAdmin.username : 'admin'
+            });
+
+            showAdminToast('✅ Saved — History mein naya entry add hua (Date: ' + dateKey + ')', 'success');
+
+            // History list refresh
+            if (typeof window.refreshWinnerHistoryPanel === 'function') {
+                window.refreshWinnerHistoryPanel();
+            }
+        } catch(e) {
+            showAdminToast('Error: ' + e.message, 'error');
+        }
     });
+
     document.getElementById('wsResetBtn').addEventListener('click', async function(){
         if (!confirm('Reset?')) return;
         try {
@@ -4519,6 +4665,35 @@ var KARO_DB = (function(){
             showAdminToast('Reset', 'success');
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
+
+    // ===== WINNER HISTORY VIEWER (NEW) =====
+    window.refreshWinnerHistoryPanel = async function() {
+        var container = document.getElementById('winnerHistoryList');
+        if (!container) return;
+        try {
+            var dateKey = KARO_DB.getLuckyDrawDate() || getDateKey(Date.now());
+            var list = await KARO_DB.getWinnerHistoryByDate(dateKey);
+            if (list.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#667; padding:12px;">Is date (' + dateKey + ') pe abhi koi entry nahi.</div>';
+                return;
+            }
+            container.innerHTML = list.map(function(e, i){
+                var sum = e.sum;
+                var digits = (e.digits || []).join(' ');
+                var time = new Date(e.createdAt).toLocaleTimeString('en-IN');
+                return '<div style="background:#0a0e1a; border-radius:8px; padding:8px 10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; border-left:2px solid #ffd700;">' +
+                    '<div><span style="color:#667; font-size:10px;">#' + (i+1) + '</span> ' +
+                    '<span style="color:#fff; font-weight:700;">' + digits + '</span> ' +
+                    '<span style="color:#ffd700;">= ' + sum + '</span></div>' +
+                    '<div style="color:#667; font-size:10px;">' + time + '</div>' +
+                '</div>';
+            }).join('');
+        } catch(e) {
+            container.innerHTML = '<div style="color:#f44336; text-align:center; padding:12px;">Error: ' + e.message + '</div>';
+        }
+    };
+    var _refreshWhBtn = document.getElementById('refreshWinnerHistoryBtn');
+    if (_refreshWhBtn) _refreshWhBtn.addEventListener('click', window.refreshWinnerHistoryPanel);
 
     var luckyDateInput = document.getElementById('luckyDateInput');
     function loadLuckyDateIntoForm() {
@@ -4581,7 +4756,10 @@ var KARO_DB = (function(){
 
     window.addEventListener('karorpati_users_updated', function(){ if (currentAdmin) { refreshStats(); renderUsersTable(); } });
     window.addEventListener('karorpati_records_updated', function(){ if (currentAdmin) { refreshStats(); renderRecordsTable(); renderBoxResultsTable(); renderNumberStats(); } });
-    window.addEventListener('karorpati_db_ready', function(){ tryAutoLogin(); });
+    window.addEventListener('karorpati_db_ready', function(){
+        tryAutoLogin();
+        setTimeout(function(){ if (window.refreshWinnerHistoryPanel) window.refreshWinnerHistoryPanel(); }, 1200);
+    });
 })();
 </script>
 
