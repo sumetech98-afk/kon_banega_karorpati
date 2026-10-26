@@ -185,7 +185,6 @@
 }
 #luckyView .btn-prizes:hover { background: rgba(255,215,0,0.15); border-color: #ffd700; }
 
-/* ===== HISTORY BUTTON (NEW) ===== */
 #luckyView .btn-history {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     margin-top: 14px; margin-left: 8px; padding: 10px 24px; border-radius: 40px;
@@ -195,7 +194,6 @@
 }
 #luckyView .btn-history:hover { background: rgba(79,195,247,0.18); border-color: #4fc3f7; }
 
-/* ===== HISTORY OVERLAY (NEW) ===== */
 #luckyHistoryOverlay {
     position: fixed; inset: 0; background: rgba(11,14,26,0.96);
     backdrop-filter: blur(10px); display: none; align-items: center;
@@ -251,9 +249,7 @@
 #luckyHistoryOverlay .history-list {
     max-height: 55vh; overflow-y: auto; padding-right: 4px;
 }
-#luckyHistoryOverlay .history-date-group {
-    margin-bottom: 14px;
-}
+#luckyHistoryOverlay .history-date-group { margin-bottom: 14px; }
 #luckyHistoryOverlay .history-date-header {
     color: #4fc3f7; font-size: 13px; font-weight: 800;
     padding: 6px 12px; border-left: 3px solid #4fc3f7;
@@ -291,14 +287,11 @@
 }
 
 @media (max-width: 520px) {
-    #luckyView .btn-history {
-        padding: 8px 18px; font-size: 12px; margin-top: 10px;
-    }
+    #luckyView .btn-history { padding: 8px 18px; font-size: 12px; margin-top: 10px; }
     #luckyHistoryOverlay .history-panel { padding: 20px 14px; }
     #luckyHistoryOverlay .hs-card .hs-val { font-size: 22px; }
 }
 
-/* ===== FAKE SOLD COUNTER STRIP ===== */
 #soldCounterStrip {
     display: flex; justify-content: center; align-items: stretch;
     gap: 10px; margin: 0 0 22px; flex-wrap: wrap;
@@ -918,7 +911,6 @@
     #agentPanelView .agent-box-grid { gap: 1.5px; padding: 3px; }
 }
 
-/* ============ HELP VIEW CSS ============ */
 #helpView { display:none; position:fixed; inset:0; overflow-y:auto; padding-top:60px; background:linear-gradient(145deg,#0b0e1a 0%,#1a2540 100%); z-index:50; }
 #helpView.active { display:block; }
 #helpView .help-wrap { max-width:560px; margin:0 auto; padding:16px 14px 40px; }
@@ -970,7 +962,6 @@
 #helpView .help-success p { color:#aab; font-size:13px; }
 #helpView .help-error { color:#f44336; font-size:13px; text-align:center; min-height:18px; margin-top:6px; }
 
-/* ============ SUPPORT TICKET CELLS + DETAIL MODAL ============ */
 #adminView .support-msg-cell {
     max-width: 260px;
     overflow: hidden;
@@ -1052,6 +1043,78 @@
     max-width: 100%; max-height: 100%; border-radius: 8px;
     box-shadow: 0 0 60px rgba(0,0,0,0.9);
 }
+
+/* ===== WINNER HISTORY ENTRY ACTIONS ===== */
+.winner-history-item {
+    background: #0a0e1a;
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 2px solid #ffd700;
+    gap: 8px;
+}
+.winner-history-item .wh-info { flex: 1; min-width: 0; }
+.winner-history-item .wh-digits {
+    color: #fff; font-weight: 700; font-family: monospace;
+    font-size: 13px; letter-spacing: 1px;
+}
+.winner-history-item .wh-sum { color: #ffd700; font-weight: 900; margin-left: 6px; }
+.winner-history-item .wh-time { color: #667; font-size: 10px; margin-top: 2px; }
+.winner-history-item .wh-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.winner-history-item .wh-btn {
+    padding: 4px 8px; border-radius: 6px; border: 1px solid #3a4055;
+    background: #121724; color: #aab; font-size: 10px; font-weight: 700;
+    cursor: pointer; transition: 0.2s;
+}
+.winner-history-item .wh-btn.edit { border-color: #4fc3f766; color: #4fc3f7; }
+.winner-history-item .wh-btn.edit:hover { background: #4fc3f722; }
+.winner-history-item .wh-btn.delete { border-color: #f4433666; color: #f44336; }
+.winner-history-item .wh-btn.delete:hover { background: #f4433622; }
+
+#winnerEditOverlay {
+    position: fixed; inset: 0; background: rgba(11,14,26,0.96);
+    backdrop-filter: blur(10px); display: none; align-items: center;
+    justify-content: center; z-index: 2147483500; padding: 20px;
+}
+#winnerEditOverlay.active { display: flex; }
+#winnerEditOverlay .we-panel {
+    background: #1e2538; border-radius: 28px; max-width: 460px; width: 100%;
+    padding: 26px 22px; border: 2px solid #ffd700;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.9); max-height: 92vh; overflow-y: auto;
+}
+#winnerEditOverlay h2 { color: #ffd700; text-align: center; font-size: 20px; margin-bottom: 6px; }
+#winnerEditOverlay .we-sub { text-align: center; color: #aab; font-size: 12px; margin-bottom: 18px; }
+#winnerEditOverlay .we-digits-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+#winnerEditOverlay .we-digit-box { text-align: center; }
+#winnerEditOverlay .we-digit-box label { display: block; color: #aab; font-size: 11px; margin-bottom: 6px; text-transform: uppercase; }
+#winnerEditOverlay .we-digit-box input {
+    width: 64px; height: 72px; text-align: center; font-size: 30px; font-weight: 900;
+    border-radius: 14px; border: 2px solid #3a4055; background: #0a0e1a;
+    color: #ffd700; outline: none; font-variant-numeric: tabular-nums;
+}
+#winnerEditOverlay .we-digit-box input:focus { border-color: #ffd700; }
+#winnerEditOverlay .we-sum-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; }
+#winnerEditOverlay .we-sum-display {
+    width: 80px; height: 80px;
+    background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+    border-radius: 18px; display: flex; align-items: center; justify-content: center;
+    font-size: 30px; font-weight: 900; color: #0b0e1a;
+}
+#winnerEditOverlay .we-actions { display: flex; gap: 8px; margin-top: 16px; }
+#winnerEditOverlay .we-actions button {
+    flex: 1; padding: 12px; border-radius: 12px; border: none;
+    font-weight: 700; font-size: 14px; cursor: pointer;
+}
+#winnerEditOverlay .we-save-btn { background: linear-gradient(135deg, #4caf50, #45a049); color: #fff; }
+#winnerEditOverlay .we-cancel-btn { background: #3a3045; color: #ccc; }
+
+#luckyDateInput:focus {
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 0 2px rgba(255,215,0,0.2) !important;
+}
 </style>
 </head>
 <body>
@@ -1116,14 +1179,13 @@
     </div>
 </div>
 
-<!-- LUCKY DRAW HISTORY OVERLAY (NEW) -->
+<!-- LUCKY DRAW HISTORY OVERLAY -->
 <div id="luckyHistoryOverlay">
     <div class="history-panel">
         <h2><i class="fas fa-history"></i> Number History</h2>
         <div class="history-sub">Date-wise saare checked numbers</div>
 
         <div class="history-filter-bar">
-            
             <button class="hfilter-btn" data-hfilter="saved">⭐ Lucky Date</button>
             <button class="hfilter-btn" data-hfilter="all">📚 All Dates</button>
         </div>
@@ -1681,7 +1743,7 @@
                     <h4 style="color:#4fc3f7; font-size:13px; margin:0;"><i class="fas fa-list"></i> Saved Winner History (Selected Date)</h4>
                     <button id="refreshWinnerHistoryBtn" style="background:#4fc3f7; color:#0b0e1a; border:none; padding:5px 12px; border-radius:8px; font-weight:700; font-size:11px; cursor:pointer;">Refresh</button>
                 </div>
-                <div id="winnerHistoryList" style="max-height:220px; overflow-y:auto; font-size:12px;">
+                <div id="winnerHistoryList" style="max-height:280px; overflow-y:auto; font-size:12px;">
                     <div style="text-align:center; color:#667; padding:12px;">Loading...</div>
                 </div>
             </div>
@@ -1774,6 +1836,42 @@
             <div class="input-group"><label>Phone</label><input type="text" id="newAgentPhone" /></div>
             <div class="input-group"><label>Password</label><input type="text" id="newAgentPassword" /></div>
             <div class="modal-actions"><button class="cancel-btn" id="cancelAddAgent">Cancel</button><button class="save-btn" id="saveAddAgent" style="background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f;">Create</button></div>
+        </div>
+    </div>
+
+    <!-- WINNER HISTORY EDIT MODAL -->
+    <div id="winnerEditOverlay">
+        <div class="we-panel">
+            <h2><i class="fas fa-edit"></i> Edit Winner Entry</h2>
+            <div class="we-sub">Saved winner ko modify karein</div>
+
+            <div class="we-digits-row">
+                <div class="we-digit-box"><label>D1</label><input type="number" id="weDigit0" min="0" max="9" /></div>
+                <div class="we-digit-box"><label>D2</label><input type="number" id="weDigit1" min="0" max="9" /></div>
+                <div class="we-digit-box"><label>D3</label><input type="number" id="weDigit2" min="0" max="9" /></div>
+                <div class="we-digit-box"><label>D4</label><input type="number" id="weDigit3" min="0" max="9" /></div>
+            </div>
+
+            <div class="we-sum-row">
+                <span style="font-size:24px; font-weight:900; color:#ffd700;">=</span>
+                <div class="we-sum-display" id="weSumDisplay">0</div>
+            </div>
+
+            <div style="background:#121724; border-radius:12px; padding:12px; margin-bottom:14px; border-left:3px solid #ff9800;">
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#ff9800; font-weight:700; font-size:13px;">
+                    <input type="checkbox" id="weUseCustomSum" style="width:16px; height:16px;" />
+                    Manual Sum Override
+                </label>
+                <div style="margin-top:10px; display:none;" id="weCustomSumWrap">
+                    <input type="number" id="weCustomSumValue" min="0" value="0"
+                        style="width:100%; padding:10px; border-radius:8px; border:2px solid #ff9800; background:#0a0e1a; color:#ff9800; font-size:20px; font-weight:900; text-align:center; outline:none;" />
+                </div>
+            </div>
+
+            <div class="we-actions">
+                <button class="we-cancel-btn" id="weCancelBtn">Cancel</button>
+                <button class="we-save-btn" id="weSaveBtn"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
         </div>
     </div>
 
@@ -1964,7 +2062,6 @@ var KARO_DB = (function(){
         KARO_CACHE.winnerSettings = s;
     }
 
-    // ===== WINNER HISTORY =====
     async function addWinnerHistory(entry) {
         entry.createdAt = Date.now();
         var ref = await db.collection('winnerHistory').add(entry);
@@ -1973,9 +2070,7 @@ var KARO_DB = (function(){
 
     async function getWinnerHistoryByDate(dateKey) {
         try {
-            var snap = await db.collection('winnerHistory')
-                .where('date', '==', dateKey)
-                .get();
+            var snap = await db.collection('winnerHistory').where('date', '==', dateKey).get();
             var list = [];
             snap.forEach(function(doc){ var d = doc.data(); d._id = doc.id; list.push(d); });
             list.sort(function(a,b){ return (a.createdAt||0) - (b.createdAt||0); });
@@ -1995,6 +2090,10 @@ var KARO_DB = (function(){
 
     async function deleteWinnerHistory(id) {
         await db.collection('winnerHistory').doc(id).delete();
+    }
+
+    async function updateWinnerHistory(id, updates) {
+        await db.collection('winnerHistory').doc(id).update(updates);
     }
 
     async function fetchLuckyDrawDate() {
@@ -2278,7 +2377,7 @@ var KARO_DB = (function(){
         getRecords, fetchRecords, fetchRecordsByDate, addRecord, updateRecord,
         migrateRecordsDateKeys,
         getWinnerSettings, fetchWinnerSettings, saveWinnerSettings,
-        addWinnerHistory, getWinnerHistoryByDate, getAllWinnerHistory, deleteWinnerHistory,
+        addWinnerHistory, getWinnerHistoryByDate, getAllWinnerHistory, deleteWinnerHistory, updateWinnerHistory,
         fetchLuckyDrawDate, saveLuckyDrawDate, getLuckyDrawDate,
         fetchFakeCounter, saveFakeCounter,
         updateUserBalance, getTransactions, addTransaction,
@@ -2536,7 +2635,6 @@ var KARO_DB = (function(){
 
     drawBtn.addEventListener('click', startSpin);
 
-    // ===== HISTORY PAGE (NEW) =====
     var luckyHistoryOverlay = document.getElementById('luckyHistoryOverlay');
     var luckyHistoryList = document.getElementById('luckyHistoryList');
     var hsTotalCount = document.getElementById('hsTotalCount');
@@ -4025,7 +4123,6 @@ var KARO_DB = (function(){
         }
     });
 
-    // ===== AGENT REFERRAL LOGIC =====
     var agentReferralOverlay = document.getElementById('agentReferralOverlay');
     var agentMyReferralCode = document.getElementById('agentMyReferralCode');
     var agentCopyRefCodeBtn = document.getElementById('agentCopyRefCodeBtn');
@@ -4506,7 +4603,6 @@ var KARO_DB = (function(){
         } catch (e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
 
-    // ===== NEW: EDIT BOX RESULT =====
     async function editBoxResult(recordId) {
         try {
             var records = KARO_DB.getRecords();
@@ -4952,6 +5048,7 @@ var KARO_DB = (function(){
     if (recordsTodayBtn) recordsTodayBtn.addEventListener('click', function(){ recordsDateFilter.value = getDateKey(Date.now()); renderRecordsTable(); });
     if (recordsAllBtn) recordsAllBtn.addEventListener('click', function(){ recordsDateFilter.value = ''; renderRecordsTable(); });
 
+    // ===== WINNER SETTINGS FORM =====
     var wsDigitInputs = [document.getElementById('wsDigit0'), document.getElementById('wsDigit1'), document.getElementById('wsDigit2'), document.getElementById('wsDigit3')];
     var wsSumDisplay = document.getElementById('wsSumDisplay');
     var wsUseCustomSum = document.getElementById('wsUseCustomSum');
@@ -5026,6 +5123,36 @@ var KARO_DB = (function(){
         } catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
+    // ===== WINNER HISTORY PANEL (EDIT + DELETE) =====
+    var editingWinnerEntry = null;
+
+    function updateWePreview() {
+        var digits = ['weDigit0','weDigit1','weDigit2','weDigit3'].map(function(id){
+            var v = parseInt(document.getElementById(id).value);
+            if (isNaN(v) || v < 0) v = 0;
+            if (v > 9) v = 9;
+            return v;
+        });
+        var auto = digits.reduce(function(a,b){ return a+b; }, 0);
+        var final = auto;
+        var useCustom = document.getElementById('weUseCustomSum').checked;
+        if (useCustom) {
+            var cv = parseInt(document.getElementById('weCustomSumValue').value);
+            final = isNaN(cv) ? 0 : cv;
+        }
+        document.getElementById('weSumDisplay').textContent = final;
+        return { digits: digits, sum: final, useCustomSum: useCustom };
+    }
+
+    ['weDigit0','weDigit1','weDigit2','weDigit3','weCustomSumValue'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('input', updateWePreview);
+    });
+    document.getElementById('weUseCustomSum').addEventListener('change', function(){
+        document.getElementById('weCustomSumWrap').style.display = this.checked ? 'block' : 'none';
+        updateWePreview();
+    });
+
     window.refreshWinnerHistoryPanel = async function() {
         var container = document.getElementById('winnerHistoryList');
         if (!container) return;
@@ -5036,35 +5163,127 @@ var KARO_DB = (function(){
                 container.innerHTML = '<div style="text-align:center; color:#667; padding:12px;">Is date (' + dateKey + ') pe abhi koi entry nahi.</div>';
                 return;
             }
-            container.innerHTML = list.map(function(e, i){
-                var sum = e.sum;
-                var digits = (e.digits || []).join(' ');
+            container.innerHTML = '';
+            list.forEach(function(e, i) {
+                var digitsArr = (e.digits || [0,0,0,0]);
+                while (digitsArr.length < 4) digitsArr.push(0);
+                var digits = digitsArr.join(' ');
+                var sum = (typeof e.sum === 'number') ? e.sum : digitsArr.reduce(function(a,b){ return (parseInt(a)||0)+(parseInt(b)||0); }, 0);
                 var time = new Date(e.createdAt).toLocaleTimeString('en-IN');
-                return '<div style="background:#0a0e1a; border-radius:8px; padding:8px 10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; border-left:2px solid #ffd700;">' +
-                    '<div><span style="color:#667; font-size:10px;">#' + (i+1) + '</span> ' +
-                    '<span style="color:#fff; font-weight:700;">' + digits + '</span> ' +
-                    '<span style="color:#ffd700;">= ' + sum + '</span></div>' +
-                    '<div style="color:#667; font-size:10px;">' + time + '</div>' +
-                '</div>';
-            }).join('');
+
+                var item = document.createElement('div');
+                item.className = 'winner-history-item';
+                item.innerHTML =
+                    '<div class="wh-info">' +
+                        '<span style="color:#667; font-size:10px;">#' + (i+1) + '</span> ' +
+                        '<span class="wh-digits">' + digits + '</span>' +
+                        '<span class="wh-sum">= ' + sum + '</span>' +
+                        '<div class="wh-time">' + time + '</div>' +
+                    '</div>' +
+                    '<div class="wh-actions">' +
+                        '<button class="wh-btn edit" data-we-edit="' + e._id + '"><i class="fas fa-edit"></i> Edit</button>' +
+                        '<button class="wh-btn delete" data-we-del="' + e._id + '"><i class="fas fa-trash"></i></button>' +
+                    '</div>';
+
+                container.appendChild(item);
+            });
+
+            container.querySelectorAll('[data-we-edit]').forEach(function(btn){
+                btn.addEventListener('click', function(){
+                    var id = this.dataset.weEdit;
+                    var entry = list.find(function(x){ return x._id === id; });
+                    if (entry) openWinnerEditModal(entry);
+                });
+            });
+            container.querySelectorAll('[data-we-del]').forEach(function(btn){
+                btn.addEventListener('click', async function(){
+                    var id = this.dataset.weDel;
+                    if (!confirm('Delete this winner entry? Yeh history se permanently hat jayega.')) return;
+                    try {
+                        await KARO_DB.deleteWinnerHistory(id);
+                        showAdminToast('🗑️ Entry deleted', 'success');
+                        window.refreshWinnerHistoryPanel();
+                    } catch(err) {
+                        showAdminToast('Error: ' + err.message, 'error');
+                    }
+                });
+            });
         } catch(e) {
             container.innerHTML = '<div style="color:#f44336; text-align:center; padding:12px;">Error: ' + e.message + '</div>';
         }
     };
+
+    function openWinnerEditModal(entry) {
+        editingWinnerEntry = entry;
+        var digits = (entry.digits || [0,0,0,0]).slice(0,4);
+        while (digits.length < 4) digits.push(0);
+        digits.forEach(function(d, i){
+            var el = document.getElementById('weDigit' + i);
+            if (el) el.value = d;
+        });
+        document.getElementById('weUseCustomSum').checked = entry.useCustomSum === true;
+        document.getElementById('weCustomSumValue').value = entry.customSum || entry.sum || 0;
+        document.getElementById('weCustomSumWrap').style.display = entry.useCustomSum ? 'block' : 'none';
+        updateWePreview();
+        document.getElementById('winnerEditOverlay').classList.add('active');
+    }
+
+    document.getElementById('weCancelBtn').addEventListener('click', function(){
+        document.getElementById('winnerEditOverlay').classList.remove('active');
+        editingWinnerEntry = null;
+    });
+    document.getElementById('winnerEditOverlay').addEventListener('click', function(e){
+        if (e.target === this) {
+            this.classList.remove('active');
+            editingWinnerEntry = null;
+        }
+    });
+
+    document.getElementById('weSaveBtn').addEventListener('click', async function(){
+        if (!editingWinnerEntry) return;
+        var result = updateWePreview();
+        try {
+            await db.collection('winnerHistory').doc(editingWinnerEntry._id).update({
+                digits: result.digits,
+                sum: result.sum,
+                useCustomSum: result.useCustomSum,
+                customSum: result.useCustomSum ? result.sum : 0,
+                editedAt: Date.now(),
+                editedBy: currentAdmin ? currentAdmin.username : 'admin'
+            });
+            document.getElementById('winnerEditOverlay').classList.remove('active');
+            showAdminToast('✅ Winner entry updated!', 'success');
+            editingWinnerEntry = null;
+            window.refreshWinnerHistoryPanel();
+        } catch(err) {
+            showAdminToast('Error: ' + err.message, 'error');
+        }
+    });
+
     var _refreshWhBtn = document.getElementById('refreshWinnerHistoryBtn');
     if (_refreshWhBtn) _refreshWhBtn.addEventListener('click', window.refreshWinnerHistoryPanel);
 
+    // ===== LUCKY DATE SETTINGS =====
     var luckyDateInput = document.getElementById('luckyDateInput');
     function loadLuckyDateIntoForm() {
         var d = KARO_DB.getLuckyDrawDate();
         luckyDateInput.value = d || '';
     }
     document.getElementById('luckyDateSaveBtn').addEventListener('click', async function(){
-        try { await KARO_DB.saveLuckyDrawDate(luckyDateInput.value); showAdminToast('✅ Lucky Draw date saved!', 'success'); }
+        try {
+            await KARO_DB.saveLuckyDrawDate(luckyDateInput.value);
+            showAdminToast('✅ Lucky Draw date saved!', 'success');
+            if (typeof window.refreshWinnerHistoryPanel === 'function') window.refreshWinnerHistoryPanel();
+        }
         catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
     document.getElementById('luckyDateClearBtn').addEventListener('click', async function(){
-        try { await KARO_DB.saveLuckyDrawDate(''); luckyDateInput.value = ''; showAdminToast('Cleared — using default', 'info'); }
+        try {
+            await KARO_DB.saveLuckyDrawDate('');
+            luckyDateInput.value = '';
+            showAdminToast('Cleared — using default', 'info');
+            if (typeof window.refreshWinnerHistoryPanel === 'function') window.refreshWinnerHistoryPanel();
+        }
         catch(e) { showAdminToast('Error: ' + e.message, 'error'); }
     });
 
@@ -5374,7 +5593,8 @@ var KARO_DB = (function(){
             'addMoneyOverlay', 'withdrawOverlay', 'referralOverlay',
             'secretCodeOverlay', 'addUserModal', 'addAgentModal',
             'agentAddMoneyOverlay', 'agentWithdrawOverlay', 'agentReferralOverlay',
-            'agentBuyerOverlay', 'supportDetailOverlay', 'supportImageZoomOverlay'
+            'agentBuyerOverlay', 'supportDetailOverlay', 'supportImageZoomOverlay',
+            'winnerEditOverlay'
         ];
         modalIds.forEach(function(id){
             var el = document.getElementById(id);
@@ -5423,6 +5643,7 @@ var KARO_DB = (function(){
     hookModal(document.getElementById('agentReferralOverlay'), 'agentReferralOverlay');
     hookModal(document.getElementById('supportDetailOverlay'), 'supportDetailOverlay');
     hookModal(document.getElementById('supportImageZoomOverlay'), 'supportImageZoomOverlay');
+    hookModal(document.getElementById('winnerEditOverlay'), 'winnerEditOverlay');
 
     function hookDynamicBuyerOverlay() {
         var el = document.getElementById('agentBuyerOverlay');
