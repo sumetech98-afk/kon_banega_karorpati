@@ -1596,7 +1596,7 @@
 
         <div class="admin-panel" id="panelBoxResults" style="display:none;">
             <h3><i class="fas fa-box-open"></i> Box Results — Manual Prize Setting</h3>
-            <p style="color:#aab; font-size:13px; margin-bottom:14px;">Yahan pending box purchases dikhengi. Prize amount set karke <b style="color:#4caf50;">"Set"</b> click karein.<br><b style="color:#4caf50;">Amount > 0 = WON</b> (wallet auto credit) &nbsp;|&nbsp; <b style="color:#f44336;">Amount 0 = LOST</b></p>
+            <p style="color:#aab; font-size:13px; margin-bottom:14px;">Yahan pending box purchases dikhengi. Prize amount set karke <b style="color:#4caf50;">"Set"</b> click karein. Already processed records ke liye <b style="color:#ff9800;">"Edit"</b> button use karein.<br><b style="color:#4caf50;">Amount > 0 = WON</b> (wallet auto credit) &nbsp;|&nbsp; <b style="color:#f44336;">Amount 0 = LOST</b></p>
             <div class="admin-search-row">
                 <input type="text" id="boxResultSearch" placeholder="🔍 Search by username or box code..." />
                 <input type="date" id="boxResultDate" style="flex:0 0 170px; min-width:150px; padding:10px 14px; border-radius:12px; border:1px solid #3a4055; background:#121724; color:#fff; font-size:14px; outline:none;" />
@@ -2574,7 +2574,6 @@ var KARO_DB = (function(){
             return;
         }
 
-        // Group by date
         var groups = {};
         entries.forEach(function(e){
             var dateKey = e.date || 'unknown';
@@ -2588,7 +2587,6 @@ var KARO_DB = (function(){
 
         dateKeys.forEach(function(dateKey){
             var items = groups[dateKey];
-            // sort by createdAt asc
             items.sort(function(a,b){ return (a.createdAt||0) - (b.createdAt||0); });
 
             var groupEl = document.createElement('div');
@@ -2637,12 +2635,10 @@ var KARO_DB = (function(){
                 if (savedKey) {
                     entries = await KARO_DB.getWinnerHistoryByDate(savedKey);
                 } else {
-                    // no saved date — show today's
                     var todayKey2 = getDateKey(Date.now());
                     entries = await KARO_DB.getWinnerHistoryByDate(todayKey2);
                 }
             } else {
-                // all
                 entries = await KARO_DB.getAllWinnerHistory();
             }
             renderHistoryList(entries, historyFilterMode);
@@ -4463,7 +4459,9 @@ var KARO_DB = (function(){
                 if (st === 'pending') {
                     actionCell = '<input type="number" min="0" placeholder="Prize ₹" data-record-id="' + r._id + '" style="width:80px;padding:5px 8px;border-radius:6px;border:1px solid #3a4055;background:#0a0e1a;color:#4caf50;font-weight:700;font-size:12px;" />' +
                     '<button class="tbl-btn green" data-set-result="' + r._id + '" style="margin-left:4px;">Set</button>';
-                } else { actionCell = '<span style="opacity:0.5;font-size:11px;">✓ Done</span>'; }
+                } else {
+                    actionCell = '<button class="tbl-btn orange" data-edit-result="' + r._id + '" title="Edit prize/status">✏️ Edit</button>';
+                }
                 tr.innerHTML = '<td>' + (i+1) + '</td>' +
                     '<td style="color:#fff;font-weight:700;">' + (r.username || '-') + srcTag + buyerDisplay + '</td>' +
                     '<td style="color:#ffd700;font-weight:900;">' + (r.box_code || '-') + '</td>' +
@@ -4481,6 +4479,11 @@ var KARO_DB = (function(){
                     var amt = parseInt(input.value);
                     if (isNaN(amt) || amt < 0) { showAdminToast('Enter valid prize (0 = LOST)', 'error'); return; }
                     await setBoxResult(recordId, amt);
+                });
+            });
+            tb.querySelectorAll('button[data-edit-result]').forEach(function(btn){
+                btn.addEventListener('click', function(){
+                    editBoxResult(this.dataset.editResult);
                 });
             });
         } catch (e) { tb.innerHTML = '<tr><td colspan="8" style="color:#f44336;text-align:center;">' + e.message + '</td></tr>'; }
@@ -4502,6 +4505,89 @@ var KARO_DB = (function(){
             refreshStats(); renderBoxResultsTable();
         } catch (e) { showAdminToast('Error: ' + e.message, 'error'); }
     }
+
+    // ===== NEW: EDIT BOX RESULT =====
+    async function editBoxResult(recordId) {
+        try {
+            var records = KARO_DB.getRecords();
+            var rec = records.find(function(r){ return r._id === recordId; });
+            if (!rec) { showAdminToast('Record not found', 'error'); return; }
+
+            var currentPrize = rec.prize_amount || 0;
+            var oldStatus = rec.status || 'pending';
+
+            var input = prompt(
+                '✏️ Edit Prize — ' + rec.username + '\n' +
+                'Box Code: ' + rec.box_code + '\n' +
+                'Current Status: ' + oldStatus.toUpperCase() + '\n' +
+                'Current Prize: ₹' + currentPrize + '\n\n' +
+                'Enter new prize amount (0 = LOST, >0 = WON):',
+                currentPrize
+            );
+
+            if (input === null) return;
+
+            var newPrize = parseInt(input);
+            if (isNaN(newPrize) || newPrize < 0) {
+                showAdminToast('Invalid amount entered', 'error');
+                return;
+            }
+
+            var diff = newPrize - currentPrize;
+            var newStatus = newPrize > 0 ? 'won' : 'lost';
+            var isWin = newPrize > 0;
+
+            var confirmMsg = 'Confirm edit?\n\n' +
+                'User: ' + rec.username + '\n' +
+                'Box: ' + rec.box_code + '\n' +
+                'Prize: ₹' + currentPrize + ' → ₹' + newPrize + '\n' +
+                'Status: ' + oldStatus.toUpperCase() + ' → ' + newStatus.toUpperCase() + '\n';
+            if (diff !== 0) {
+                confirmMsg += 'Wallet adjustment: ' + (diff > 0 ? '+' : '') + '₹' + diff + '\n';
+            }
+            if (!confirm(confirmMsg)) return;
+
+            if (diff < 0) {
+                var user = KARO_DB.getUser(rec.username);
+                var currentBal = user ? (parseFloat(user.balance) || 0) : 0;
+                if (currentBal + diff < 0) {
+                    if (!confirm('⚠️ Warning: User balance is ₹' + currentBal + ', deducting ₹' + Math.abs(diff) + ' will make it negative. Continue anyway?')) return;
+                }
+            }
+
+            await KARO_DB.updateRecord(recordId, {
+                status: newStatus,
+                win: isWin,
+                prize_amount: newPrize,
+                processedAt: rec.processedAt || Date.now(),
+                editedAt: Date.now(),
+                editedBy: currentAdmin ? currentAdmin.username : 'admin'
+            });
+
+            if (diff !== 0) {
+                await KARO_DB.updateUserBalance(rec.username, diff);
+                await KARO_DB.addTransaction({
+                    username: rec.username,
+                    amount: diff,
+                    type: 'prize_edit',
+                    description: 'Prize edit for box ' + rec.box_code + ' → ₹' + newPrize + ' (was ₹' + currentPrize + ')',
+                    box_code: rec.box_code
+                });
+            }
+
+            showAdminToast('✅ Updated! ' + rec.username + ' → ₹' + newPrize +
+                (diff !== 0 ? ' | Wallet: ' + (diff > 0 ? '+' : '') + '₹' + diff : ''), 'success');
+
+            refreshStats();
+            renderBoxResultsTable();
+            renderRecordsTable();
+            renderNumberStats();
+            renderUsersTable();
+        } catch (e) {
+            showAdminToast('Error: ' + e.message, 'error');
+        }
+    }
+
     if (refreshBoxResultsBtn) refreshBoxResultsBtn.addEventListener('click', renderBoxResultsTable);
     if (boxResultSearch) boxResultSearch.addEventListener('input', renderBoxResultsTable);
     if (boxResultDate) boxResultDate.addEventListener('change', renderBoxResultsTable);
