@@ -1115,6 +1115,55 @@
     border-color: #ffd700 !important;
     box-shadow: 0 0 0 2px rgba(255,215,0,0.2) !important;
 }
+/* ===== MOBILE-FRIENDLY OVERRIDES ===== */
+html, body {
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+}
+* { -webkit-tap-highlight-color: transparent; }
+input, select, textarea { font-size: 16px !important; } /* iOS auto-zoom fix */
+
+@media (max-width: 380px) {
+    #viewSwitcher { top: 6px; padding: 4px; gap: 3px; }
+    #viewSwitcher button { padding: 5px 9px; font-size: 10px; min-height: 30px; }
+    #luckyView .main-box { padding: 1.2rem 0.6rem; border-radius: 30px 8px 30px 8px; margin-top: 45px; }
+    #luckyView h1 { font-size: 1.15rem; letter-spacing: 2px; }
+    #luckyView .reel-container { gap: 5px; padding: 10px 6px; border-radius: 30px; }
+    #luckyView .reel { width: 42px; height: 54px; font-size: 2rem; border-radius: 12px; }
+    #luckyView .sum-box { width: 54px; height: 54px; font-size: 2rem; border-radius: 14px; }
+    #luckyView .equals { font-size: 1.8rem; padding: 0 3px; }
+    #luckyView .btn-draw { font-size: 1rem; padding: 12px 20px; letter-spacing: 1px; }
+    #soldCounterStrip .sc-value { font-size: 1rem; }
+    #soldCounterStrip .sc-label { font-size: 0.45rem; }
+    #karorpatiView .header .title-area h1 { font-size: 14px; }
+    #karorpatiView .header .btn-group button { font-size: 9px; padding: 2px 6px; }
+    #karorpatiView .wallet-badge, #karorpatiView .refer-badge { font-size: 11px; padding: 4px 9px; }
+    #karorpatiView .box-item .box-code { font-size: 7px; letter-spacing: 0; }
+    #karorpatiView .box-grid { gap: 1.5px; padding: 3px; }
+    #agentPanelView .agent-box-item .ab-code { font-size: 7px; letter-spacing: 0; }
+    #agentPanelView .agent-box-grid { gap: 1.5px; padding: 3px; }
+    #luckyPrizeOverlay .prize-grid { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+    #luckyPrizeOverlay .prize-card { padding: 6px 3px; }
+    #luckyPrizeOverlay .prize-card .pnum { font-size: 13px; }
+    #luckyPrizeOverlay .prize-card .pamt { font-size: 10px; }
+}
+
+/* Touch devices: remove sticky hover */
+@media (hover: none) {
+    #karorpatiView .box-item:hover,
+    #agentPanelView .agent-box-item:hover,
+    #karorpatiView .wallet-badge:hover,
+    #karorpatiView .refer-badge:hover,
+    #luckyView .sum-box:hover {
+        transform: none !important;
+    }
+}
+
+/* Notched phones safe area */
+#viewSwitcher { padding-top: max(6px, env(safe-area-inset-top)); }
+#luckyView .main-box { padding-bottom: max(2rem, env(safe-area-inset-bottom)); }
+
 </style>
 </head>
 <body>
@@ -1142,11 +1191,11 @@
         <div id="soldCounterStrip">
             <div class="sc-card">
                 <div class="sc-value" id="scTotalSold">1,00,000+</div>
-                <div class="sc-label"><span class="sc-live-dot"></span>Total Sold</div>
+                <div class="sc-label"><span class="sc-live-dot"></span>Total User</div>
             </div>
             <div class="sc-card green">
                 <div class="sc-value" id="scTodaySold">0</div>
-                <div class="sc-label">Today</div>
+                <div class="sc-label">Today Sold</div>
             </div>
         </div>
 
