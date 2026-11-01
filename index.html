@@ -1,1244 +1,139 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta name="robots" content="noindex">
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Karorpati + Wallet + Referral + Agent</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
 
-#viewSwitcher {
-    position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
-    z-index: 99999; display: flex; gap: 6px;
-    background: rgba(20,25,40,0.92); padding: 6px; border-radius: 40px;
-    border: 1px solid #ffd70055; box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-    backdrop-filter: blur(10px);
-    max-width: 96vw; overflow-x: auto; flex-wrap: nowrap;
-}
-#viewSwitcher button {
-    padding: 8px 18px; border-radius: 30px; border: none;
-    background: transparent; color: #aab; font-weight: 700; font-size: 13px;
-    cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;
-    white-space: nowrap;
-}
-#viewSwitcher button.active { background: linear-gradient(135deg,#ffd700,#e6b800); color: #1a1f2f; }
-#viewSwitcher button:hover:not(.active) { color: #ffd700; }
-#viewSwitcher button.admin-tab { border: 1px solid #ff5252; color: #ff5252; display: none; }
-#viewSwitcher button.admin-tab.visible { display: flex; }
-#viewSwitcher button.admin-tab.active { background: linear-gradient(135deg,#ff5252,#c62828); color:#fff; }
-#viewSwitcher button.help-tab { border: 1px solid #4fc3f7; color: #4fc3f7; }
-#viewSwitcher button.help-tab.active { background: linear-gradient(135deg,#4fc3f7,#0288d1); color:#fff; }
+    // ============================================================
+    // HELPER FUNCTIONS (Code ko clean aur readable rakhte hain)
+    // ============================================================
 
-#loadingOverlay {
-    position: fixed; inset: 0; z-index: 9999999; background: #0b0e1a;
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 20px;
-}
-#loadingOverlay.hidden { display: none; }
-#loadingOverlay .spinner {
-    width: 60px; height: 60px; border: 4px solid #ffd70033;
-    border-top-color: #ffd700; border-radius: 50%; animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-#loadingOverlay p { color: #ffd700; font-weight: 700; letter-spacing: 2px; }
+    function isSignedIn() {
+      return request.auth != null;
+    }
 
-#luckyView { display: none; position: fixed; inset: 0; background: #0b0e1a; z-index: 50; overflow: hidden; }
-#luckyView.active { display: block; }
-#starCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-#luckyView .main-box {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    z-index: 10; background: rgba(255,248,235,0.08);
-    backdrop-filter: blur(12px); border: 2px solid rgba(212,160,23,0.4);
-    border-radius: 70px 20px 70px 20px; padding: 3rem 2.5rem;
-    max-width: 600px; width: 92%; text-align: center;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 40px rgba(212,160,23,0.2);
-    margin-top: 30px;
-}
-#luckyView h1 {
-    color: #f7d44a; font-size: 2.2rem; letter-spacing: 4px;
-    text-shadow: 0 0 20px rgba(247,212,74,0.4); margin-bottom: 10px;
-    font-weight: 700; cursor: pointer; user-select: none; transition: 0.3s;
-}
-#luckyView .sub-text { color: #cfc1a6; font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 30px; opacity: 0.8; }
-#luckyView .reel-container {
-    display: flex; justify-content: center; align-items: center; gap: 12px;
-    flex-wrap: wrap; background: rgba(0,0,0,0.4); padding: 20px 15px;
-    border-radius: 60px; border: 1px solid rgba(212,160,23,0.3); margin-bottom: 20px;
-}
-#luckyView .reel {
-    width: 70px; height: 90px; background: linear-gradient(145deg,#1f1f2e,#0d0d16);
-    border-radius: 20px; display: flex; justify-content: center; align-items: center;
-    font-size: 3.8rem; font-weight: 900; color: #f7d44a;
-    text-shadow: 0 0 25px #f7d44a, 0 0 5px #b8860b;
-    box-shadow: inset 0 -4px 0 #b8860b, 0 8px 20px rgba(0,0,0,0.6);
-    font-variant-numeric: tabular-nums;
-}
-#luckyView .equals { font-size: 3.5rem; font-weight: 900; color: #f7d44a; padding: 0 8px; text-shadow: 0 0 30px #f7d44a; }
-#luckyView .sum-box {
-    width: 90px; height: 90px; background: radial-gradient(circle at 30% 30%,#f7d44a,#b8860b);
-    border-radius: 30px; display: flex; justify-content: center; align-items: center;
-    font-size: 3.8rem; font-weight: 900; color: #0b0e1a;
-    box-shadow: 0 0 50px #f7d44a, inset 0 -4px 0 #7a5f0a;
-    transform: scale(0.5); cursor: pointer; transition: 0.2s;
-}
-#luckyView .sum-box:hover { transform: scale(0.55); box-shadow: 0 0 70px #f7d44a, inset 0 -4px 0 #7a5f0a; }
-#luckyView .sum-box.pop { animation: popScale 0.7s cubic-bezier(0.175,0.885,0.32,1.275) forwards; }
-@keyframes popScale {
-    0% { transform: scale(0.2); opacity: 0; }
-    50% { transform: scale(1.4); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-}
-#luckyView .btn-draw {
-    background: linear-gradient(145deg,#f7d44a,#d4a017); border: none;
-    padding: 16px 40px; border-radius: 60px; font-size: 1.4rem;
-    font-weight: 800; color: #1a1510; cursor: pointer;
-    box-shadow: 0 8px 0 #7a5f0a, 0 10px 30px rgba(212,160,23,0.4);
-    letter-spacing: 2px; margin-top: 15px; width: 100%;
-}
-#luckyView .btn-draw:disabled { opacity: 0.5; pointer-events: none; }
-#luckyView .footer-msg {
-    margin-top: 25px; color: #b8aa94; font-size: 0.85rem;
-    letter-spacing: 1px; border-top: 1px dashed rgba(212,160,23,0.2); padding-top: 18px;
-}
+    // Check karta hai ki request karne wala user hi document ka owner hai
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
 
-#luckyPrizeOverlay {
-    position: fixed; inset: 0; background: rgba(11,14,26,0.96);
-    backdrop-filter: blur(10px); display: none; align-items: center;
-    justify-content: center; z-index: 999998; padding: 20px;
-}
-#luckyPrizeOverlay.active { display: flex; }
-#luckyPrizeOverlay .prize-panel {
-    max-width: 720px; width: 100%; background: #1e2538;
-    border-radius: 32px; padding: 26px 22px; border: 2px solid #ffd700;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 40px rgba(255,215,0,0.2);
-    max-height: 90vh; overflow-y: auto;
-}
-#luckyPrizeOverlay h2 {
-    color: #ffd700; text-align: center; font-size: 22px;
-    margin-bottom: 6px; letter-spacing: 1px;
-}
-#luckyPrizeOverlay .prize-sub {
-    text-align: center; color: #aab; font-size: 12px;
-    margin-bottom: 18px; letter-spacing: 1px;
-}
-#luckyPrizeOverlay .prize-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 8px; margin-bottom: 18px;
-}
-#luckyPrizeOverlay .prize-card {
-    background: linear-gradient(145deg,#121724,#0d1119);
-    border: 1px solid #2a3045; border-radius: 12px;
-    padding: 10px 8px; text-align: center; transition: 0.2s;
-}
-#luckyPrizeOverlay .prize-card:hover {
-    border-color: #ffd70088; transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(255,215,0,0.15);
-}
-#luckyPrizeOverlay .prize-card .pnum {
-    color: #ffd700; font-size: 18px; font-weight: 900;
-    font-variant-numeric: tabular-nums;
-}
-#luckyPrizeOverlay .prize-card .plabel {
-    color: #889; font-size: 9px; text-transform: uppercase;
-    letter-spacing: 1px; margin-bottom: 4px;
-}
-#luckyPrizeOverlay .prize-card .pamt {
-    color: #4caf50; font-size: 14px; font-weight: 800;
-    margin-top: 4px;
-}
-#luckyPrizeOverlay .prize-card.top1 {
-    border-color: #ffd700; background: linear-gradient(145deg,#2a2410,#1a1608);
-    box-shadow: 0 0 20px rgba(255,215,0,0.3);
-}
-#luckyPrizeOverlay .prize-card.top1 .pamt { color: #ffd700; }
-#luckyPrizeOverlay .prize-card.top2 {
-    border-color: #c0c0c0; background: linear-gradient(145deg,#1f2330,#151822);
-}
-#luckyPrizeOverlay .prize-card.top2 .pamt { color: #c0c0c0; }
-#luckyPrizeOverlay .prize-card.top3 {
-    border-color: #cd7f32; background: linear-gradient(145deg,#241c14,#16110c);
-}
-#luckyPrizeOverlay .prize-card.top3 .pamt { color: #cd7f32; }
-#luckyPrizeOverlay .prize-note {
-    background: #121724; border-radius: 12px; padding: 12px 14px;
-    border-left: 3px solid #ffd700; color: #aab; font-size: 12px;
-    line-height: 1.6; margin-bottom: 16px;
-}
-#luckyPrizeOverlay .prize-close-btn {
-    width: 100%; padding: 14px; border-radius: 16px; border: none;
-    background: linear-gradient(135deg,#ffd700,#e6b800); color: #1a1f2f;
-    font-weight: 800; font-size: 16px; cursor: pointer;
-}
-#luckyPrizeOverlay .prize-close-btn:hover { opacity: 0.9; }
-#luckyView .btn-prizes {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    margin-top: 14px; padding: 10px 24px; border-radius: 40px;
-    border: 1px solid #ffd70055; background: rgba(255,215,0,0.08);
-    color: #ffd700; font-weight: 700; font-size: 13px; cursor: pointer;
-    transition: 0.2s;
-}
-#luckyView .btn-prizes:hover { background: rgba(255,215,0,0.15); border-color: #ffd700; }
+    // Check karta hai ki user ka role admin hai (Users collection se)
+    // Note: Ye har write par ek extra read karega, isliye custom claims better option hai.
+    function isAdmin() {
+      return isSignedIn() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
 
-#luckyView .btn-history {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    margin-top: 14px; margin-left: 8px; padding: 10px 24px; border-radius: 40px;
-    border: 1px solid #4fc3f755; background: rgba(79,195,247,0.08);
-    color: #4fc3f7; font-weight: 700; font-size: 13px; cursor: pointer;
-    transition: 0.2s;
-}
-#luckyView .btn-history:hover { background: rgba(79,195,247,0.18); border-color: #4fc3f7; }
+    // Check karta hai ki user agent hai (agar agent panel access dena hai)
+    function isAgent() {
+      return isSignedIn() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'agent';
+    }
 
-#luckyHistoryOverlay {
-    position: fixed; inset: 0; background: rgba(11,14,26,0.96);
-    backdrop-filter: blur(10px); display: none; align-items: center;
-    justify-content: center; z-index: 999998; padding: 20px;
-}
-#luckyHistoryOverlay.active { display: flex; }
-#luckyHistoryOverlay .history-panel {
-    max-width: 640px; width: 100%; background: #1e2538;
-    border-radius: 32px; padding: 26px 22px; border: 2px solid #4fc3f7;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 40px rgba(79,195,247,0.15);
-    max-height: 90vh; overflow-y: auto;
-}
-#luckyHistoryOverlay h2 {
-    color: #4fc3f7; text-align: center; font-size: 22px;
-    margin-bottom: 6px; letter-spacing: 1px;
-}
-#luckyHistoryOverlay .history-sub {
-    text-align: center; color: #aab; font-size: 12px;
-    margin-bottom: 18px; letter-spacing: 1px;
-}
-#luckyHistoryOverlay .history-filter-bar {
-    display: flex; gap: 8px; justify-content: center;
-    flex-wrap: wrap; margin-bottom: 16px;
-}
-#luckyHistoryOverlay .hfilter-btn {
-    padding: 8px 18px; border-radius: 24px;
-    border: 1px solid #3a4055; background: #121724;
-    color: #aab; font-weight: 700; font-size: 12px; cursor: pointer;
-    transition: 0.2s;
-}
-#luckyHistoryOverlay .hfilter-btn:hover { border-color: #4fc3f7; color: #4fc3f7; }
-#luckyHistoryOverlay .hfilter-btn.active {
-    background: linear-gradient(135deg,#4fc3f7,#0288d1);
-    color: #fff; border-color: #4fc3f7;
-}
-#luckyHistoryOverlay .history-summary-strip {
-    display: flex; gap: 10px; margin-bottom: 18px;
-}
-#luckyHistoryOverlay .hs-card {
-    flex: 1; background: #121724;
-    border: 1px solid #2a3045; border-radius: 14px;
-    padding: 12px 8px; text-align: center;
-}
-#luckyHistoryOverlay .hs-card .hs-val {
-    color: #ffd700; font-size: 26px; font-weight: 900;
-    font-variant-numeric: tabular-nums;
-}
-#luckyHistoryOverlay .hs-card .hs-label {
-    color: #889; font-size: 10px; text-transform: uppercase;
-    letter-spacing: 1px; margin-top: 4px; font-weight: 700;
-}
-#luckyHistoryOverlay .hs-card.green .hs-val { color: #4caf50; }
-#luckyHistoryOverlay .history-list {
-    max-height: 55vh; overflow-y: auto; padding-right: 4px;
-}
-#luckyHistoryOverlay .history-date-group { margin-bottom: 14px; }
-#luckyHistoryOverlay .history-date-header {
-    color: #4fc3f7; font-size: 13px; font-weight: 800;
-    padding: 6px 12px; border-left: 3px solid #4fc3f7;
-    background: rgba(79,195,247,0.08); border-radius: 6px;
-    margin-bottom: 8px; display: flex; justify-content: space-between;
-    align-items: center;
-}
-#luckyHistoryOverlay .history-date-header .hd-count {
-    color: #ffd700; font-size: 11px;
-    background: rgba(255,215,0,0.1); padding: 2px 8px;
-    border-radius: 10px;
-}
-#luckyHistoryOverlay .history-entry {
-    display: flex; align-items: center;
-    justify-content: space-between; padding: 8px 12px;
-    background: #0a0e1a; border-radius: 10px;
-    margin-bottom: 5px; border-left: 2px solid #ffd70066;
-    font-size: 12px;
-}
-#luckyHistoryOverlay .history-entry .he-digits {
-    color: #fff; font-weight: 700;
-    font-family: monospace; font-size: 13px;
-    letter-spacing: 1px;
-}
-#luckyHistoryOverlay .history-entry .he-sum {
-    color: #ffd700; font-weight: 900;
-    font-size: 15px; padding: 0 6px;
-}
-#luckyHistoryOverlay .history-entry .he-time {
-    color: #667; font-size: 10px;
-}
-#luckyHistoryOverlay .history-empty {
-    text-align: center; padding: 40px 20px;
-    color: #667; font-size: 13px;
-}
+    // ============================================================
+    // USERS COLLECTION (Profile, Wallet, Role, Referral)
+    // ============================================================
+    match /users/{userId} {
+      
+      // 1. READ: User apna data padh sakta hai. Admin sabka data padh sakta hai.
+      //    Agent apne referred users ka data padh sakta hai (agar zarurat ho).
+      allow read: if isOwner(userId) || isAdmin();
 
-@media (max-width: 520px) {
-    #luckyView .btn-history { padding: 8px 18px; font-size: 12px; margin-top: 10px; }
-    #luckyHistoryOverlay .history-panel { padding: 20px 14px; }
-    #luckyHistoryOverlay .hs-card .hs-val { font-size: 22px; }
-}
+      // 2. CREATE: Sirf naya user apna document bana sakta hai (Signup).
+      //    Role aur Balance ko initial state mein lock karna zaroori hai.
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasAll(['username', 'phone', 'role', 'walletBalance', 'referralCode', 'createdAt'])
+        && request.resource.data.role == 'user' // Default role user hi hoga
+        && request.resource.data.walletBalance == 0 // Start with 0 balance
+        && request.resource.data.username is string
+        && request.resource.data.phone is string
+        && request.resource.data.referralCode is string;
 
-#soldCounterStrip {
-    display: flex; justify-content: center; align-items: stretch;
-    gap: 10px; margin: 0 0 22px; flex-wrap: wrap;
-}
-#soldCounterStrip .sc-card {
-    flex: 1; min-width: 110px; max-width: 180px;
-    background: linear-gradient(145deg, rgba(31,31,46,0.95), rgba(13,13,22,0.95));
-    border: 1px solid rgba(212,160,23,0.35);
-    border-radius: 16px; padding: 12px 8px; text-align: center;
-    box-shadow: inset 0 -3px 0 #7a5f0a, 0 6px 18px rgba(0,0,0,0.5);
-    position: relative; overflow: hidden;
-}
-#soldCounterStrip .sc-card::before {
-    content: ''; position: absolute; inset: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(247,212,74,0.14), transparent 70%);
-    pointer-events: none;
-}
-#soldCounterStrip .sc-value {
-    font-size: 1.65rem; font-weight: 900; color: #f7d44a;
-    text-shadow: 0 0 18px rgba(247,212,74,0.55);
-    font-variant-numeric: tabular-nums; line-height: 1.1;
-    transition: transform 0.25s ease;
-}
-#soldCounterStrip .sc-value.bump { transform: scale(1.22); }
-#soldCounterStrip .sc-label {
-    font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase;
-    color: #cfc1a6; opacity: 0.85; margin-top: 5px; font-weight: 700;
-}
-#soldCounterStrip .sc-card.green .sc-value { color: #4caf50; text-shadow: 0 0 18px rgba(76,175,80,0.5); }
-#soldCounterStrip .sc-live-dot {
-    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
-    background: #4caf50; margin-right: 4px; vertical-align: middle;
-    animation: scPulse 1.6s infinite;
-}
-@keyframes scPulse {
-    0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(76,175,80,0.6); }
-    50%     { opacity: 0.5; box-shadow: 0 0 0 6px rgba(76,175,80,0); }
-}
-@media (max-width: 520px) {
-    #soldCounterStrip { gap: 6px; }
-    #soldCounterStrip .sc-card { min-width: 80px; padding: 9px 4px; border-radius: 12px; }
-    #soldCounterStrip .sc-value { font-size: 1.2rem; }
-    #soldCounterStrip .sc-label { font-size: 0.5rem; letter-spacing: 1px; }
-}
+      // 3. UPDATE: 
+      //    - User apni profile (username, phone) update kar sakta hai.
+      //    - User apna walletBalance, role, ya referralCode CHANGE NAHI kar sakta.
+      //    - Admin kuch bhi update kar sakta hai (e.g., manual balance adjustment).
+      allow update: if isAdmin() 
+        || (isOwner(userId) 
+            // Ensure ki user sensitive fields ko modify na kare
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['username', 'phone', 'updatedAt'])
+            // (Optional) Agar user ko wallet balance dikhana hai but change nahi karna, toh unchanged check laga sakte hain
+            && request.resource.data.walletBalance == resource.data.walletBalance
+            && request.resource.data.role == resource.data.role
+            && request.resource.data.referralCode == resource.data.referralCode
+           );
 
-#karorpatiView { display: none; position: fixed; inset: 0; overflow-y: auto; padding-top: 60px; background: linear-gradient(145deg,#0b0e1a 0%,#1a1f2f 100%); z-index: 50; }
-#karorpatiView.active { display: block; }
-#karorpatiView .container-wrap { display: flex; justify-content: center; padding: 12px; min-height: calc(100vh - 60px); }
-#appContainer {
-    max-width: 480px; width: 100%; background: rgba(26,31,47,0.92);
-    border-radius: 36px; padding: 20px 16px 28px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,215,0,0.12);
-    border: 1px solid rgba(255,215,0,0.15); display: none; margin: 10px 0;
-}
-#appContainer.active { display: block; }
-#karorpatiView .auth-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(11,14,26,0.96); backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center; z-index: 5000; padding: 20px;
-}
-#karorpatiView .auth-overlay.hidden { display: none; }
-#karorpatiView .auth-box {
-    max-width: 380px; width: 100%; background: #1e2538; border-radius: 40px;
-    padding: 32px 24px; border: 1px solid #ffd70055; box-shadow: 0 30px 60px rgba(0,0,0,0.9);
-}
-#karorpatiView .auth-box h2 { color: #ffd700; text-align: center; font-size: 28px; margin-bottom: 8px; }
-#karorpatiView .auth-box .sub { color: #aab; text-align: center; font-size: 14px; margin-bottom: 24px; }
-#karorpatiView .auth-box .input-group { margin-bottom: 16px; }
-#karorpatiView .auth-box .input-group label { color: #aab; font-size: 13px; display: block; margin-bottom: 4px; }
-#karorpatiView .auth-box .input-group input {
-    width: 100%; padding: 14px 16px; border-radius: 16px;
-    border: 1px solid #3a4055; background: #121724; color: #fff; font-size: 16px; outline: none;
-}
-#karorpatiView .auth-box .input-group input:focus { border-color: #ffd700; }
-#karorpatiView .auth-box .auth-btn {
-    width: 100%; padding: 14px; border-radius: 16px; border: none;
-    background: #ffd700; color: #1a1f2f; font-weight: 700; font-size: 18px;
-    cursor: pointer; margin-top: 8px;
-}
-#karorpatiView .auth-box .switch-link { text-align: center; margin-top: 16px; color: #aab; font-size: 14px; }
-#karorpatiView .auth-box .switch-link a { color: #ffd700; cursor: pointer; text-decoration: underline; }
-#karorpatiView .auth-box .auth-error { color: #f44336; font-size: 13px; text-align: center; margin-top: 8px; min-height: 20px; }
+      // 4. DELETE: User apna account delete nahi kar sakta (admin only).
+      allow delete: if isAdmin();
+    }
 
-#karorpatiView .modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-    display: none; align-items: center; justify-content: center; z-index: 7000; padding: 20px;
-}
-#karorpatiView .modal-overlay.active { display: flex; }
-#karorpatiView .modal-panel {
-    background: #1e2538; border-radius: 32px; max-width: 500px; width: 100%;
-    max-height: 90vh; overflow-y: auto; padding: 28px 24px;
-    border: 2px solid #ffd700; box-shadow: 0 30px 60px rgba(0,0,0,0.9);
-}
-#karorpatiView .modal-panel h2 { color: #ffd700; text-align: center; margin-bottom: 16px; font-size: 22px; }
-#karorpatiView .modal-close-btn {
-    display: block; width: 100%; padding: 12px; margin-top: 16px;
-    border-radius: 16px; border: none; background: #3a3045; color: #ccc;
-    font-weight: 700; font-size: 16px; cursor: pointer;
-}
-#karorpatiView .modal-close-btn:hover { background: #4a3a55; }
+    // ============================================================
+    // GAME / KARORPATI SESSIONS (Box openings, Wins)
+    // ============================================================
+    match /game_sessions/{sessionId} {
+      // Read: User apni history padh sakta hai. Admin sab kuch.
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
 
-#karorpatiView .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
-#karorpatiView .header .title-area { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-#karorpatiView .header .title-area h1 { color: #ffd700; font-size: 20px; font-weight: 900; letter-spacing: 1px; line-height: 1.2; }
-#karorpatiView .header .btn-group { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
-#karorpatiView .header .btn-group button {
-    background: #2a3045; border: 1px solid #ffd70055; color: #ffd700;
-    padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; gap: 4px;
-}
-#karorpatiView .user-info { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-#karorpatiView .wallet-badge {
-    background: linear-gradient(135deg,#4caf50,#388e3c); color: #fff;
-    padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 13px;
-    cursor: pointer; display: flex; align-items: center; gap: 6px;
-    box-shadow: 0 4px 12px rgba(76,175,80,0.3); transition: 0.2s;
-}
-#karorpatiView .wallet-badge:hover { transform: scale(1.05); }
-#karorpatiView .refer-badge {
-    background: linear-gradient(135deg,#9c27b0,#e91e63); color: #fff;
-    padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 13px;
-    cursor: pointer; display: flex; align-items: center; gap: 6px;
-    box-shadow: 0 4px 12px rgba(156,39,176,0.4); transition: 0.2s;
-}
-#karorpatiView .refer-badge:hover { transform: scale(1.05); }
-#karorpatiView .username-badge { color: #aab; font-size: 13px; font-weight: 500; }
-#karorpatiView .logout-btn {
-    background: #3a2a2a; border: 1px solid #7d3a3a; color: #fff;
-    padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
-    cursor: pointer; display: flex; align-items: center; gap: 4px;
-}
+      // Create: User apna game session create kar sakta hai.
+      // Important: Prize amount / win status ko server-side validate karna chahiye
+      // agar aap chahte hain ki user manipulate na kar sake. Yahan basic validation hai.
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasAll(['userId', 'selectedBox', 'result', 'amount', 'createdAt'])
+        && request.resource.data.selectedBox is number
+        && request.resource.data.result is string
+        && request.resource.data.amount is number;
 
-#karorpatiView .box-grid {
-    display: grid; grid-template-columns: repeat(10,1fr); gap: 4px;
-    background: #121724; padding: 6px; border-radius: 14px; border: 1px solid #2a3045;
-    width: 100%; max-width: 100%; overflow: hidden; box-sizing: border-box;
-}
-#karorpatiView .box-item {
-    aspect-ratio: 1/1; background: linear-gradient(145deg,#1e2538,#161c2e);
-    border-radius: 6px; border: 1px solid #2a3045; display: flex;
-    flex-direction: column; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 9px; color: #aab; min-height: 38px;
-    padding: 2px; user-select: none; min-width: 0; overflow: hidden;
-}
-#karorpatiView .box-item .box-code {
-    font-size: clamp(8px, 2.5vw, 13px);
-    font-weight: 900; color: #fff; letter-spacing: 0.5px; line-height: 1.2;
-    text-align: center; white-space: nowrap; overflow: hidden;
-    text-overflow: clip; width: 100%;
-}
-#karorpatiView .box-item .box-prize { font-size: 7px; font-weight: 700; color: #4caf50; display: none; }
-#karorpatiView .box-item:hover:not(.disabled):not(.revealed) { transform: scale(1.04); border-color: #ffd70088; }
-#karorpatiView .box-item.selected { border-color: #ffd700; box-shadow: 0 0 25px rgba(255,215,0,0.25); transform: scale(1.05); }
-#karorpatiView .box-item.disabled { cursor: not-allowed; opacity: 0.5; }
-#karorpatiView .box-item.revealed { cursor: default; }
-#karorpatiView .box-item.revealed .box-prize { display: block; }
-#karorpatiView .box-item.revealed .box-code { font-size: 11px; }
-#karorpatiView .box-item.win-box { border-color: #4caf50; background: #1e3a2f; }
-#karorpatiView .box-item.win-box .box-prize { color: #4caf50; font-size: 9px; }
-#karorpatiView .box-item.lose-box { border-color: #f44336; background: #3a1e2a; }
-#karorpatiView .box-item.lose-box .box-prize { color: #f44336; }
-#karorpatiView .box-item.pending-box { border-color: #ff9800; background: #3a2e1a; }
-#karorpatiView .box-item.pending-box .box-prize { color: #ff9800; font-size: 9px; display:block; }
+      // Update/Delete: Client-side se allow nahi karna chahiye (tampering risk).
+      allow update, delete: if false; 
+    }
 
-#karorpatiView .play-controls { display: flex; justify-content: center; margin: 14px 0 8px; }
-#karorpatiView .play-btn {
-    padding: 14px 30px; border-radius: 16px; border: none;
-    background: linear-gradient(135deg,#ffd700,#e6b800); color: #1a1f2f;
-    font-weight: 800; font-size: 18px; cursor: pointer;
-    display: flex; align-items: center; gap: 10px;
-}
-#karorpatiView .play-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-#karorpatiView .play-btn .price-tag { background: #1a1f2f44; padding: 2px 12px; border-radius: 30px; font-size: 14px; font-weight: 700; }
-#karorpatiView .result-msg {
-    text-align: center; font-size: 16px; font-weight: 700; color: #fff;
-    min-height: 30px; margin-top: 6px; padding: 6px; border-radius: 12px;
-}
-#karorpatiView .result-msg.win { color: #4caf50; background: #4caf5011; }
-#karorpatiView .result-msg.lose { color: #f44336; background: #f4433611; }
-#karorpatiView .result-msg.info { color: #ffd700; background: #ffd70011; }
-#karorpatiView .result-msg.error { color: #f44336; background: #f4433611; }
+    // ============================================================
+    // WALLET TRANSACTIONS (Add Money, Withdraw, Referral Bonus)
+    // ============================================================
+    match /wallet_transactions/{txnId} {
+      // User apni transactions dekh sakta hai.
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
 
-#karorpatiView .input-group { margin-bottom: 12px; }
-#karorpatiView .input-group label { color: #aab; font-size: 13px; display: block; margin-bottom: 4px; }
-#karorpatiView .input-group input {
-    width: 100%; padding: 12px 14px; border-radius: 12px;
-    border: 1px solid #3a4055; background: #121724; color: #fff; font-size: 15px; outline: none;
-}
-#karorpatiView .input-group input:focus { border-color: #4caf50; }
+      // Create: User khud transaction create nahi kar sakta (security risk).
+      // Ise sirf Cloud Functions ya Admin panel handle kare.
+      allow create: if false; // Ya phir isAdmin() agar admin manually add karta hai.
 
-#karorpatiView .amount-display-box {
-    text-align: center; background: #0a0e1a; padding: 10px;
-    border-radius: 10px; border: 1px solid #4caf50; margin-bottom: 10px;
-}
-#karorpatiView .amount-display-box .amount-label { color: #aab; font-size: 12px; }
-#karorpatiView .amount-display-box .amount-value { color: #4caf50; font-size: 28px; font-weight: 900; }
+      // Update/Delete: Block.
+      allow update, delete: if false;
+    }
 
-#karorpatiView .user-sales-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
-#karorpatiView .user-sales-item {
-    background: #121724; padding: 10px 14px; border-radius: 12px;
-    border-left: 3px solid #4fc3f7; display: flex; justify-content: space-between;
-    align-items: center; color: #ccc; font-size: 14px;
-}
-#karorpatiView .user-sales-item .username { color: #4fc3f7; font-weight: 600; }
-#karorpatiView .user-sales-item .sales-count { color: #ffd700; font-weight: 700; font-size: 16px; }
-#karorpatiView .user-sales-empty { text-align: center; color: #666; padding: 30px 0; }
+    // ============================================================
+    // LUCKY DRAW / DAILY WINNER (Read-only for clients)
+    // ============================================================
+    match /lucky_draw/{drawId} {
+      // Sabhi authenticated users read kar sakte hain (Latest winner dekhne ke liye).
+      allow read: if isSignedIn();
+      
+      // Write: Sirf Admin ya Cloud Functions.
+      allow write: if isAdmin();
+    }
 
-#karorpatiView .toast {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-    background: #1e2538; color: #fff; padding: 14px 28px; border-radius: 60px;
-    border: 1px solid #ffd70055; box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-    font-weight: 500; display: none; z-index: 6000; max-width: 90%; text-align: center;
-}
-#karorpatiView .toast.show { display: block; }
-#karorpatiView .toast.success { border-color: #4caf50; }
-#karorpatiView .toast.error { border-color: #f44336; }
-#karorpatiView .toast.warning { border-color: #ff9800; }
+    // ============================================================
+    // SUPPORT TICKETS / HELP MESSAGES
+    // ============================================================
+    match /support_tickets/{ticketId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasAll(['userId', 'message', 'status', 'createdAt'])
+        && request.resource.data.status == 'pending'; // User khud status change na kare
 
-.ref-input-group { background: rgba(156,39,176,0.1); border-radius: 12px; padding: 12px; border: 1px solid rgba(156,39,176,0.4); margin-bottom: 12px; }
-.ref-input-group label { color: #e91e63 !important; }
-.ref-input-group input { background: rgba(156,39,176,0.08) !important; border-color: rgba(156,39,176,0.5) !important; text-transform: uppercase; }
+      allow update: if isAdmin(); // Sirf admin reply/status change kare
+      
+      allow delete: if false; // Soft delete use karein
+    }
 
-@media (max-width: 520px) {
-    #luckyView .main-box { padding: 1.8rem 1rem; border-radius: 40px 10px 40px 10px; }
-    #luckyView .reel { width: 55px; height: 70px; font-size: 2.8rem; }
-    #luckyView .sum-box { width: 70px; height: 70px; font-size: 2.8rem; }
-    #luckyView .equals { font-size: 2.5rem; }
-    #luckyView h1 { font-size: 1.6rem; }
-    #karorpatiView .box-item { min-height: 0; }
-    #karorpatiView .header .title-area h1 { font-size: 16px; }
-    #karorpatiView .header .btn-group button { font-size: 10px; padding: 2px 8px; }
-    #luckyPrizeOverlay .prize-grid { grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 6px; }
-    #luckyPrizeOverlay .prize-card { padding: 8px 4px; }
-    #luckyPrizeOverlay .prize-card .pnum { font-size: 15px; }
-    #luckyPrizeOverlay .prize-card .pamt { font-size: 12px; }
+    // ============================================================
+    // DEFAULT DENY (Fallback Security)
+    // ============================================================
+    // Kisi bhi unknown path ko block karein.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
 }
-
-#adminView { display: none; position: fixed; inset: 0; overflow-y: auto; padding-top: 60px; background: linear-gradient(145deg,#0b0e1a 0%,#2a1a1a 100%); z-index: 50; }
-#adminView.active { display: block; }
-#adminView .admin-auth-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(11,14,26,0.97); backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center; z-index: 5000; padding: 20px;
-}
-#adminView .admin-auth-overlay.hidden { display: none; }
-#adminView .admin-auth-box {
-    max-width: 380px; width: 100%; background: #1e2538; border-radius: 40px;
-    padding: 32px 24px; border: 1px solid #ff525255; box-shadow: 0 30px 60px rgba(0,0,0,0.9);
-}
-#adminView .admin-auth-box h2 { color: #ff5252; text-align: center; font-size: 26px; margin-bottom: 8px; }
-#adminView .admin-auth-box .sub { color: #aab; text-align: center; font-size: 13px; margin-bottom: 22px; }
-#adminView .admin-auth-box .input-group { margin-bottom: 14px; }
-#adminView .admin-auth-box .input-group label { color: #aab; font-size: 13px; display: block; margin-bottom: 4px; }
-#adminView .admin-auth-box .input-group input {
-    width: 100%; padding: 13px 16px; border-radius: 14px;
-    border: 1px solid #3a4055; background: #121724; color: #fff; font-size: 15px; outline: none;
-}
-#adminView .admin-auth-box .admin-login-btn {
-    width: 100%; padding: 14px; border-radius: 14px; border: none;
-    background: linear-gradient(135deg,#ff5252,#c62828); color: #fff;
-    font-weight: 700; font-size: 17px; cursor: pointer; margin-top: 8px;
-}
-#adminView .admin-auth-box .admin-error { color: #f44336; font-size: 13px; text-align: center; margin-top: 8px; min-height: 20px; }
-#adminView .admin-auth-box .hint { text-align: center; color: #667; font-size: 11px; margin-top: 12px; border-top: 1px dashed #333; padding-top: 10px; }
-#adminView .admin-wrap { max-width: 1200px; margin: 0 auto; padding: 0 12px 40px; }
-#adminView .admin-header {
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-    background: rgba(30,37,56,0.92); border: 1px solid #ff525255; border-radius: 20px;
-    padding: 14px 18px; margin: 12px 0 16px;
-}
-#adminView .admin-header h1 { color: #ff5252; font-size: 20px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
-#adminView .admin-header .admin-user { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-#adminView .admin-header .admin-user .badge { background: #ff5252; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-#adminView .admin-header .admin-user button {
-    background: #3a2a2a; border: 1px solid #7d3a3a; color: #fff;
-    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
-    cursor: pointer; display: flex; align-items: center; gap: 5px;
-}
-#adminView .admin-stats { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 10px; margin-bottom: 16px; }
-#adminView .stat-card {
-    background: rgba(30,37,56,0.92); border: 1px solid #2a3045;
-    border-radius: 16px; padding: 14px; text-align: center;
-}
-#adminView .stat-card .stat-value { color: #ffd700; font-size: 26px; font-weight: 900; }
-#adminView .stat-card .stat-label { color: #aab; font-size: 12px; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
-#adminView .stat-card.red .stat-value { color: #ff5252; }
-#adminView .stat-card.green .stat-value { color: #4caf50; }
-#adminView .stat-card.blue .stat-value { color: #4fc3f7; }
-#adminView .stat-card.orange .stat-value { color: #ff9800; }
-#adminView .stat-card.pink { background: linear-gradient(135deg,#9c27b0,#e91e63); }
-#adminView .stat-card.pink .stat-value { color: #fff; }
-#adminView .stat-card.pink .stat-label { color: rgba(255,255,255,0.8); }
-#adminView .admin-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-#adminView .admin-tabs button {
-    padding: 10px 20px; border-radius: 30px; border: 1px solid #3a4055;
-    background: #1e2538; color: #aab; font-weight: 700; font-size: 14px;
-    cursor: pointer; display: flex; align-items: center; gap: 6px;
-}
-#adminView .admin-tabs button.active { background: linear-gradient(135deg,#ff5252,#c62828); color: #fff; border-color: #ff5252; }
-#adminView .admin-panel { background: rgba(30,37,56,0.92); border: 1px solid #2a3045; border-radius: 20px; padding: 18px; }
-#adminView .admin-panel h3 { color: #ff5252; font-size: 16px; margin-bottom: 14px; border-bottom: 1px dashed #333; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-#adminView .admin-search-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
-#adminView .admin-search-row input {
-    flex: 1; min-width: 160px; padding: 10px 14px; border-radius: 12px;
-    border: 1px solid #3a4055; background: #121724; color: #fff; font-size: 14px; outline: none;
-}
-#adminView .admin-search-row button {
-    padding: 10px 20px; border-radius: 12px; border: none;
-    background: linear-gradient(135deg,#ff5252,#c62828); color: #fff;
-    font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px;
-}
-#adminView .admin-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #2a3045; }
-#adminView table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 700px; }
-#adminView table thead { background: #121724; }
-#adminView table th {
-    color: #ff5252; padding: 10px 12px; text-align: left;
-    font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
-}
-#adminView table td { padding: 10px 12px; color: #ccc; border-top: 1px solid #1a2030; }
-#adminView table tbody tr:hover { background: #1a2232; }
-#adminView table td .status-pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-#adminView table td .status-pill.active { background: #4caf5022; color: #4caf50; border: 1px solid #4caf5055; }
-#adminView table td .status-pill.disabled { background: #f4433622; color: #f44336; border: 1px solid #f4433655; }
-#adminView table td .status-pill.pending { background: #ff980022; color: #ff9800; border: 1px solid #ff980055; }
-#adminView table td .status-pill.approved { background: #4caf5022; color: #4caf50; border: 1px solid #4caf5055; }
-#adminView table td .status-pill.rejected { background: #f4433622; color: #f44336; border: 1px solid #f4433655; }
-#adminView table td .status-pill.won { background: #4caf5033; color: #4caf50; border: 1px solid #4caf5066; }
-#adminView table td .status-pill.lost { background: #f4433633; color: #f44336; border: 1px solid #f4433666; }
-#adminView table td .role-pill {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    font-size: 10px; font-weight: 700; background: #4fc3f722;
-    color: #4fc3f7; border: 1px solid #4fc3f755;
-}
-#adminView table td .role-pill.admin { background: #ff525222; color: #ff5252; border-color: #ff525255; }
-#adminView table td .role-pill.agent { background: #ffb30022; color: #ffb300; border-color: #ffb30055; }
-#adminView .ref-code-pill { color:#e91e63; font-family:monospace; font-weight:900; font-size:12px; background:rgba(233,30,99,0.15); padding:3px 8px; border-radius:6px; border:1px solid rgba(233,30,99,0.4); display:inline-block; }
-#adminView .tbl-btn {
-    padding: 5px 10px; border-radius: 8px; border: 1px solid #3a4055;
-    background: #121724; color: #aab; font-size: 11px; font-weight: 700;
-    cursor: pointer; margin-right: 4px; margin-bottom: 2px;
-}
-#adminView .tbl-btn.green { border-color: #4caf5066; color: #4caf50; }
-#adminView .tbl-btn.green:hover { background: #4caf5022; }
-#adminView .tbl-btn.red { border-color: #f4433666; color: #f44336; }
-#adminView .tbl-btn.red:hover { background: #f4433622; }
-#adminView .tbl-btn.blue { border-color: #4fc3f766; color: #4fc3f7; }
-#adminView .tbl-btn.blue:hover { background: #4fc3f722; }
-#adminView .tbl-btn.orange { border-color: #ff980066; color: #ff9800; }
-#adminView .tbl-btn.orange:hover { background: #ff980022; }
-#adminView .tbl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-#adminView .empty-state { text-align: center; padding: 40px 20px; color: #667; }
-#adminView .admin-toast {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-    background: #1e2538; color: #fff; padding: 14px 28px; border-radius: 60px;
-    border: 1px solid #ff525255; font-weight: 500; display: none;
-    z-index: 6000; max-width: 90%; text-align: center;
-}
-#adminView .admin-toast.show { display: block; }
-#adminView .admin-toast.success { border-color: #4caf50; }
-#adminView .admin-toast.error { border-color: #f44336; }
-#adminView .admin-modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85); display: none; align-items: center;
-    justify-content: center; z-index: 8000; padding: 20px;
-}
-#adminView .admin-modal-overlay.active { display: flex; }
-#adminView .admin-modal {
-    background: #1e2538; border-radius: 24px; max-width: 420px; width: 100%;
-    max-height: 90vh; overflow-y: auto; padding: 24px; border: 2px solid #ff5252;
-}
-#adminView .admin-modal h2 { color: #ff5252; text-align: center; font-size: 20px; margin-bottom: 16px; }
-#adminView .admin-modal .input-group { margin-bottom: 12px; }
-#adminView .admin-modal .input-group label { color: #aab; font-size: 13px; display: block; margin-bottom: 4px; }
-#adminView .admin-modal .input-group input, #adminView .admin-modal .input-group select {
-    width: 100%; padding: 11px 14px; border-radius: 12px;
-    border: 1px solid #3a4055; background: #121724; color: #fff; font-size: 14px; outline: none;
-}
-#adminView .admin-modal .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
-#adminView .admin-modal .modal-actions button {
-    flex: 1; padding: 12px; border-radius: 12px; border: none;
-    font-weight: 700; font-size: 15px; cursor: pointer;
-}
-#adminView .admin-modal .modal-actions .save-btn { background: linear-gradient(135deg,#ff5252,#c62828); color: #fff; }
-#adminView .admin-modal .modal-actions .cancel-btn { background: #3a3045; color: #ccc; }
-
-#adminView .ws-digit-box input {
-    width: 70px; height: 80px; text-align: center; font-size: 34px;
-    font-weight: 900; border-radius: 14px; border: 2px solid #3a4055;
-    background: #0a0e1a; color: #ffd700; outline: none; font-variant-numeric: tabular-nums;
-}
-#adminView .ws-digit-box label { display: block; color: #aab; font-size: 11px; margin-bottom: 6px; text-transform: uppercase; }
-#adminView .ws-digit-box { text-align: center; }
-#adminView .ws-digits-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap; }
-
-#secretCodeOverlay {
-    position: fixed; inset: 0; background: rgba(11,14,26,0.97);
-    display: none; align-items: center; justify-content: center; z-index: 999999; padding: 20px;
-}
-#secretCodeOverlay.active { display: flex; }
-#secretCodeOverlay .secret-box {
-    max-width: 360px; width: 100%; background: #1e2538; border-radius: 32px;
-    padding: 30px 24px; border: 1px solid #ff525266; text-align: center;
-}
-#secretCodeOverlay h2 { color: #ff5252; font-size: 22px; margin-bottom: 8px; }
-#secretCodeOverlay p { color: #aab; font-size: 13px; margin-bottom: 20px; }
-#secretCodeInput {
-    width: 100%; padding: 14px 16px; border-radius: 14px;
-    border: 1px solid #3a4055; background: #121724; color: #fff;
-    font-size: 18px; text-align: center; letter-spacing: 3px; outline: none; margin-bottom: 14px;
-}
-#secretCodeError { color: #f44336; font-size: 13px; min-height: 18px; margin-bottom: 10px; }
-#secretCodeOverlay .btn-row { display: flex; gap: 8px; }
-#secretCodeOverlay .btn-row button {
-    flex: 1; padding: 12px; border-radius: 12px; border: none;
-    font-weight: 700; font-size: 15px; cursor: pointer;
-}
-#secretCodeCancelBtn { background: #3a3045; color: #ccc; }
-#secretCodeOkBtn { background: linear-gradient(135deg,#ff5252,#c62828); color: #fff; }
-
-.ns-summary-card {
-    background:#121724; border:1px solid #2a3045; border-radius:12px;
-    padding:12px; text-align:center;
-}
-.ns-summary-card .ns-value { font-size:22px; font-weight:900; color:#ffd700; }
-.ns-summary-card .ns-label { color:#889; font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
-.ns-summary-card.green .ns-value { color:#4caf50; }
-.ns-summary-card.red .ns-value { color:#f44336; }
-.ns-summary-card.orange .ns-value { color:#ff9800; }
-
-.code-badge {
-    background:#0a0e1a; padding:4px 10px; border-radius:6px;
-    color:#ffd700; font-family:monospace; font-weight:900; font-size:13px;
-    border:1px solid #ffd70044; display:inline-block;
-}
-.rank-badge {
-    display:inline-block; min-width:28px; padding:2px 8px;
-    border-radius:20px; font-size:11px; font-weight:800;
-    background:#2a3045; color:#aab;
-}
-.rank-badge.top1 { background:linear-gradient(135deg,#ffd700,#e6b800); color:#1a1f2f; }
-.rank-badge.top2 { background:linear-gradient(135deg,#c0c0c0,#9a9a9a); color:#1a1f2f; }
-.rank-badge.top3 { background:linear-gradient(135deg,#cd7f32,#a05a1f); color:#fff; }
-
-#agentPanelView { display:none; position:fixed; inset:0; overflow-y:auto; padding-top:60px; background:linear-gradient(145deg,#0b0e1a 0%,#1a2a1f 100%); z-index:50; }
-#agentPanelView.active { display:block; }
-#agentPanelView .agent-wrap { max-width:1100px; margin:0 auto; padding:0 12px 40px; }
-#agentPanelView .agent-header {
-    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
-    background:rgba(30,40,56,0.92); border:1px solid #ffb30055; border-radius:20px;
-    padding:14px 18px; margin:12px 0 16px;
-}
-#agentPanelView .agent-header h1 { color:#ffb300; font-size:20px; font-weight:900; display:flex; align-items:center; gap:8px; }
-#agentPanelView .agent-header .agent-user { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-#agentPanelView .agent-header .agent-user .badge { background:#ffb300; color:#1a1f2f; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; }
-#agentPanelView .agent-header .agent-user button {
-    background:#3a2a2a; border:1px solid #7d3a3a; color:#fff;
-    padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600;
-    cursor:pointer; display:flex; align-items:center; gap:5px;
-}
-#agentPanelView .agent-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:16px; }
-#agentPanelView .agent-stat-card {
-    background:rgba(30,40,56,0.92); border:1px solid #2a3045;
-    border-radius:16px; padding:14px; text-align:center;
-}
-#agentPanelView .agent-stat-card .stat-value { color:#ffb300; font-size:26px; font-weight:900; }
-#agentPanelView .agent-stat-card .stat-label { color:#aab; font-size:12px; margin-top:4px; text-transform:uppercase; letter-spacing:1px; }
-#agentPanelView .agent-stat-card.green .stat-value { color:#4caf50; }
-#agentPanelView .agent-stat-card.blue .stat-value { color:#4fc3f7; }
-#agentPanelView .agent-panel { background:rgba(30,40,56,0.92); border:1px solid #2a3045; border-radius:20px; padding:18px; }
-#agentPanelView .agent-panel h3 { color:#ffb300; font-size:16px; margin-bottom:14px; border-bottom:1px dashed #333; padding-bottom:10px; display:flex; align-items:center; gap:8px; }
-#agentPanelView .agent-search-row { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-#agentPanelView .agent-search-row input, #agentPanelView .agent-search-row select {
-    flex:1; min-width:160px; padding:10px 14px; border-radius:12px;
-    border:1px solid #3a4055; background:#121724; color:#fff; font-size:14px; outline:none;
-}
-#agentPanelView .agent-table-wrap { overflow-x:auto; border-radius:12px; border:1px solid #2a3045; }
-#agentPanelView table { width:100%; border-collapse:collapse; font-size:13px; min-width:700px; }
-#agentPanelView table thead { background:#121724; }
-#agentPanelView table th { color:#ffb300; padding:10px 12px; text-align:left; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; }
-#agentPanelView table td { padding:10px 12px; color:#ccc; border-top:1px solid #1a2030; }
-#agentPanelView table tbody tr:hover { background:#1a2232; }
-#agentPanelView .empty-state { text-align:center; padding:40px 20px; color:#667; }
-#agentPanelView .agent-toast {
-    position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
-    background:#1e2538; color:#fff; padding:14px 28px; border-radius:60px;
-    border:1px solid #ffb30055; font-weight:500; display:none;
-    z-index:6000; max-width:90%; text-align:center;
-}
-#agentPanelView .agent-toast.show { display:block; }
-#agentPanelView .agent-toast.success { border-color:#4caf50; }
-#agentPanelView .agent-toast.error { border-color:#f44336; }
-#agentPanelView .month-group-title { color:#ffb300; font-size:14px; font-weight:800; margin:16px 0 8px; padding-left:10px; border-left:3px solid #ffb300; }
-
-#agentPanelView .agent-tabs { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
-#agentPanelView .agent-tabs button {
-    padding:10px 18px; border-radius:30px; border:1px solid #3a4055;
-    background:#1e2538; color:#aab; font-weight:700; font-size:13px;
-    cursor:pointer; display:flex; align-items:center; gap:6px;
-}
-#agentPanelView .agent-tabs button.active { background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f; border-color:#ffb300; }
-
-#agentPanelView .agent-wallet-card {
-    background:linear-gradient(135deg,#4caf50,#388e3c); border-radius:20px;
-    padding:20px; text-align:center; margin-bottom:16px;
-}
-#agentPanelView .agent-wallet-card .lbl { color:#fff; font-size:12px; text-transform:uppercase; letter-spacing:2px; opacity:0.9; }
-#agentPanelView .agent-wallet-card .val { color:#fff; font-size:40px; font-weight:900; margin-top:4px; }
-#agentPanelView .agent-wallet-card .sub { color:#fff; font-size:11px; margin-top:6px; opacity:0.85; }
-#agentPanelView .agent-wallet-actions { display:flex; gap:10px; margin-bottom:16px; }
-#agentPanelView .agent-wallet-actions button {
-    flex:1; padding:14px; border-radius:14px; border:none;
-    font-weight:800; font-size:15px; cursor:pointer;
-}
-#agentPanelView .agent-wallet-actions .add-btn { background:linear-gradient(135deg,#4caf50,#45a049); color:#fff; }
-#agentPanelView .agent-wallet-actions .wd-btn { background:linear-gradient(135deg,#ff9800,#f57c00); color:#fff; }
-
-#agentPanelView .agent-box-grid {
-    display:grid; grid-template-columns:repeat(10,1fr); gap:4px;
-    background:#121724; padding:6px; border-radius:14px; border:1px solid #2a3045;
-    width:100%; max-width:100%; overflow:hidden; box-sizing:border-box;
-}
-#agentPanelView .agent-box-item {
-    aspect-ratio:1/1; background:linear-gradient(145deg,#1e2538,#161c2e);
-    border-radius:6px; border:1px solid #2a3045; display:flex;
-    flex-direction:column; align-items:center; justify-content:center;
-    cursor:pointer; font-size:9px; color:#aab; min-height:38px;
-    padding:2px; user-select:none; min-width:0; overflow:hidden;
-}
-#agentPanelView .agent-box-item .ab-code {
-    font-size:clamp(8px, 2.5vw, 13px);
-    font-weight:900; color:#fff; line-height:1.2;
-    white-space:nowrap; overflow:hidden; text-overflow:clip;
-    width:100%; text-align:center;
-}
-#agentPanelView .agent-box-item.selected { border-color:#ffb300; box-shadow:0 0 25px rgba(255,179,0,0.3); transform:scale(1.05); }
-#agentPanelView .agent-box-item.disabled { cursor:not-allowed; opacity:0.4; }
-
-#agentPanelView .agent-play-row { display:flex; justify-content:center; margin:14px 0 8px; }
-#agentPanelView .agent-play-btn {
-    padding:14px 30px; border-radius:16px; border:none;
-    background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f;
-    font-weight:800; font-size:17px; cursor:pointer;
-    display:flex; align-items:center; gap:10px;
-}
-#agentPanelView .agent-play-btn:disabled { opacity:0.5; cursor:not-allowed; }
-#agentPanelView .agent-play-btn .price-tag { background:#1a1f2f44; padding:2px 12px; border-radius:30px; font-size:13px; }
-
-#agentPanelView .agent-result-msg {
-    text-align:center; font-size:14px; font-weight:700; color:#fff;
-    min-height:28px; margin-top:6px; padding:6px; border-radius:12px;
-}
-#agentPanelView .agent-result-msg.info { color:#ffb300; background:#ffb30011; }
-#agentPanelView .agent-result-msg.error { color:#f44336; background:#f4433611; }
-#agentPanelView .agent-result-msg.success { color:#4caf50; background:#4caf5011; }
-
-#agentPanelView .agent-modal-overlay {
-    position:fixed; top:0; left:0; width:100%; height:100%;
-    background:rgba(0,0,0,0.85); backdrop-filter:blur(8px);
-    display:none; align-items:center; justify-content:center; z-index:8000; padding:20px;
-}
-#agentPanelView .agent-modal-overlay.active { display:flex; }
-#agentPanelView .agent-modal-panel {
-    background:#1e2538; border-radius:28px; max-width:460px; width:100%;
-    max-height:90vh; overflow-y:auto; padding:26px 22px;
-    border:2px solid #ffb300; box-shadow:0 30px 60px rgba(0,0,0,0.9);
-}
-#agentPanelView .agent-modal-panel h2 { color:#ffb300; text-align:center; margin-bottom:16px; font-size:20px; }
-#agentPanelView .agent-modal-panel .inp-group { margin-bottom:12px; }
-#agentPanelView .agent-modal-panel .inp-group label { color:#aab; font-size:13px; display:block; margin-bottom:4px; }
-#agentPanelView .agent-modal-panel .inp-group input {
-    width:100%; padding:12px 14px; border-radius:12px;
-    border:1px solid #3a4055; background:#121724; color:#fff; font-size:15px; outline:none;
-}
-#agentPanelView .agent-modal-panel .inp-group input:focus { border-color:#ffb300; }
-#agentPanelView .agent-modal-panel .modal-close-btn {
-    display:block; width:100%; padding:12px; margin-top:12px;
-    border-radius:14px; border:none; background:#3a3045; color:#ccc;
-    font-weight:700; font-size:15px; cursor:pointer;
-}
-#agentPanelView .agent-modal-panel .submit-btn {
-    width:100%; padding:14px; border-radius:14px; border:none;
-    background:linear-gradient(135deg,#ffb300,#ff8f00); color:#1a1f2f;
-    font-weight:800; font-size:16px; cursor:pointer;
-}
-#agentPanelView .agent-amount-box {
-    text-align:center; background:#0a0e1a; padding:10px;
-    border-radius:10px; border:1px solid #4caf50; margin-bottom:12px;
-}
-#agentPanelView .agent-amount-box .lbl { color:#aab; font-size:12px; }
-#agentPanelView .agent-amount-box .val { color:#4caf50; font-size:26px; font-weight:900; }
-#agentPanelView .agent-txn-item {
-    background:#121724; border-radius:10px; padding:10px 14px;
-    display:flex; justify-content:space-between; align-items:center;
-    border-left:3px solid #4caf50; margin-bottom:6px;
-}
-#agentPanelView .agent-txn-item.neg { border-left-color:#f44336; }
-#agentPanelView .agent-txn-item .t-desc { color:#fff; font-size:13px; }
-#agentPanelView .agent-txn-item .t-date { color:#889; font-size:11px; margin-top:2px; }
-#agentPanelView .agent-txn-item .t-amt { font-weight:900; font-size:16px; }
-
-@media (max-width: 600px) {
-    #viewSwitcher button { padding: 6px 12px; font-size: 11px; }
-    .ns-summary-card .ns-value { font-size:18px; }
-    #agentPanelView .agent-stat-card .stat-value { font-size:20px; }
-    #karorpatiView .box-grid,
-    #agentPanelView .agent-box-grid { gap: 2px; padding: 4px; }
-    #karorpatiView .box-item,
-    #agentPanelView .agent-box-item { min-height: 0; }
-    #karorpatiView .box-item .box-code,
-    #agentPanelView .agent-box-item .ab-code { font-size: clamp(7px, 2.2vw, 11px); }
-}
-@media (max-width: 380px) {
-    #karorpatiView .box-item .box-code,
-    #agentPanelView .agent-box-item .ab-code { font-size: 7px; letter-spacing: 0; }
-    #karorpatiView .box-grid,
-    #agentPanelView .agent-box-grid { gap: 1.5px; padding: 3px; }
-}
-
-#helpView { display:none; position:fixed; inset:0; overflow-y:auto; padding-top:60px; background:linear-gradient(145deg,#0b0e1a 0%,#1a2540 100%); z-index:50; }
-#helpView.active { display:block; }
-#helpView .help-wrap { max-width:560px; margin:0 auto; padding:16px 14px 40px; }
-#helpView .help-card {
-    background:rgba(30,37,56,0.95); border:1px solid #4fc3f755; border-radius:28px;
-    padding:26px 22px; box-shadow:0 20px 50px rgba(0,0,0,0.7);
-}
-#helpView h1 { color:#4fc3f7; font-size:22px; text-align:center; margin-bottom:6px; display:flex; align-items:center; justify-content:center; gap:8px; }
-#helpView .help-sub { color:#aab; text-align:center; font-size:13px; margin-bottom:22px; }
-#helpView .help-field { margin-bottom:14px; }
-#helpView .help-field label { color:#aab; font-size:13px; display:block; margin-bottom:5px; font-weight:600; }
-#helpView .help-field input,
-#helpView .help-field textarea,
-#helpView .help-field select {
-    width:100%; padding:12px 14px; border-radius:12px;
-    border:1px solid #3a4055; background:#121724; color:#fff;
-    font-size:14px; outline:none; font-family:inherit;
-}
-#helpView .help-field textarea { resize:vertical; min-height:100px; }
-#helpView .help-field input:focus,
-#helpView .help-field textarea:focus,
-#helpView .help-field select:focus { border-color:#4fc3f7; }
-#helpView .file-drop {
-    border:2px dashed #3a4055; border-radius:12px; padding:18px;
-    text-align:center; color:#889; cursor:pointer; transition:0.2s;
-    background:#0d1119;
-}
-#helpView .file-drop:hover { border-color:#4fc3f7; color:#4fc3f7; }
-#helpView .file-drop.has-file { border-color:#4caf50; color:#4caf50; background:#0d1f16; }
-#helpView .file-preview { margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
-#helpView .file-preview img {
-    width:70px; height:70px; object-fit:cover; border-radius:8px;
-    border:1px solid #4caf5066;
-}
-#helpView .help-submit {
-    width:100%; padding:14px; border-radius:14px; border:none;
-    background:linear-gradient(135deg,#4fc3f7,#0288d1); color:#fff;
-    font-weight:800; font-size:16px; cursor:pointer; margin-top:8px;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-}
-#helpView .help-submit:disabled { opacity:0.5; cursor:not-allowed; }
-#helpView .help-success {
-    display:none; text-align:center; padding:20px;
-    background:#0d1f16; border-radius:16px; border:1px solid #4caf5066;
-    margin-top:14px;
-}
-#helpView .help-success i { font-size:44px; color:#4caf50; }
-#helpView .help-success h3 { color:#fff; margin:8px 0 4px; }
-#helpView .help-success p { color:#aab; font-size:13px; }
-#helpView .help-error { color:#f44336; font-size:13px; text-align:center; min-height:18px; margin-top:6px; }
-
-#adminView .support-msg-cell {
-    max-width: 260px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    cursor: pointer;
-    color: #aab;
-}
-#adminView .support-msg-cell:hover { color: #4fc3f7; }
-#adminView .support-view-btn {
-    padding: 5px 10px; border-radius: 8px;
-    border: 1px solid #4fc3f766; color: #4fc3f7;
-    background: #121724; font-size: 11px; font-weight: 700;
-    cursor: pointer;
-}
-#adminView .support-view-btn:hover { background: #4fc3f722; }
-
-#supportDetailOverlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-    backdrop-filter: blur(8px); display: none; align-items: center;
-    justify-content: center; z-index: 2147483000; padding: 20px;
-    overflow-y: auto;
-}
-#supportDetailOverlay.active { display: flex; }
-#supportDetailOverlay .support-detail-panel {
-    background: #1e2538; border-radius: 24px; max-width: 620px;
-    width: 100%; padding: 24px 22px; border: 2px solid #4fc3f7;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.9);
-    max-height: 92vh; overflow-y: auto;
-}
-#supportDetailOverlay h2 {
-    color: #4fc3f7; font-size: 20px; text-align: center;
-    margin-bottom: 16px; display: flex; align-items: center;
-    justify-content: center; gap: 8px;
-}
-#supportDetailOverlay .sd-row {
-    background: #121724; border-radius: 12px; padding: 10px 14px;
-    margin-bottom: 10px; border-left: 3px solid #4fc3f7;
-}
-#supportDetailOverlay .sd-label {
-    color: #889; font-size: 11px; text-transform: uppercase;
-    letter-spacing: 1px; margin-bottom: 4px;
-}
-#supportDetailOverlay .sd-value { color: #fff; font-size: 14px; word-break: break-word; }
-#supportDetailOverlay .sd-message {
-    background: #0a0e1a; border-radius: 12px; padding: 14px;
-    color: #e0e0e0; font-size: 14px; line-height: 1.6;
-    white-space: pre-wrap; word-break: break-word;
-    border: 1px solid #2a3045; margin-bottom: 14px;
-    max-height: 260px; overflow-y: auto;
-}
-#supportDetailOverlay .sd-screenshots {
-    display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
-}
-#supportDetailOverlay .sd-screenshot {
-    width: 100%; max-width: 280px; border-radius: 12px;
-    border: 2px solid #4fc3f755; cursor: pointer; transition: 0.2s;
-}
-#supportDetailOverlay .sd-screenshot:hover {
-    border-color: #4fc3f7; transform: scale(1.02);
-}
-#supportDetailOverlay .sd-close-btn {
-    width: 100%; padding: 13px; border-radius: 14px; border: none;
-    background: linear-gradient(135deg,#4fc3f7,#0288d1); color: #fff;
-    font-weight: 800; font-size: 15px; cursor: pointer;
-}
-#supportDetailOverlay .sd-error {
-    color: #f44336; text-align: center; font-size: 13px; padding: 12px;
-}
-#supportImageZoomOverlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.97);
-    display: none; align-items: center; justify-content: center;
-    z-index: 2147483600; padding: 20px; cursor: zoom-out;
-}
-#supportImageZoomOverlay.active { display: flex; }
-#supportImageZoomOverlay img {
-    max-width: 100%; max-height: 100%; border-radius: 8px;
-    box-shadow: 0 0 60px rgba(0,0,0,0.9);
-}
-
-/* ===== WINNER HISTORY ENTRY ACTIONS ===== */
-.winner-history-item {
-    background: #0a0e1a;
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-left: 2px solid #ffd700;
-    gap: 8px;
-}
-.winner-history-item .wh-info { flex: 1; min-width: 0; }
-.winner-history-item .wh-digits {
-    color: #fff; font-weight: 700; font-family: monospace;
-    font-size: 13px; letter-spacing: 1px;
-}
-.winner-history-item .wh-sum { color: #ffd700; font-weight: 900; margin-left: 6px; }
-.winner-history-item .wh-time { color: #667; font-size: 10px; margin-top: 2px; }
-.winner-history-item .wh-actions { display: flex; gap: 4px; flex-shrink: 0; }
-.winner-history-item .wh-btn {
-    padding: 4px 8px; border-radius: 6px; border: 1px solid #3a4055;
-    background: #121724; color: #aab; font-size: 10px; font-weight: 700;
-    cursor: pointer; transition: 0.2s;
-}
-.winner-history-item .wh-btn.edit { border-color: #4fc3f766; color: #4fc3f7; }
-.winner-history-item .wh-btn.edit:hover { background: #4fc3f722; }
-.winner-history-item .wh-btn.delete { border-color: #f4433666; color: #f44336; }
-.winner-history-item .wh-btn.delete:hover { background: #f4433622; }
-
-#winnerEditOverlay {
-    position: fixed; inset: 0; background: rgba(11,14,26,0.96);
-    backdrop-filter: blur(10px); display: none; align-items: center;
-    justify-content: center; z-index: 2147483500; padding: 20px;
-}
-#winnerEditOverlay.active { display: flex; }
-#winnerEditOverlay .we-panel {
-    background: #1e2538; border-radius: 28px; max-width: 460px; width: 100%;
-    padding: 26px 22px; border: 2px solid #ffd700;
-    box-shadow: 0 30px 70px rgba(0,0,0,0.9); max-height: 92vh; overflow-y: auto;
-}
-#winnerEditOverlay h2 { color: #ffd700; text-align: center; font-size: 20px; margin-bottom: 6px; }
-#winnerEditOverlay .we-sub { text-align: center; color: #aab; font-size: 12px; margin-bottom: 18px; }
-#winnerEditOverlay .we-digits-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
-#winnerEditOverlay .we-digit-box { text-align: center; }
-#winnerEditOverlay .we-digit-box label { display: block; color: #aab; font-size: 11px; margin-bottom: 6px; text-transform: uppercase; }
-#winnerEditOverlay .we-digit-box input {
-    width: 64px; height: 72px; text-align: center; font-size: 30px; font-weight: 900;
-    border-radius: 14px; border: 2px solid #3a4055; background: #0a0e1a;
-    color: #ffd700; outline: none; font-variant-numeric: tabular-nums;
-}
-#winnerEditOverlay .we-digit-box input:focus { border-color: #ffd700; }
-#winnerEditOverlay .we-sum-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; }
-#winnerEditOverlay .we-sum-display {
-    width: 80px; height: 80px;
-    background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
-    border-radius: 18px; display: flex; align-items: center; justify-content: center;
-    font-size: 30px; font-weight: 900; color: #0b0e1a;
-}
-#winnerEditOverlay .we-actions { display: flex; gap: 8px; margin-top: 16px; }
-#winnerEditOverlay .we-actions button {
-    flex: 1; padding: 12px; border-radius: 12px; border: none;
-    font-weight: 700; font-size: 14px; cursor: pointer;
-}
-#winnerEditOverlay .we-save-btn { background: linear-gradient(135deg, #4caf50, #45a049); color: #fff; }
-#winnerEditOverlay .we-cancel-btn { background: #3a3045; color: #ccc; }
-
-#luckyDateInput:focus {
-    border-color: #ffd700 !important;
-    box-shadow: 0 0 0 2px rgba(255,215,0,0.2) !important;
-}
-</style>
-</head>
-<body>
-
-<div id="loadingOverlay">
-    <div class="spinner"></div>
-    <p>Loading...</p>
-</div>
-
-<div id="viewSwitcher">
-    <button id="switchLucky" class="active"><i class="fas fa-star"></i> Lucky Draw</button>
-    <button id="switchKarorpati"><i class="fas fa-crown"></i> Karorpati</button>
-    <button id="switchAgent"><i class="fas fa-user-tie"></i> Agent</button>
-    <button id="switchHelp" class="help-tab"><i class="fas fa-headset"></i> Help</button>
-    <button id="switchAdmin" class="admin-tab"><i class="fas fa-shield-alt"></i> Admin</button>
-</div>
-
-<!-- LUCKY DRAW -->
-<div id="luckyView" class="active">
-    <canvas id="starCanvas"></canvas>
-    <div class="main-box">
-        <h1 id="appLogo">✨ Kon Banega KarorPati ✨</h1>
-        <div class="sub-text" id="luckyDrawDate">🎰 Today's Winner</div>
-
-        <div id="soldCounterStrip">
-            <div class="sc-card">
-                <div class="sc-value" id="scTotalSold">1,00,000+</div>
-                <div class="sc-label"><span class="sc-live-dot"></span>Total User</div>
-            </div>
-            <div class="sc-card green">
-                <div class="sc-value" id="scTodaySold">0</div>
-                <div class="sc-label">Today Sold</div>
-            </div>
-        </div>
-
-        <div class="reel-container" id="reelContainer">
-            <div class="reel" id="reel1">0</div>
-            <div class="reel" id="reel2">0</div>
-            <div class="reel" id="reel3">0</div>
-            <div class="reel" id="reel4">0</div>
-            <div class="equals">=</div>
-            <div class="sum-box" id="sumBox">0</div>
-        </div>
-        <button class="btn-draw" id="drawBtn">🎲 Check Number</button>
-        <button class="btn-prizes" id="showPrizesBtn"><i class="fas fa-trophy"></i> Prize Details (1-100)</button>
-        <button class="btn-history" id="showHistoryBtn"><i class="fas fa-history"></i> History</button>
-        <div class="footer-msg">⭐ Today Try Your Luck ⭐</div>
-    </div>
-</div>
-
-<!-- PRIZE DETAILS MODAL -->
-<div id="luckyPrizeOverlay">
-    <div class="prize-panel">
-        <h2><i class="fas fa-trophy"></i> Prize Details</h2>
-        <div class="prize-sub">Number 1-100 ke hisaab se prize amounts</div>
-        <div class="prize-note">
-            <i class="fas fa-info-circle" style="color:#ffd700;"></i> Har number ka apna fixed prize hai. 
-            Number jitna bada, prize utna zyada. Top 3 numbers (98, 99, 100) ke liye special prizes hain.
-        </div>
-        <div class="prize-grid" id="prizeGrid"></div>
-        <button class="prize-close-btn" id="closePrizesBtn"><i class="fas fa-times"></i> Close</button>
-    </div>
-</div>
-
-<!-- LUCKY DRAW HISTORY OVERLAY -->
-<div id="luckyHistoryOverlay">
-    <div class="history-panel">
-        <h2><i class="fas fa-history"></i> Number History</h2>
-        <div class="history-sub">Date-wise saare checked numbers</div>
-
-        <div class="history-filter-bar">
-            <button class="hfilter-btn" data-hfilter="saved">⭐ Lucky Date</button>
-            <button class="hfilter-btn" data-hfilter="all">📚 All Dates</button>
-        </div>
-
-        <div id="historySummaryStrip" class="history-summary-strip">
-            <div class="hs-card">
-                <div class="hs-val" id="hsTotalCount">0</div>
-                <div class="hs-label">Total Entries</div>
-            </div>
-            <div class="hs-card green">
-                <div class="hs-val" id="hsDateCount">0</div>
-                <div class="hs-label">Dates Covered</div>
-            </div>
-        </div>
-
-        <div id="luckyHistoryList" class="history-list">
-            <div class="history-empty">
-                <i class="fas fa-hourglass-half" style="font-size:36px;opacity:0.4;"></i>
-                <div style="margin-top:10px;">Loading...</div>
-            </div>
-        </div>
-
-        <button class="prize-close-btn" id="closeLuckyHistoryBtn" style="margin-top:14px;">
-            <i class="fas fa-times"></i> Close
-        </button>
-    </div>
-</div>
-
-<!-- KARORPATI -->
-<div id="karorpatiView">
-    <div class="container-wrap">
-        <div class="auth-overlay" id="authOverlay">
-            <div class="auth-box">
-                <h2><i class="fas fa-crown"></i> Karorpati</h2>
-                <div class="sub" id="authSub">Login to play and win big!</div>
-                <div class="input-group"><label><i class="fas fa-user"></i> Username</label><input type="text" id="authUsername" placeholder="Enter username" /></div>
-                <div class="input-group"><label><i class="fas fa-phone"></i> Phone Number</label><input type="text" id="authPhone" placeholder="Enter 10-digit phone" maxlength="10" inputmode="numeric" /></div>
-                <div class="input-group"><label><i class="fas fa-lock"></i> Password</label><input type="password" id="authPassword" placeholder="Enter password" /></div>
-                <div class="input-group ref-input-group" id="referralInputGroup" style="display:none;">
-                    <label><i class="fas fa-gift"></i> Referral Code (Optional)</label>
-                    <input type="text" id="authReferralCode" placeholder="e.g. RAHUL4K9X2" maxlength="20" />
-                    <div style="font-size:11px; color:#889; margin-top:4px;">🎁 Code daalo — ₹100 extra bonus milega!</div>
-                </div>
-                <button class="auth-btn" id="authBtn">Login</button>
-                <div class="auth-error" id="authError"></div>
-                <div class="switch-link" id="authSwitch">Don't have an account? <a id="toggleAuthLink">Register</a></div>
-            </div>
-        </div>
-
-        <div id="appContainer">
-            <div class="header">
-                <div class="title-area">
-                    <h1><i class="fas fa-trophy"></i> Karorpati</h1>
-                    <div class="btn-group"><button id="historyBtn"><i class="fas fa-history"></i> History</button></div>
-                </div>
-                <div class="user-inf
